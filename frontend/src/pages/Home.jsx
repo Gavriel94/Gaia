@@ -2,47 +2,51 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { TrendBar, Sidebar, HomeHeader, Title, TrendCard, ArticleLoading, ArticleView, Footer } from '../components'
 import { useStateContext } from '../context/ContextProvider'
-// import API from '../API'
+import API from '../API'
 
 /**
  * Home page containing autoupdating trends and content for the user to browse
  */
 
+/**
+ * django server is running at 3.11.212.147:8000
+ */
+
 const Home = () => {
     const { articleList, setArticleList, articleLoading, setArticleLoading } = useStateContext()
 
-    // useEffect(() => {
-    //     const refreshArticles = () => {
-    //         API.get('/articles/')
-    //             .then((res) => {
-    //                 setArticleList(res.data)
-    //             })
-    //             .catch(console.error)
-    //     }
-    //     refreshArticles()
-    // }, [setArticleList])
+    useEffect(() => {
+        const refreshArticles = () => {
+            API.get('/articles/')
+                .then((res) => {
+                    setArticleList(res.data)
+                })
+                .catch(console.error)
+        }
+        refreshArticles()
+    }, [setArticleList])
 
-    // var timer = 0
-    // const serverTimeout = (e) => {
-    //     if (articleLoading === false) {
-    //         clearTimer(timer)
-    //     }
-    //     timer = setTimeout(() => alert('Server timeout'), 10000)
-    // }
+    var timer = 0
+    const serverTimeout = (e) => {
+        if (articleLoading === false) {
+            clearTimer(timer)
+        }
+        timer = setTimeout(() => alert('Server timeout'), 10000)
+    }
 
-    // const clearTimer = () => {
-    //     clearTimeout(timer)
-    // }
+    const clearTimer = () => {
+        clearTimeout(timer)
+    }
 
-    // if (articleList.length === 0) {
-    //     return (
-    //         <>
-    //             <ArticleLoading pageTitle={'Home'} />
-    //             {/* {serverTimeout()} */}
-    //         </>
-    //     )
-    // }
-    // else {
+    if (articleList.length === 0) {
+        return (
+            <>
+                <ArticleLoading pageTitle={'Home'} />
+                {/* {serverTimeout()} */}
+            </>
+        )
+    }
+    else {
         return (
             <>
                 <div className='justify-center m-auto left-0 right-0 h-full w-full dark:bg-dark-grey'>
@@ -107,6 +111,6 @@ const Home = () => {
             </>
         )
     }
-// }
+}
 
 export default Home

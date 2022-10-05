@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Sidebar, Header, Title, Button } from '../components'
 import { useStateContext } from '../context/ContextProvider'
-// import API from '../API'
+import API from '../API'
 
 /**
  * Page for creating a article. 
@@ -19,13 +19,13 @@ const CreateArticle = () => {
     const [tags, setTags] = useState('')
 
     function handleSubmit(e) {
-        // const article = {
-        //     title: title,
-        //     content: content,
-        //     tags: tags,
-        // }
+        const article = {
+            title: title,
+            content: content,
+            tags: tags,
+        }
 
-        // API.post("/create/", { ...article });
+        API.post("/create/", { ...article });
     }
 
     //! ALL INPUT PROPS NEED SANITIZATION
