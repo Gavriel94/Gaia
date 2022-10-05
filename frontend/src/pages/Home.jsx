@@ -52,7 +52,7 @@ const Home = () => {
                 <div className='justify-center m-auto left-0 right-0 h-full w-full dark:bg-dark-grey'>
                     <Sidebar />
                     {/* To keep with DRY could use mapping but need votes and sorting first */}
-                    {/* <TrendBar
+                    <TrendBar
                         firstTrend={
                             <Link to={`/articles/${articleList?.[0]?.id}`}>
                                 <TrendCard
@@ -97,7 +97,7 @@ const Home = () => {
                                 />
                             </Link>
                         }
-                    /> */}
+                    />
                     <HomeHeader />
                     <div className='flex justify-center overflow-auto'>
                         <div className='pt-20'>
