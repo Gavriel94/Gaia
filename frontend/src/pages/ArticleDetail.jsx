@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Title, Sidebar, Header } from "../components";
-// import API from '../API'
+import API from '../API'
 import { useParams } from "react-router-dom";
 
 /**
@@ -12,17 +12,17 @@ const ArticleDetail = () => {
     const [article, setArticle] = useState('')
     const { id } = useParams()
 
-    // useEffect(() => {
-    //     const articleDetail = () => {
-    //         API.get(`/articles/${id}`)
-    //             .then((res) => {
-    //                 setArticle(res.data)
-    //             })
-    //             .catch(console.error)
-    //     }
-    //     articleDetail()
-    //     console.log(article)
-    // }, [id])
+    useEffect(() => {
+        const articleDetail = () => {
+            API.get(`/articles/${id}`)
+                .then((res) => {
+                    setArticle(res.data)
+                })
+                .catch(console.error)
+        }
+        articleDetail()
+        console.log(article)
+    }, [id])
 
     return (
         <>
