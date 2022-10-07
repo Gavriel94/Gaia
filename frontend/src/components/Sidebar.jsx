@@ -12,9 +12,6 @@ import { useStateContext } from '../context/ContextProvider'
  * Sidebar Component which allows for easy app navigation
  * Contains icons and shows text when expanded
  * Displays the app logo
- * 
- * ? change sidebar behaviour so the bar vanishes when the screen is small but the button remains.
- * ? onclick the button should bring out the min width sidebar for nav
  */
 
 
@@ -48,20 +45,24 @@ const Sidebar = () => {
 
     //! Causes glitchy effect when screen size < 900 instead of closing cleanly
     // useEffect(() => {
-    //     if (screenSize <= 900) {
+    //     if (screenSize <= 700) {
     //         setSidebarOpen(!sidebarOpen);
     //     }
     // }, [screenSize, setSidebarOpen, sidebarOpen]);
 
     return (
-        <div className='h-full w-72 fixed'>
+        <div className={`h-full w-72 fixed bg-opacity-100 ${screenSize < 700 ? 'hidden' : ''} `}>
+        {/* Make border invisible when the screen is small */}
+        {/* Make sidebar see through when screen is small */}
             <div
-                className={`absolute left-0 ${sidebarOpen ? 'w-72' : 'w-20'} 
-                h-full border-r-1 border-light-orange dark:border-dark-orange border-opacity-50 bg-white
-                ${screenSize < 900 ? 'w-20' : sidebarOpen}`}
+                className={`absolute left-0 h-full border-r-1 border-light-orange dark:border-dark-orange 
+                ${screenSize < 700 ? 'border-opacity-0' : 'border-opacity-50'}  
+                ${screenSize < 700 ? 'w-20' : sidebarOpen} bg-white
+                ${sidebarOpen ? 'w-72' : 'w-20'}` 
+            }
             >
                 <div className='dark:bg-dark-grey h-full'>
-                    <div className={`absolute -right-3 top-4 w-9 ${screenSize < 900 ? 'invisible' : 'visible'}`}>
+                    <div className={`absolute -right-3 top-4 w-9 ${screenSize < 700 ? 'invisible' : 'visible'}`}>
                         <Button
                             title={'Menu'}
                             func={() => {
@@ -74,7 +75,7 @@ const Sidebar = () => {
                         <Link to='/home'>
                             <img
                                 src={`${currentMode === 'dark' ? darkLogo : lightLogo}`}
-                                className={`${sidebarOpen ? 'w-40' : 'w-0'}`}
+                                className={`${sidebarOpen ? 'w-40' : 'w-0'} ${screenSize < 700 ? 'invisible' : 'visible'}`}
                                 alt='icon'
                             />
                         </Link>

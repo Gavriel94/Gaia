@@ -3,6 +3,7 @@ import Title from "./Title";
 import { RiHeartLine, RiDislikeLine } from 'react-icons/ri'
 import Button from './Button'
 import { Link } from 'react-router-dom'
+import { useStateContext } from "../context/ContextProvider";
 // import API from '../API'
 
 /**
@@ -11,6 +12,8 @@ import { Link } from 'react-router-dom'
  */
 
 const MiniArticle = ({ id, title, content, tags }) => {
+
+    const { screenSize } = useStateContext()
 
     // Show snippet of content
     function shortenContent(content) {
@@ -41,30 +44,31 @@ const MiniArticle = ({ id, title, content, tags }) => {
 
     return (
         <>
-
-            <div className='border-light-orange dark:border-dark-orange border-1 border-opacity-50 rounded-3xl p-6 mb-3 w-[500px]'>
-                <Link to={`/articles/${id}`}>
-                    <Title text={title} size={'text-2xl'} />
-                    <div className='mt-10 text-center text-black dark:text-light-white'>
-                        {content.length > 80 ? shortenContent(content) : content}
-                    </div>
-                    <div className='mt-4 text-black dark:text-light-white'>
-                        {tags}
-                    </div>
-                </Link>
-                <div>
-                    <div className='mt-2 flex flex-row justify-center'>
-                        <div className='rounded-full pr-2'>
-                            <Button icon={<RiHeartLine />} func={() => putLike()} />
-                            <div
-                                className='inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip'
-                            >
-                                Like
-                                <div className='tooltip-arrow' data-popper-arrow></div>
-                            </div>
+            <div>
+                <div className={`border-light-orange dark:border-dark-orange p-6 mb-3  ${screenSize < 800 ? 'w-[250px] border-b-1' : 'w-[500px] border-1 border-opacity-50 rounded-3xl'}`}>
+                    <Link to={`/articles/${id}`}>
+                        <Title text={title} size={'text-2xl'} />
+                        <div className='mt-10 text-center text-black dark:text-light-white'>
+                            {content.length > 80 ? shortenContent(content) : content}
                         </div>
-                        <div className='rounded-full'>
-                            <Button icon={<RiDislikeLine />} func={() => putDislike()} />
+                        <div className='mt-4 text-black dark:text-light-white'>
+                            {tags}
+                        </div>
+                    </Link>
+                    <div>
+                        <div className='mt-2 flex flex-row justify-center'>
+                            <div className='rounded-full pr-2'>
+                                <Button icon={<RiHeartLine />} func={() => putLike()} />
+                                <div
+                                    className='inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 shadow-sm opacity-0 tooltip'
+                                >
+                                    Like
+                                    <div className='tooltip-arrow' data-popper-arrow></div>
+                                </div>
+                            </div>
+                            <div className='rounded-full'>
+                                <Button icon={<RiDislikeLine />} func={() => putDislike()} />
+                            </div>
                         </div>
                     </div>
                 </div>

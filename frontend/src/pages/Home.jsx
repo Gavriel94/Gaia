@@ -99,7 +99,7 @@ const Home = () => {
                         }
                     />
                     <HomeHeader />
-                    <div className='flex justify-center overflow-auto'>
+                    <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
                             <div className='mt-20 overflow-auto'>

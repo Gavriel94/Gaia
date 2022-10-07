@@ -22,7 +22,7 @@ const ArticleDetail = () => {
         }
         articleDetail()
         console.log(article)
-    }, [id])
+    }, [id, article])
 
     return (
         <>

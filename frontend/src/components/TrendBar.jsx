@@ -16,11 +16,11 @@ const TrendBar = ({ firstTrend, secondTrend, thirdTrend, fourthTrend }) => {
 
     return (
         <div className=''>
-            <div className={`absolute right-3 
-            ${screenSize < 1100 ? 'w-0' : 'w-350'}
+            <div className={`flex items-end px-10
+            ${screenSize < 1250 ? 'invisible' : 'w-350'}
             flex-col h-full 
             border-light-orange dark:border-dark-orange border-opacity-50`}>
-                <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-auto'>
+                <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
                     <div className='py-4' />
                     <div className='w-[300px] h-[10px] justify-center py-10'>
                         <Title text={'trending'} size={'text-3xl'} />
