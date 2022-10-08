@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useStateContext } from './context/ContextProvider';
-import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, CreateArticle, UnresolvedPath } from './pages'
+import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, CreateArticle, Trending, UnresolvedPath } from './pages'
 
 // /**
 //  * App function with routing
@@ -23,6 +23,7 @@ function App() {
             <Route path='/articleguide' element={<ArticleGuide />} />
             <Route path='/articles/:id/' element={<ArticleDetail />} />
             <Route path='/create' element={<CreateArticle />} />
+            <Route path='/trending' element={<Trending />} />
             <Route path={'*'} element={<UnresolvedPath />} />
           </Routes>
         </BrowserRouter>
