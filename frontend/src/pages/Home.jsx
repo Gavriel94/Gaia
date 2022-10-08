@@ -1,15 +1,11 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, HomeHeader, Title, TrendCard, ArticleLoading, ArticleView, Footer } from '../components'
+import { TrendBar, Sidebar, HomeHeader, Title, TrendCard, ArticleLoading, ArticleView, Footer, TempComponent } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 import API from '../API'
 
 /**
  * Home page containing autoupdating trends and content for the user to browse
- */
-
-/**
- * django server is running at 3.11.212.147:8000
  */
 
 const Home = () => {

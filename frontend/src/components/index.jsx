@@ -14,3 +14,4 @@
  export { default as ArticleLoading } from './ArticleLoading'
  export { default as ArticleView } from './ArticleView'
  export { default as HomeHeader } from './HomeHeader' 
+ export { default as TempComponent } from './TempComponent'

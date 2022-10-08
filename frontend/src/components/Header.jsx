@@ -33,7 +33,7 @@ const Header = () => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className={`${screenSize < 700 ? 'flex min-w-full items-center justify-center fixed bottom-0' : 'right-3'} h-16 fixed px-16 py-1 bg-white dark:bg-dark-grey opacity-100`}>
+                <div className={`${screenSize < 700 ? 'flex min-w-full items-center justify-center fixed bottom-0' : ''} h-16 fixed px-8 py-1 bg-white dark:bg-dark-grey opacity-100`}>
                     {
                         showAlert && (
                             <div className='transition-opacity ease-in duration-700 opacity-100 animate-bounce
@@ -46,15 +46,6 @@ const Header = () => {
                     }
                     <div className={`flex flex-row ${showAlert && 'hidden'}`}>
                         <div className='px-2 py-3'>
-                            <Link to={'/create'}>
-                                <Button
-                                    title={'Create'}
-                                    icon={<BsPen />}
-                                    className='p-2'
-                                />
-                            </Link>
-                        </div>
-                        <div className='px-2 py-3'>
                             <Button
                                 title={'Wallet'}
                                 func={() => {
@@ -64,7 +55,7 @@ const Header = () => {
                                 className='p-2'
                             />
                         </div>
-                        <div className='py-3 px-2'>
+                        <div className='py-3'>
                             <Button
                                 title={'mode-toggle'}
                                 func={() => {
