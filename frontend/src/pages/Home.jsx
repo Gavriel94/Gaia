@@ -46,6 +46,7 @@ const Home = () => {
         return (
             <>
                 <div className='justify-center m-auto left-0 right-0 h-full w-full dark:bg-dark-grey'>
+                <HomeHeader />
                     <Sidebar />
                     {/* To keep with DRY could use mapping but need votes and sorting first */}
                     <TrendBar
@@ -94,7 +95,6 @@ const Home = () => {
                             </Link>
                         }
                     />
-                    <HomeHeader />
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />

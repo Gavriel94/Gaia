@@ -51,7 +51,7 @@ const HomeHeader = () => {
         <div>
             <div className='flex items-end flex-col'>
             {/* <div className={`${screenSize < 700 ? 'flex min-w-full items-center justify-center fixed bottom-0' : 'right-3'} h-16 fixed px-20 py-1 bg-white dark:bg-dark-grey opacity-100`}> */}
-            <div className='flex min-w-full items-center justify-center bottom-0 sm:right-3 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 bg-white dark:bg-dark-grey opacity-100 sm:bg-opacity-0'>
+            <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:right-3 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 bg-white dark:bg-dark-grey opacity-100 sm:bg-opacity-0'>
                     {
                         showAlert && (
                             <div className='transition-opacity ease-in duration-700 opacity-100 animate-bounce
