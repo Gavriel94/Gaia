@@ -24,39 +24,21 @@ export const ContextProvider = ({ children }) => {
     }
 
     const [darkMode, setDarkMode] = useState(getInitialTheme())
-    const [showAlert, setShowAlert] = useState(false);
     const [screenSize, setScreenSize] = useState(undefined);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [currentFrame, setCurrentFrame] = useState(null)
     const [article, setArticle] = useState(null)
     const [articleList, setArticleList] = useState([])
     const [articleLoading, setArticleLoading] = useState(true)
     const [sortBy, setSortBy] = useState('popular')
-    const [openDropdown, setOpenDropdown] = useState(false)
 
     return (
         <StateContext.Provider
             value={{
-                darkMode,
-                setDarkMode,
-                showAlert,
-                setShowAlert,
-                screenSize,
-                setScreenSize,
-                sidebarOpen,
-                setSidebarOpen,
-                currentFrame,
-                setCurrentFrame,
-                article,
-                setArticle,
-                articleList,
-                setArticleList,
-                articleLoading,
-                setArticleLoading,
-                sortBy,
-                setSortBy,
-                openDropdown,
-                setOpenDropdown,
+                darkMode, setDarkMode,
+                screenSize, setScreenSize,
+                article, setArticle,
+                articleList, setArticleList,
+                articleLoading, setArticleLoading,
+                sortBy, setSortBy,
             }}
         >
             {children}

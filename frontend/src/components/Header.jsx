@@ -13,15 +13,9 @@ import { BiTrendingUp } from 'react-icons/bi'
  */
 
 const Header = ( { page } ) => {
-    const {
-        darkMode,
-        setDarkMode,
-        showAlert,
-        setShowAlert,
-        sortBy,
-        setSortBy,
-    } = useStateContext();
+    const { sortBy, setSortBy, darkMode,setDarkMode } = useStateContext();
     const [sortingIcon, setSortingIcon] = useState(<AiOutlineFire size={'26px'}/>)
+    const [showAlert, setShowAlert] = useState(null)
 
     function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineMenu, AiOutlineHome } from 'react-icons/ai'
 import { FiInfo } from 'react-icons/fi'
 import { BsPen } from 'react-icons/bs'
@@ -15,7 +15,8 @@ import { useStateContext } from '../context/ContextProvider'
  */
 
 const Sidebar = () => {
-    const { setScreenSize, sidebarOpen, setSidebarOpen, currentMode } = useStateContext();
+    const { setScreenSize, darkMode } = useStateContext();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const sidebarItems = [
         {
             name: 'home',
@@ -64,7 +65,7 @@ const Sidebar = () => {
                     <div className='flex justify-center py-0 pt-4 pb-2'>
                         <Link to='/home'>
                             <img
-                                src={`${currentMode === 'dark' ? darkLogo : lightLogo}`}
+                                src={`${darkMode === true ? darkLogo : lightLogo}`}
                                 className={`${sidebarOpen ? 'w-40' : 'w-0'} hidden md:block`}
                                 alt='icon'
                             />

@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import placeholder from '../assets/fpngs/placeholder.png'
-import { BsSun, BsMoon } from 'react-icons/bs'
 import { NavLink } from 'react-router-dom'
 import { Button, FlipCard, Header } from '../components'
-import { useStateContext } from '../context/ContextProvider'
 import frameZero from '../assets/fpngs/animated/blankFrame.png'
 import frameOne from '../assets/fpngs/animated/frame1.png'
 import frameTwo from '../assets/fpngs/animated/frame2.png'
@@ -17,7 +15,7 @@ import frameSix from '../assets/fpngs/animated/frame6.png'
  */
 
 const Landing = () => {
-    const { darkMode, setDarkMode, currentFrame, setCurrentFrame } = useStateContext();
+    const [currentFrame, setCurrentFrame] = useState(null)
     const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
 
     let timeInMs = 80
