@@ -97,7 +97,7 @@ const Home = () => {
                     <Sidebar />
                     <div className='flex justify-center'>
                         <div className='pt-20'>
-                            <Title text={'home'} size={'text-8xl'} />
+                            <Title text={'home'} size={'text-6xl'} />
                             <div className='mt-20 overflow-auto'>
                                 <ArticleView />
                             </div>
