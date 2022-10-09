@@ -75,7 +75,7 @@ const Sidebar = () => {
                             <NavLink
                                 to={`/${item.name}`}
                                 key={item.name}
-                                className='text-xl items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
+                                className='text-xl font-semibold items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
                   gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default ease-in-out mt-2 overflow-auto'
                             >
                                 {item.icon}
