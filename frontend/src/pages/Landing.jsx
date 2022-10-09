@@ -4,13 +4,13 @@ import { BsSun, BsMoon } from 'react-icons/bs'
 import { NavLink } from 'react-router-dom'
 import { Button, FlipCard, Header } from '../components'
 import { useStateContext } from '../context/ContextProvider'
-import frameZero from '../assets/fpngs/animated/frame0.png'
-import firstFrame from '../assets/fpngs/animated/frame1.png'
-import secondFrame from '../assets/fpngs/animated/frame2.png'
-import thirdFrame from '../assets/fpngs/animated/frame3.png'
-import fourthFrame from '../assets/fpngs/animated/frame4.png'
-import fifthFrame from '../assets/fpngs/animated/frame5.png'
-import sixthFrame from '../assets/fpngs/animated/frame6.png'
+import frameZero from '../assets/fpngs/animated/blankFrame.png'
+import frameOne from '../assets/fpngs/animated/frame1.png'
+import frameTwo from '../assets/fpngs/animated/frame2.png'
+import frameThree from '../assets/fpngs/animated/frame3.png'
+import frameFour from '../assets/fpngs/animated/frame4.png'
+import frameFive from '../assets/fpngs/animated/frame5.png'
+import frameSix from '../assets/fpngs/animated/frame6.png'
 /**
  * Landing page for instant information for the user to see what the project is about 
  * TODO: change the Flipcards into animations and make the page scrollable with 'enter app' on a fixed header above
@@ -18,9 +18,9 @@ import sixthFrame from '../assets/fpngs/animated/frame6.png'
 
 const Landing = () => {
     const { darkMode, setDarkMode, currentFrame, setCurrentFrame } = useStateContext();
-    const frames = [firstFrame, secondFrame, thirdFrame, fourthFrame, fifthFrame, sixthFrame, sixthFrame, sixthFrame, fifthFrame, fourthFrame, thirdFrame, secondFrame, firstFrame]
+    const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
 
-    let timeInMs = 100
+    let timeInMs = 80
     useEffect(() => {
         const interval = setInterval(() => {
             if (currentFrame === frames.length - 1) {
