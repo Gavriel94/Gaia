@@ -17,10 +17,8 @@ const Button = ({ label, func, icon }) => {
             className='rounded-full
         bg-light-orange hover:bg-light-white hover:text-light-orange text-light-white
         dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'>
-            <div className='flex flex-row'>
             {icon}
             {label}
-            </div>
         </button>
     )
 }
