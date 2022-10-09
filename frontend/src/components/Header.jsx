@@ -56,7 +56,7 @@ const Header = ( { page } ) => {
                         )
                     }
                     <div className={`flex flex-row ${showAlert && 'hidden'}`}>
-                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'} tooltip tooltip-bottom`} data-tip={`${capitalize(sortBy)}`}>
+                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'}`}>
                             <Button 
                                 title={'Sort'}
                                 icon={sortingIcon}

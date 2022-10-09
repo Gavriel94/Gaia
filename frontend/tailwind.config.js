@@ -136,6 +136,5 @@ module.exports = {
     },
     plugins: [
         Rotate,
-        require('daisyui'),
     ],
 };
