@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className={`${darkMode === true ? 'dark' : ''}`}>
-      <div className='dark:bg-dark-grey min-h-screen'>
+      <div className='dark:bg-dark-grey bg-white min-h-screen'>
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<Landing />} />
