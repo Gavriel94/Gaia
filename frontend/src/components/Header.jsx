@@ -43,6 +43,10 @@ const Header = ( { page } ) => {
         }
     }
 
+    function capitalize(word) {
+        return word?.charAt(0).toUpperCase() + word?.slice(1)
+    }
+
     return (
         <div>
             <div className='flex items-end flex-col'>
@@ -58,7 +62,7 @@ const Header = ( { page } ) => {
                         )
                     }
                     <div className={`flex flex-row ${showAlert && 'hidden'}`}>
-                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'} tooltip tooltip-bottom`} data-tip={`${sortBy}`}>
+                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'} tooltip tooltip-bottom`} data-tip={`${capitalize(sortBy)}`}>
                             <Button 
                                 title={'Sort'}
                                 icon={sortingIcon}
