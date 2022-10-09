@@ -3,7 +3,6 @@ import Title from "./Title";
 import { RiHeartLine, RiDislikeLine } from 'react-icons/ri'
 import Button from './Button'
 import { Link } from 'react-router-dom'
-import { useStateContext } from "../context/ContextProvider";
 import API from '../API'
 
 /**
@@ -12,8 +11,6 @@ import API from '../API'
  */
 
 const MiniArticle = ({ id, title, content, tags }) => {
-
-    const { screenSize } = useStateContext()
 
     function shortenContent(content) {
         let reducedContent = ''
@@ -24,21 +21,21 @@ const MiniArticle = ({ id, title, content, tags }) => {
     }
 
     const putLike = () => {
-        // API.patch(`/articles/${id}/`).catch((error) => {
-        //     if (error.response) {
-        //         console.log(error.response.data)
-        //     }
-        // })
-        // console.log("like pressed")
+        API.patch(`/articles/${id}/`).catch((error) => {
+            if (error.response) {
+                console.log(error.response.data)
+            }
+        })
+        console.log("like pressed")
     }
 
     const putDislike = () => {
-        // API.put(`/articles/${id}/`).then(response => { console.log(response.data) })
-        //     .catch((error) => {
-        //         if (error.response) {
-        //             console.log(error.response.data)
-        //         }
-        //     })
+        API.patch(`/articles/${id}/`).then(response => { console.log(response.data) })
+            .catch((error) => {
+                if (error.response) {
+                    console.log(error.response.data)
+                }
+            })
     }
 
     return (

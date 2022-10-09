@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import placeholder from '../assets/fpngs/placeholder.png'
 import { BsSun, BsMoon } from 'react-icons/bs'
 import { NavLink } from 'react-router-dom'
-import { Button, FlipCard } from '../components'
+import { Button, FlipCard, Header } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 import frameZero from '../assets/fpngs/animated/frame0.png'
 import firstFrame from '../assets/fpngs/animated/frame1.png'
@@ -18,10 +18,9 @@ import sixthFrame from '../assets/fpngs/animated/frame6.png'
 
 const Landing = () => {
     const { darkMode, setDarkMode, currentFrame, setCurrentFrame } = useStateContext();
-    const frames = [frameZero, firstFrame, secondFrame, thirdFrame, fourthFrame, fifthFrame, sixthFrame, sixthFrame, sixthFrame, fifthFrame, fourthFrame, thirdFrame, secondFrame, firstFrame]
+    const frames = [firstFrame, secondFrame, thirdFrame, fourthFrame, fifthFrame, sixthFrame, sixthFrame, sixthFrame, fifthFrame, fourthFrame, thirdFrame, secondFrame, firstFrame]
 
     let timeInMs = 100
-
     useEffect(() => {
         const interval = setInterval(() => {
             if (currentFrame === frames.length - 1) {
@@ -35,16 +34,17 @@ const Landing = () => {
     },)
 
     return (
-        <div className='dark:bg-dark-gray'>
+        <>
             <div className='flex justify-end top-5 h-16 px-10'>
-                <div className='py-5 px-2'>
-                    <Button
+                <div className=''>
+                    {/* <Button
                         title={'mode-toggle'}
                         func={() => {
                             setDarkMode(!darkMode);
                         }}
                         icon={darkMode === false ? <BsSun /> : <BsMoon />}
-                    />
+                    /> */}
+                    <Header/>
                 </div>
             </div>
             <div className='absolute mt-40 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
@@ -115,7 +115,7 @@ const Landing = () => {
                     <Button title={'Enter App'} icon={'Enter App'} />
                 </NavLink>
             </div>
-        </div>
+            </>
     )
 }
 

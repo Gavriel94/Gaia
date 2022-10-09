@@ -1,7 +1,6 @@
 import React from 'react'
-import TrendCard from '../components/TrendCard'
 import Title from '../components/Title'
-import { HomeHeader, Sidebar } from '../components'
+import { Header, Sidebar } from '../components'
 
 /**
  * To contain information on how to write a article.
@@ -12,8 +11,8 @@ const ArticleGuide = () => {
     return (
         <>
             <div className='fixed justify-center m-auto left-0 right-0 '>
+                <Header />
                 <Sidebar />
-                <HomeHeader />
             </div>
             <div className='flex justify-center'>
                 <div className='pt-20'>

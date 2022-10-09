@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Sidebar, Header, Title, Button } from '../components'
-import { useStateContext } from '../context/ContextProvider'
 import API from '../API'
 
 /**
@@ -45,8 +44,8 @@ const CreateArticle = () => {
     return (
         <>
             <div className='fixed justify-center m-auto left-0 right-0'>
-                <Sidebar />
                 <Header />
+                <Sidebar />
                 <div className='flex mt-20 justify-center'>
                     <Title text={'Create an Article'} size={'text-6xl'} />
                 </div>

@@ -1,5 +1,4 @@
 export { default as Home } from './Home'
-export { default as AllArticles } from './AllArticles'
 export { default as CreateArticle } from './CreateArticle'
 export { default as Market } from './Market'
 export { default as About } from './About'

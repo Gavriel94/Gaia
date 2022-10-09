@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, HomeHeader, Title, TrendCard, ArticleLoading, ArticleView, Footer, TempComponent } from '../components'
+import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 import API from '../API'
 
@@ -46,9 +46,7 @@ const Home = () => {
         return (
             <>
                 <div className='justify-center m-auto left-0 right-0 h-full w-full dark:bg-dark-grey'>
-                <HomeHeader />
-                    <Sidebar />
-                    {/* To keep with DRY could use mapping but need votes and sorting first */}
+                    {/* To keep with DRY could use mapping but need votes first */}
                     <TrendBar
                         firstTrend={
                             <Link to={`/articles/${articleList?.[0]?.id}`}>
@@ -95,9 +93,11 @@ const Home = () => {
                             </Link>
                         }
                     />
+                    <Header page={'home'} />
+                    <Sidebar />
                     <div className='flex justify-center'>
                         <div className='pt-20'>
-                            <Title text={'home'} size={'text-6xl'} />
+                            <Title text={'home'} size={'text-8xl'} />
                             <div className='mt-20 overflow-auto'>
                                 <ArticleView />
                             </div>

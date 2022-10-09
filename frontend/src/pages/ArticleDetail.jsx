@@ -37,8 +37,8 @@ const ArticleDetail = () => {
         return (
             <>
                 <div className='fixed justify-center m-auto left-0 right-0 dark:bg-dark-grey'>
-                    <Sidebar />
                     <Header />
+                    <Sidebar />
                 </div>
                 <div className='contents-center'>
                     <div className='pt-20'>
