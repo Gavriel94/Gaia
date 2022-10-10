@@ -14,7 +14,7 @@ import { BiTrendingUp } from 'react-icons/bi'
 
 const Header = ( { page } ) => {
     const { sortBy, setSortBy, darkMode,setDarkMode } = useStateContext();
-    const [sortingIcon, setSortingIcon] = useState(<AiOutlineFire size={'26px'}/>)
+    const [sortingIcon, setSortingIcon] = useState(<AiOutlineStar size={'26px'}/>) //initial icon because popular is default sort
     const [showAlert, setShowAlert] = useState(null)
 
     function sleep(ms) {
@@ -30,15 +30,11 @@ const Header = ( { page } ) => {
     function handleUserChoice(choice) {
         if(sortBy === 'new') {
             setSortBy('popular')
-            setSortingIcon(<AiOutlineFire size={'26px'}/>)
+            setSortingIcon(<AiOutlineStar size={'26px'}/>)
         } else{
             setSortBy('new')
-            setSortingIcon(<AiOutlineStar size={'26px'}/>)
+            setSortingIcon(<AiOutlineFire size={'26px'}/>)
         }
-    }
-
-    function capitalize(word) {
-        return word?.charAt(0).toUpperCase() + word?.slice(1)
     }
 
     return (
@@ -56,7 +52,7 @@ const Header = ( { page } ) => {
                         )
                     }
                     <div className={`flex flex-row ${showAlert && 'hidden'}`}>
-                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'}`}>
+                        <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'}`} title={`${sortBy === 'new' ? 'Popular' : 'New'}`}>
                             <Button 
                                 title={'Sort'}
                                 icon={sortingIcon}
@@ -87,7 +83,7 @@ const Header = ( { page } ) => {
                                 func={() => {
                                     setDarkMode(!darkMode);
                                 }}
-                                icon={darkMode === false ? <BsSun size={'26px'}/> : <BsMoon size={'26px'}/>}
+                                icon={darkMode === false ? <BsMoon size={'26px'}/> : <BsSun size={'26px'}/>}
                             />
                         </div>
                     </div>
