@@ -14,3 +14,4 @@
  export { default as ArticleView } from './ArticleView'
  export { default as Header } from './Header' 
  export { default as TopLoader } from './TopLoader'
+ export { default as WalletLoader } from './WalletLoader'
