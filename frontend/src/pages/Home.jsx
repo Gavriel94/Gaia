@@ -127,6 +127,7 @@ const Home = () => {
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
+                            <WalletConnect />
                             <div className='mt-20 overflow-auto flex flex-row'>
                                 <ArticleView />
                             </div>

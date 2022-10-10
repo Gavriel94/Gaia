@@ -19,7 +19,7 @@ const Rotate = plugin(function ({ addUtilities }) {
 
 module.exports = {
     content: [
-        "./src/**/*.{js,jsx}",
+        "./src/**/*.{js,jsx,ts}",
     ],
     darkMode: 'class',
     theme: {
