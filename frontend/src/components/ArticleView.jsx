@@ -5,19 +5,6 @@ import MiniArticle from './MiniArticle'
 const ArticleView = () => {
     const { articleList, sortBy } = useStateContext()
 
-    const newestFirst = articleList.map(function iterateArticles(article) {
-        return (
-            <div key={article.id} className='flex justify-center'>
-                <MiniArticle
-                    id={article.id}
-                    title={article.title}
-                    content={article.content}
-                    tags={article.tags}
-                />
-            </div>
-        )
-    }).reverse()
-
     const oldestFirst = articleList.map(function iterateArticles(article) {
         return (
             <div key={article.id} className='flex justify-center'>
@@ -33,7 +20,7 @@ const ArticleView = () => {
 
     return (
         <div className='overflow-auto'>
-            {sortBy === 'new' ? oldestFirst : newestFirst}
+            {sortBy === 'new' ? oldestFirst.reverse() : oldestFirst}
         </div>
     )
 }
