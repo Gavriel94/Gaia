@@ -54,6 +54,7 @@ module.exports = {
             48: '12rem',
             52: '13rem',
             56: '14rem',
+            58: '14.5rem',
             60: '15rem',
             62: '15.5rem',
             64: '16rem',
@@ -63,7 +64,9 @@ module.exports = {
             96: '24rem',
             100: '25rem',
             108: '27rem',
-            124: '31rem'
+            124: '31rem',
+            186: '46.5rem',
+            248: '62rem',
         },
         // light-white and dark-grey are bg colours for light and dark mode
         colors: {
