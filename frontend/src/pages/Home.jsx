@@ -118,7 +118,7 @@ const Home = () => {
                         topLoaderVisible 
                             &&
                         <div className='flex justify-end h-full'>
-                            <div className='absolute bottom-20 pr-52 hidden sm:block'>
+                            <div className='absolute bottom-20 lg:pr-52 hidden sm:block sm:pr-36'>
                                 <TopLoader />
                             </div>
                         </div>
@@ -127,7 +127,6 @@ const Home = () => {
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
-                            <WalletLoader />
                             <div className='mt-20 overflow-auto flex flex-row'>
                                 <ArticleView />
                             </div>
