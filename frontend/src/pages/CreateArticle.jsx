@@ -112,7 +112,7 @@ const CreateArticle = () => {
                             </div>
                         </div>
                         <Button label={'Submit'} func={handleSubmit} />
-                        <p className="input-center mt-2 input-sm input- input-dark-grey dark:input-light-white">Unsure how to Article? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange hover:underline">Article Guide</Link>.</p>
+                        <p className="input-center mt-2 input-sm input- input-dark-grey dark:input-light-white">Unsure how to start? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange hover:underline">Article Guide</Link>.</p>
                     </div>
                 </div>
             </div>

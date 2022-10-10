@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView } from '../components'
+import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView, TopLoader } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 import API from '../API'
 
@@ -10,6 +10,7 @@ import API from '../API'
 
 const Home = () => {
     const { articleList, setArticleList, articleLoading, setArticleLoading } = useStateContext()
+    const [topLoaderVisible, setTopLoaderVisible] = useState(false)
 
     useEffect(() => {
         const refreshArticles = () => {
@@ -21,6 +22,23 @@ const Home = () => {
         }
         refreshArticles()
     }, [setArticleList])
+
+    // shows TopLoader after scrolling down the page
+    useEffect(() => {
+        window.addEventListener("scroll", listenToScroll)
+        return () => window.removeEventListener("scroll", listenToScroll)
+    }, [])
+
+    const listenToScroll = () => {
+        let showFrom = 300
+        const windowScroll = document.body.scrollTop || document.documentElement.scrollTop
+
+        if (windowScroll > showFrom) {
+            setTopLoaderVisible(true)
+        } else {
+            setTopLoaderVisible(false)
+        }
+    }
 
     var timer = 0
     const serverTimeout = (e) => {
@@ -95,10 +113,21 @@ const Home = () => {
                     />
                     <Header page={'home'} />
                     <Sidebar />
+
+                    { 
+                        topLoaderVisible 
+                            &&
+                        <div className='flex justify-end h-full'>
+                            <div className='absolute bottom-20 pr-52 hidden sm:block'>
+                                <TopLoader />
+                            </div>
+                        </div>
+                    }
+
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
-                            <div className='mt-20 overflow-auto'>
+                            <div className='mt-20 overflow-auto flex flex-row'>
                                 <ArticleView />
                             </div>
                         </div>

@@ -21,7 +21,7 @@ const MiniArticle = ({ id, title, content, tags }) => {
     }
 
     const putLike = () => {
-        API.patch(`/articles/${id}/`).catch((error) => {
+        API.patch(`/articles/${id}/like`).catch((error) => {
             if (error.response) {
                 console.log(error.response.data)
             }

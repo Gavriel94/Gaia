@@ -23,7 +23,6 @@ const ArticleDetail = () => {
                 .catch(console.error)
         }
         articleDetail()
-        console.log(article)
     }, [])
 
     if (article === '') {

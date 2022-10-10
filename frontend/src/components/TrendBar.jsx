@@ -1,8 +1,10 @@
 import React from 'react'
 import Title from './Title'
+import TopLoader from './TopLoader'
 
 /**
- * Sidebar designed to auto-update showing trending items in descending order
+ * Bar designed to auto-update showing trending items in descending order
+ * Only displays on large screens
  * 
  * @param firstTrend
  * @param secondTrend
@@ -13,7 +15,7 @@ import Title from './Title'
 const TrendBar = ({ firstTrend, secondTrend, thirdTrend, fourthTrend }) => {
 
     return (
-        <div className=''>
+        <div>
             <div className={`flex invisible lg:visible items-end px-10
             }
             flex-col h-full 
@@ -28,8 +30,6 @@ const TrendBar = ({ firstTrend, secondTrend, thirdTrend, fourthTrend }) => {
                         {secondTrend}
                         {thirdTrend}
                         {fourthTrend}
-                    </div>
-                    <div className='flex justify-center p-3'>
                     </div>
                 </div>
             </div>
