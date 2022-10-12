@@ -9,15 +9,16 @@ import React from 'react'
  * @returns Functional button with the consistent styling of Project Gaia
  */
 
-const Button = ({ label, func, icon }) => {
+const Button = ({ label, func, icon, image, imageAlt, imageWidth, imageHeight }) => {
     return (
         <button
             type='button'
             onClick={func}
-            className='rounded-full
+            className='rounded-full focus:outline-none
         bg-light-orange hover:bg-light-white hover:text-light-orange text-light-white
         dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'>
             {icon}
+            {<img src={image} alt={imageAlt} height={imageHeight} width={imageWidth}/>}
             {label}
         </button>
     )
