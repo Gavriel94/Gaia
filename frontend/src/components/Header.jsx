@@ -5,6 +5,8 @@ import { BsSun, BsMoon } from 'react-icons/bs'
 import Button from './Button'
 import { useStateContext } from '../context/ContextProvider'
 import { BiTrendingUp } from 'react-icons/bi'
+import WalletConnectV2 from './WalletConnectV2'
+
 
 /**
  * Header component to be displayed on Home page
@@ -12,68 +14,40 @@ import { BiTrendingUp } from 'react-icons/bi'
  * Contains a button for wallet connectivity and another to switch dark/light mode 
  */
 
-const Header = ( { page } ) => {
-    const { sortBy, setSortBy, darkMode,setDarkMode } = useStateContext();
-    const [sortingIcon, setSortingIcon] = useState(<AiOutlineStar size={'26px'}/>) //initial icon because popular is default sort
-    const [showAlert, setShowAlert] = useState(null)
-
-    function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    async function displayAlert() {
-        setShowAlert(true);
-        await sleep(2000);
-        setShowAlert(false);
-    }
+const Header = ({ page }) => {
+    const { sortBy, setSortBy, darkMode, setDarkMode } = useStateContext();
+    const [sortingIcon, setSortingIcon] = useState(<AiOutlineStar size={'26px'} />) //initial icon because popular is default sort
 
     function handleUserChoice(choice) {
-        if(sortBy === 'new') {
+        if (sortBy === 'new') {
             setSortBy('popular')
-            setSortingIcon(<AiOutlineStar size={'26px'}/>)
-        } else{
+            setSortingIcon(<AiOutlineStar size={'26px'} />)
+        } else {
             setSortBy('new')
-            setSortingIcon(<AiOutlineFire size={'26px'}/>)
+            setSortingIcon(<AiOutlineFire size={'26px'} />)
         }
     }
 
     return (
         <div>
             <div className='flex items-end flex-col'>
-            <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:right-3 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 bg-white dark:bg-dark-grey opacity-100 sm:bg-opacity-0'>
-                    {
-                        showAlert && (
-                            <div className='duration-900 transition-shadow opacity-100 animate-bounce
-                    mt-5 bg-light-orange dark:bg-dark-orange border-black border-1 text-light-white rounded-lg'>
-                                <div className='p-2'>
-                                    <p>Wallet connectivity coming soon.</p>
-                                </div>
-                            </div>
-                        )
-                    }
-                    <div className={`flex flex-row ${showAlert && 'hidden'}`}>
+                <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:right-3 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 bg-white dark:bg-dark-grey opacity-100 sm:bg-opacity-0'>
+                    <div className='flex flex-row'>
                         <div className={`py-3 px-2 flex flex-row ${page !== 'home' && 'hidden'}`} title={`${sortBy === 'new' ? 'Popular' : 'New'}`}>
-                            <Button 
+                            <Button
                                 title={'Sort'}
                                 icon={sortingIcon}
                                 func={() => handleUserChoice()}
                             />
                         </div>
                         <div className='px-2 py-3'>
-                            <Button
-                                title={'Wallet'}
-                                func={() => {
-                                    displayAlert();
-                                }}
-                                icon={<AiOutlineWallet size={'26px'}/>}
-                                className='p-2'
-                            />
+                            <WalletConnectV2 />
                         </div>
                         <div className={`py-3 px-2 sm:hidden`}>
                             <Link to={'/trending'}>
                                 <Button
                                     title={'Trending'}
-                                    icon={<BiTrendingUp size={'26px'}/>}
+                                    icon={<BiTrendingUp size={'26px'} />}
                                 />
                             </Link>
                         </div>
@@ -83,7 +57,7 @@ const Header = ( { page } ) => {
                                 func={() => {
                                     setDarkMode(!darkMode);
                                 }}
-                                icon={darkMode === false ? <BsMoon size={'26px'}/> : <BsSun size={'26px'}/>}
+                                icon={darkMode === false ? <BsMoon size={'26px'} /> : <BsSun size={'26px'} />}
                             />
                         </div>
                     </div>
