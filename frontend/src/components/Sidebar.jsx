@@ -49,7 +49,7 @@ const Sidebar = () => {
         <div className={`h-full w-72 fixed bg-opacity-100 hidden sm:block`}>
             <div
                 className={`absolute left-0 h-full border-r-1 border-light-orange dark:border-dark-orange 
-                ${sidebarOpen ? 'w-72' : 'w-20'}` 
+                ${sidebarOpen ? 'w-72 duration-500' : 'w-20 duration-500'}` 
             }
             >
                 <div className='dark:bg-dark-grey h-full'>
@@ -66,7 +66,7 @@ const Sidebar = () => {
                         <Link to='/home'>
                             <img
                                 src={`${darkMode === true ? darkLogo : lightLogo}`}
-                                className={`${sidebarOpen ? 'w-40' : 'w-0'} hidden md:block`}
+                                className={`${sidebarOpen ? 'w-40 duration-500' : 'w-0 duration-500'} hidden md:block`}
                                 alt='icon'
                             />
                         </Link>
@@ -76,12 +76,12 @@ const Sidebar = () => {
                             <NavLink
                                 to={`/${item.name}`}
                                 key={item.name}
-                                className='text-xl font-semibold items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
-                  gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default ease-in-out mt-2 overflow-auto'
+                                className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
+                  gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default mt-2 overflow-auto'
                             >
                                 {item.icon}
                                 <span
-                                    className={`${!sidebarOpen && 'hidden'} origin-left `}
+                                    className={`${!sidebarOpen && 'hidden'} flex ease-in duration-500 origin-left font-semibold text-xl`}
                                 >
                                     {item.name}
                                 </span>
