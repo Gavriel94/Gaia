@@ -17,10 +17,26 @@ import frameSix from '../assets/fpngs/animated/frame6.png'
 const Landing = () => {
     const [currentFrame, setCurrentFrame] = useState(null)
     const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
+    const [hover, setHover] = useState(false)
+
+    // const animateIcon = () => {
+    //     console.log('hover')
+    //     let timeInMs = 80
+    //     const interval = setInterval(() => {
+    //         if (currentFrame === frames.length - 1) {
+    //             setCurrentFrame(0)
+    //         }
+    //         else {
+    //             setCurrentFrame(currentFrame + 1)
+    //         }
+    //     }, timeInMs)
+    //     return () => clearInterval(interval)
+    // }
 
     let timeInMs = 80
     useEffect(() => {
         const interval = setInterval(() => {
+            setCurrentFrame(6)
             if (currentFrame === frames.length - 1) {
                 setCurrentFrame(0)
             }
@@ -45,8 +61,13 @@ const Landing = () => {
                     <Header/>
                 </div>
             </div>
-            <div className='absolute mt-40 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-                <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px]' />
+            <div className='absolute mt-40 left-1/2 transform -translate-x-1/2 -translate-y-1/2' onMouseOver={() => setHover(true)} onMouseOut={() =>setHover(false)}>
+                <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
+                {
+                    hover && (
+                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px]' />
+                    )
+                }
             </div>
             <div className='mt-100 justify-center'>
                 <div className='container mx-auto p-2 grid grid-cols-2 gap-y-10 content-evenly'>
