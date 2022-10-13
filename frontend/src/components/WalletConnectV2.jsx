@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Button from './Button'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
@@ -113,9 +113,9 @@ const WalletConnectV2 = () => {
      * 
      * @param count number of times browser polled 
      */
-    const pollWallets = (count = 0) => {
-        let discardedWallets = []
-        // let foundWallets = []
+    const pollWallets = useCallback(() => {
+
+        let discardedWallets = [] //remove legacy versions
         for (const key in window.cardano) {
             if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
                 if (key === 'ccvault' || key === 'typhon') {
@@ -124,52 +124,25 @@ const WalletConnectV2 = () => {
                 else { wallets.push(key) }
             }
         }
-        // if (foundWallets.length === 0 && count < 3) {
-        //     setTimeout(() => {
-        //         pollWallets(count + 1)
-        //     }, 1000)
-        // }
-        //Removes legacy versions
-        // let toDelete = ['ccvault', 'typhon']
-        // wallets = foundWallets.filter(item => !toDelete.includes(item))
+    }, [wallets])
 
-        // console.log('foundWallets', foundWallets)
-        // console.log('wallets', wallets)
-        // console.log('wallets[0]', wallets[0])
-        // setWhichWalletSelected(wallets[0])
-        refreshData()
-    }
-
-    // useEffect(() => {
-    //     pollWallets()
-    // }, [])
-
-    // useEffect(() => {
-    //     const refreshArticles = () => {
-    //         API.get('/articles/')
-    //             .then((res) => {
-    //                 setArticleList(res.data)
-    //             })
-    //             .catch(console.error)
-    //     }
-    //     refreshArticles()
-    // }, [setArticleList])
+    useEffect(() => {
+        pollWallets()
+    },[pollWallets])
 
     /**
-     * Handles user tab selection
-     * 
-     * @param e 
-     * @returns 
-     */
-    const handleTabId = e => setSelectedTabId(e)
-
-    /**
-     * Handles radio buttons on the form
+     * Handles user selection
      * 
      * @param obj 
      */
     const handleWalletSelect = (obj) => {
-        setWhichWalletSelected(obj)
+        console.log('inside handleWalletSelect')
+        console.log(obj)
+        // pick the wallet from the wallets[] and use obj to compare values
+        // use this to set whichWalletSelected, as an element from the array wallets
+        const index = wallets.indexOf(obj)
+        setWhichWalletSelected(wallets[index])
+        console.log('wallet selected', whichWalletSelected)
         closeModal()
         refreshData()
     }
@@ -200,21 +173,15 @@ const WalletConnectV2 = () => {
     /**
      * Checks if a wallet is running in the browser
      * @returns {boolean}
-     * ! if errors occur check this function
      */
     const checkIfWalletFound = () => {
         const key = whichWalletSelected
+        console.log(whichWalletSelected)
+        console.log(key)
         const walletFound = !!window?.cardano?.[key]
         setWalletFound(walletFound)
         return walletFound
     }
-
-    // checkIfWalletFound = () => {
-    //     const walletKey = this.state.whichWalletSelected;
-    //     const walletFound = !!window?.cardano?.[walletKey];
-    //     this.setState({walletFound})
-    //     return walletFound;
-    // }
 
     /**
      * Checks if connection established with wallet
@@ -230,6 +197,7 @@ const WalletConnectV2 = () => {
         } catch (err) {
             console.log(err)
         }
+        // setWalletIsEnabled(() => walletEnabled) mayne this?
         setWalletIsEnabled(walletEnabled)
         return walletIsEnabled
     }
@@ -241,8 +209,9 @@ const WalletConnectV2 = () => {
      */
     const enableWallet = async () => {
         const key = whichWalletSelected
+        console.log('enable wallet', key)
         try {
-            API = await window.cardano[key].enable()
+            setAPI(await window.cardano[key].enable())
         } catch (err) {
             console.log(err)
         }
@@ -410,16 +379,16 @@ const WalletConnectV2 = () => {
     /**
      * Returns the address rewards from staking are paid into
      */
-    const getRewardAddresses = async () => {
-        try {
-            const raw = API.getRewardAddresses()
-            const rawFirst = raw[0]
-            const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-            setRewardAddress(address)
-        } catch (err) {
-            console.log(err)
-        }
-    }
+    // const getRewardAddresses = async () => {
+    //     try {
+    //         const raw = API.getRewardAddresses()
+    //         const rawFirst = raw[0]
+    //         const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
+    //         setRewardAddress(address)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
 
     /**
      * Gets used addresses
@@ -440,26 +409,28 @@ const WalletConnectV2 = () => {
      */
     const refreshData = async () => {
         generateScriptAddress()
-        // console.log(generateScriptAddress())
+        console.log(generateScriptAddress())
         console.log('refresh data')
 
         try {
             const walletFound = checkIfWalletFound()
+            console.log(walletFound)
             if (walletFound) {
                 await getAPIVersion()
                 await getWalletName()
-                // const enabled = await enableWallet()
-                // console.log(enabled)
-                let enabled = false
+                const enabled = await enableWallet()
+                console.log(enabled)
                 if (enabled) {
                     await getNetworkId()
                     await getUtxos()
-                    await getCollateral()
+                    // await getCollateral()
                     await getBalance()
-                    await getChangeAddress()
-                    await getRewardAddresses()
-                    await getUsedAddresses()
+                    console.log(balance)
+                    // await getChangeAddress()
+                    // await getRewardAddresses()
+                    // await getUsedAddresses()
                 } else {
+                    console.log('no wallet enabled')
                     setUtxos(null)
                     setCollatUtxos(null)
                     setBalance(null)
@@ -471,9 +442,9 @@ const WalletConnectV2 = () => {
                     setTxBodyCborHex_unsigned('')
                     setTxBodyCborHex_signed('')
                     setSubmittedTxHash('')
-
                 }
             } else {
+                console.log('no wallet found')
                 setWalletIsEnabled(false)
                 setUtxos(null)
                 setCollatUtxos(null)
@@ -528,7 +499,7 @@ const WalletConnectV2 = () => {
     // useEffect(() => {
     //     pollWallets()
     //     refreshData()
-    // }, [])
+    // },[pollWallets, refreshData])
 
     const openModal = () => {
         pollWallets()
