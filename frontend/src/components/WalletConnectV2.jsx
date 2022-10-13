@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from './Button'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
@@ -54,12 +54,13 @@ import {
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import ReactModal from 'react-modal'
 import Title from './Title'
+import { BsImageFill } from 'react-icons/bs'
 let Buffer = require('buffer/').Buffer
 
 const WalletConnectV2 = () => {
 
     const [selectedTabId, setSelectedTabId] = useState('1')
-    const [whichWalletSelected, setWhichWalletSelected] = useState(undefined)
+    const [whichWalletSelected, setWhichWalletSelected] = useState('')
     const [walletFound, setWalletFound] = useState(undefined)
     const [walletIsEnabled, setWalletIsEnabled] = useState(undefined)
     const [walletName, setWalletName] = useState(undefined)
@@ -113,24 +114,46 @@ const WalletConnectV2 = () => {
      * @param count number of times browser polled 
      */
     const pollWallets = (count = 0) => {
-        let foundWallets = []
-        console.log(foundWallets)
+        let discardedWallets = []
+        // let foundWallets = []
         for (const key in window.cardano) {
-            if (window.cardano[key].enable && foundWallets.indexOf(key) === -1) {
-                foundWallets.push(key)
+            if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
+                if (key === 'ccvault' || key === 'typhon') {
+                    discardedWallets.push(key)
+                }
+                else { wallets.push(key) }
             }
         }
-        if (foundWallets.length === 0 && count < 3) {
-            setTimeout(() => {
-                pollWallets(count + 1)
-            }, 1000)
-        }
-        let toDelete = ['ccvault', 'typhon']
-        foundWallets = foundWallets.filter(item => !toDelete.includes(item))
-        setWallets(foundWallets)
-        setWhichWalletSelected(wallets[0])
+        // if (foundWallets.length === 0 && count < 3) {
+        //     setTimeout(() => {
+        //         pollWallets(count + 1)
+        //     }, 1000)
+        // }
+        //Removes legacy versions
+        // let toDelete = ['ccvault', 'typhon']
+        // wallets = foundWallets.filter(item => !toDelete.includes(item))
+
+        // console.log('foundWallets', foundWallets)
+        // console.log('wallets', wallets)
+        // console.log('wallets[0]', wallets[0])
+        // setWhichWalletSelected(wallets[0])
         refreshData()
     }
+
+    // useEffect(() => {
+    //     pollWallets()
+    // }, [])
+
+    // useEffect(() => {
+    //     const refreshArticles = () => {
+    //         API.get('/articles/')
+    //             .then((res) => {
+    //                 setArticleList(res.data)
+    //             })
+    //             .catch(console.error)
+    //     }
+    //     refreshArticles()
+    // }, [setArticleList])
 
     /**
      * Handles user tab selection
@@ -146,8 +169,10 @@ const WalletConnectV2 = () => {
      * @param obj 
      */
     const handleWalletSelect = (obj) => {
-        const selectedWallet = obj.target.value
-        setWhichWalletSelected(selectedWallet)
+        console.log('obj (handleWalletSelect())', obj)
+        setWhichWalletSelected(obj)
+        console.log('whichWalletSelected (handleWalletSelect())', whichWalletSelected)
+        setShowModal(false)
         refreshData()
     }
 
@@ -165,13 +190,13 @@ const WalletConnectV2 = () => {
         const addrBech32 = addr.to_bech32();
         const ScriptAddress = Address.from_bech32("addr_test1wpnlxv2xv9a9ucvnvzqakwepzl9ltx7jzgm53av2e9ncv4sysemm8");
 
-        // hash of address generated from script
-        console.log(Buffer.from(addr.to_bytes(), "utf8").toString("hex"))
-        // hash of address generated from cardano-cli
-        console.log(Buffer.from(ScriptAddress.to_bytes(), "utf8").toString("hex"))
+        // // hash of address generated from script
+        // console.log(Buffer.from(addr.to_bytes(), "utf8").toString("hex"))
+        // // hash of address generated from cardano-cli
+        // console.log(Buffer.from(ScriptAddress.to_bytes(), "utf8").toString("hex"))
 
-        console.log(ScriptAddress.to_bech32())
-        console.log(addrBech32)
+        // console.log(ScriptAddress.to_bech32())
+        // console.log(addrBech32)
     }
 
     /**
@@ -180,11 +205,19 @@ const WalletConnectV2 = () => {
      * ! if errors occur check this function
      */
     const checkIfWalletFound = () => {
+        console.log('whichWalletSelected (checkIfWalletFound())', whichWalletSelected)
         const key = whichWalletSelected
         const walletFound = !!window?.cardano?.[key]
         setWalletFound(walletFound)
         return walletFound
     }
+
+    // checkIfWalletFound = () => {
+    //     const walletKey = this.state.whichWalletSelected;
+    //     const walletFound = !!window?.cardano?.[walletKey];
+    //     this.setState({walletFound})
+    //     return walletFound;
+    // }
 
     /**
      * Checks if connection established with wallet
@@ -408,9 +441,10 @@ const WalletConnectV2 = () => {
     /**
      * Refresh data from the users wallet
      */
-    const refreshData = useCallback(async () => {
+    const refreshData = async () => {
         generateScriptAddress()
         // console.log(generateScriptAddress())
+        console.log('refresh data')
 
         try {
             const walletFound = checkIfWalletFound()
@@ -418,7 +452,8 @@ const WalletConnectV2 = () => {
                 await getAPIVersion()
                 await getWalletName()
                 // const enabled = await enableWallet()
-                const enabled = false
+                // console.log(enabled)
+                let enabled = false
                 if (enabled) {
                     await getNetworkId()
                     await getUtxos()
@@ -458,7 +493,7 @@ const WalletConnectV2 = () => {
         } catch (err) {
             console.log(err)
         }
-    }, [])
+    }
 
     /**
      * Every transaction requires the transaction builder and setting of protocol parameters
@@ -489,12 +524,17 @@ const WalletConnectV2 = () => {
         return outputs
     }
 
-    useEffect(() => {
-        pollWallets()
-        refreshData()
-    }, [])
+    /**                                              
+     * !---------------------------------------------- *
+     */                                               
+
+    // useEffect(() => {
+    //     pollWallets()
+    //     refreshData()
+    // }, [])
 
     const openModal = () => {
+        pollWallets()
         setShowModal(true)
         document.body.style.overflow = 'hidden';
         console.log('v2 modal opened')
@@ -505,6 +545,7 @@ const WalletConnectV2 = () => {
         document.body.style.overflow = 'unset';
         console.log('v2 modal closed')
     }
+
 
     return (
         <>
@@ -519,21 +560,21 @@ const WalletConnectV2 = () => {
                     isOpen={showModal}
                     onRequestClose={() => closeModal()}
                     contentLabel="Example Modal"
-                    ariaHideApp={true}
+                    ariaHideApp={false} //! only false for testing change to true when done
                 >
-            <div>
-                    <div className='pb-20 pt-10'>
-                        <Title text={'Select Wallet'} size={'text-4xl'} />
-                    </div>
-                        
+                    <div>
+                        <div className='pb-20 pt-10'>
+                            <Title text={'Select Wallet'} size={'text-4xl'} />
+                        </div>
+
                         {
 
                             wallets.map(key =>
                                 <div key={key} className='flex justify-center pt-10'>
                                     <button
                                         type='button'
-                                        onClick={() => whichWalletSelected}
-                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover min-w-full rounded-full duration-150 ease-in-out'>
+                                        onClick={() => handleWalletSelect(key)}
+                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-80 rounded-full duration-150 ease-in-out'>
                                         <div className='flex flex-row justify-center'>
                                             <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
                                             <p className='pt-3'>{window.cardano[key].name}</p>
@@ -541,7 +582,7 @@ const WalletConnectV2 = () => {
                                     </button>
                                 </div>
                             )}
-                        <div className='flex justify-center pt-4 pb-4'>
+                        <div className='flex justify-center pt-20 pb-4'>
                             <Button func={() => closeModal()} icon={<MdOutlineCancel />} />
                         </div>
                     </div>
