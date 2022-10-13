@@ -169,10 +169,8 @@ const WalletConnectV2 = () => {
      * @param obj 
      */
     const handleWalletSelect = (obj) => {
-        console.log('obj (handleWalletSelect())', obj)
         setWhichWalletSelected(obj)
-        console.log('whichWalletSelected (handleWalletSelect())', whichWalletSelected)
-        setShowModal(false)
+        closeModal()
         refreshData()
     }
 
@@ -205,7 +203,6 @@ const WalletConnectV2 = () => {
      * ! if errors occur check this function
      */
     const checkIfWalletFound = () => {
-        console.log('whichWalletSelected (checkIfWalletFound())', whichWalletSelected)
         const key = whichWalletSelected
         const walletFound = !!window?.cardano?.[key]
         setWalletFound(walletFound)
