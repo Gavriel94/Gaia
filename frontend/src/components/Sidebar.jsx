@@ -71,7 +71,7 @@ const Sidebar = () => {
                             />
                         </Link>
                     </div>
-                    <div className={`absolute-column justify-right content-center mt-10`}>
+                    <div className={`absolute-column justify-right content-center pt-16`}>
                         {sidebarItems.map((item) => (
                             <NavLink
                                 to={`/${item.name}`}
@@ -79,12 +79,12 @@ const Sidebar = () => {
                                 className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
                   gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default mt-2 overflow-auto'
                             >
+                             <span className={`${!sidebarOpen && 'duration-500'} ease-in-out duration-500 origin-left font-semibold text-xl`}>
                                 {item.icon}
-                                <span
-                                    className={`${!sidebarOpen && 'hidden'} flex ease-in duration-500 origin-left font-semibold text-xl`}
-                                >
-                                    {item.name}
-                                </span>
+                            </span> 
+                            <span className={`${!sidebarOpen && 'hidden'} flex ease-in-out duration-500 origin-left font-semibold text-xl`}>
+                                {item.name}
+                            </span>
                             </NavLink>
                         ))}
                     </div>
