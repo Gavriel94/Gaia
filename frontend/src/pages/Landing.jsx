@@ -19,20 +19,6 @@ const Landing = () => {
     const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
     const [hover, setHover] = useState(false)
 
-    // const animateIcon = () => {
-    //     console.log('hover')
-    //     let timeInMs = 80
-    //     const interval = setInterval(() => {
-    //         if (currentFrame === frames.length - 1) {
-    //             setCurrentFrame(0)
-    //         }
-    //         else {
-    //             setCurrentFrame(currentFrame + 1)
-    //         }
-    //     }, timeInMs)
-    //     return () => clearInterval(interval)
-    // }
-
     let timeInMs = 80
     useEffect(() => {
         const interval = setInterval(() => {
@@ -65,7 +51,7 @@ const Landing = () => {
                 <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
                 {
                     hover && (
-                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px]' />
+                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px] ease-in-out' />
                     )
                 }
             </div>
