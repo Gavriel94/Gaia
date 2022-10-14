@@ -37,13 +37,6 @@ const Landing = () => {
         <>
             <div className='flex justify-end top-5 h-16 px-10'>
                 <div className=''>
-                    {/* <Button
-                        title={'mode-toggle'}
-                        func={() => {
-                            setDarkMode(!darkMode);
-                        }}
-                        icon={darkMode === false ? <BsSun /> : <BsMoon />}
-                    /> */}
                     <Header/>
                 </div>
             </div>
@@ -51,7 +44,7 @@ const Landing = () => {
                 <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
                 {
                     hover && (
-                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px] ease-in-out' />
+                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px] ease-in-out duration-200' />
                     )
                 }
             </div>
