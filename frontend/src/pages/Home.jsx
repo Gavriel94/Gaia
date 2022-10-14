@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView, TopLoader } from '../components'
+import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView, TopLoader, SortingButton } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 import API from '../API'
 
@@ -113,9 +113,9 @@ const Home = () => {
                     />
                     <Header page={'home'} />
                     <Sidebar />
-                    { 
-                        topLoaderVisible 
-                            &&
+                    {
+                        topLoaderVisible
+                        &&
                         <div className='flex sm:justify-end lg:justify-center lg:pl-224 h-full'>
                             <div className='absolute bottom-20 lg:pr-52 hidden sm:block sm:pr-36'>
                                 <TopLoader />
@@ -126,7 +126,10 @@ const Home = () => {
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
-                            <div className='mt-20 overflow-auto flex flex-row'>
+                            <div className='mt-10'>
+                                <SortingButton />
+                            </div>
+                            <div className='mt-10 overflow-auto flex flex-row'>
                                 <ArticleView />
                             </div>
                         </div>
