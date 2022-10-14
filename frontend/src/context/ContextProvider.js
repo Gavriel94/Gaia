@@ -4,6 +4,10 @@ const StateContext = createContext();
 
 export const ContextProvider = ({ children }) => {
 
+
+    /**
+     * Gets the theme of the users system. Uses light by default if no data is found
+     */
     const getInitialTheme = () => {
         if (typeof window !== 'undefined' &&
             window.localStorage) {
@@ -23,12 +27,64 @@ export const ContextProvider = ({ children }) => {
         return false
     }
 
+    /**
+     * General state variables 
+     */
     const [darkMode, setDarkMode] = useState(getInitialTheme())
     const [screenSize, setScreenSize] = useState(undefined);
     const [article, setArticle] = useState(null)
     const [articleList, setArticleList] = useState([])
     const [articleLoading, setArticleLoading] = useState(true)
     const [sortBy, setSortBy] = useState('popular')
+
+    /**
+     * State variables for connecting a wallet
+     */
+    const [selectedTabId, setSelectedTabId] = useState('1')
+    const [whichWalletSelected, setWhichWalletSelected] = useState('')
+    const [walletFound, setWalletFound] = useState(undefined)
+    const [walletIsEnabled, setWalletIsEnabled] = useState(undefined)
+    const [walletName, setWalletName] = useState(undefined)
+    const [walletIcon, setWalletIcon] = useState(undefined)
+    const [walletAPIVersion, setWalletAPIVerison] = useState(undefined)
+    const [wallets, setWallets] = useState([])
+
+    const [networkId, setNetworkId] = useState(undefined)
+    const [Utxos, setUtxos] = useState(undefined)
+    const [collatUtxos, setCollatUtxos] = useState(undefined)
+    const [balance, setBalance] = useState(undefined)
+    const [changeAddress, setChangeAddress] = useState(undefined)
+    const [rewardAddress, setRewardAddress] = useState(undefined)
+    const [usedAddress, setUsedAddress] = useState(undefined)
+
+    const [txBody, setTxBody] = useState(undefined)
+    const [txBodyCborHex_unsigned, setTxBodyCborHex_unsigned] = useState('')
+    const [txBodyCborHex_signed, setTxBodyCborHex_signed] = useState('')
+    const [submittedTxHash, setSubmittedTxHash] = useState('')
+
+    /**
+     * When the wallet connects it returns a connector written to this variable
+     * All further operations on the wallet at performed using this API
+     */
+    const [API, setAPI] = useState(undefined)
+
+    /**
+     * Static protocol parameters set by Input Output Global (creators of Cardano)
+     */
+    const [protocolParams, setProtocolParams] = useState({
+        linearFee: {
+            minFeeA: "44",
+            minFeeB: "155381",
+        },
+        minUtxo: "34482",
+        poolDeposit: "500000000",
+        keyDeposit: "2000000",
+        maxValSize: 5000,
+        maxTxSize: 16384,
+        priceMem: 0.0577,
+        priceStep: 0.0000721,
+        coinsPerUtxoWord: "34482",
+    })
 
     return (
         <StateContext.Provider
@@ -39,6 +95,27 @@ export const ContextProvider = ({ children }) => {
                 articleList, setArticleList,
                 articleLoading, setArticleLoading,
                 sortBy, setSortBy,
+                selectedTabId, setSelectedTabId,
+                whichWalletSelected, setWhichWalletSelected,
+                walletFound, setWalletFound,
+                walletIsEnabled, setWalletIsEnabled,
+                walletName, setWalletName,
+                walletIcon, setWalletIcon,
+                walletAPIVersion, setWalletAPIVerison,
+                wallets, setWallets,
+                networkId, setNetworkId,
+                Utxos, setUtxos,
+                collatUtxos, setCollatUtxos,
+                balance, setBalance,
+                changeAddress, setChangeAddress,
+                rewardAddress, setRewardAddress,
+                usedAddress, setUsedAddress,
+                txBody, setTxBody,
+                txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
+                txBodyCborHex_signed, setTxBodyCborHex_signed,
+                submittedTxHash, setSubmittedTxHash,
+                API, setAPI,
+                protocolParams, setProtocolParams,
             }}
         >
             {children}

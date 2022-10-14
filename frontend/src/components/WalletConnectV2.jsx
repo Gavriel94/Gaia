@@ -52,60 +52,35 @@ import {
     StakeCredential,
     TransactionBuilderConfig
 } from "@emurgo/cardano-serialization-lib-asmjs"
-import ReactModal from 'react-modal'
 import Title from './Title'
-import { BsImageFill } from 'react-icons/bs'
+import { useStateContext } from '../context/ContextProvider'
 let Buffer = require('buffer/').Buffer
 
 const WalletConnectV2 = () => {
 
-    const [selectedTabId, setSelectedTabId] = useState('1')
-    const [whichWalletSelected, setWhichWalletSelected] = useState('')
-    const [walletFound, setWalletFound] = useState(undefined)
-    const [walletIsEnabled, setWalletIsEnabled] = useState(undefined)
-    const [walletName, setWalletName] = useState(undefined)
-    const [walletIcon, setWalletIcon] = useState(undefined)
-    const [walletAPIVersion, setWalletAPIVerison] = useState(undefined)
-    const [wallets, setWallets] = useState([])
-
-    const [networkId, setNetworkId] = useState(undefined)
-    const [Utxos, setUtxos] = useState(undefined)
-    const [collatUtxos, setCollatUtxos] = useState(undefined)
-    const [balance, setBalance] = useState(undefined)
-    const [changeAddress, setChangeAddress] = useState(undefined)
-    const [rewardAddress, setRewardAddress] = useState(undefined)
-    const [usedAddress, setUsedAddress] = useState(undefined)
-
-    const [txBody, setTxBody] = useState(undefined)
-    const [txBodyCborHex_unsigned, setTxBodyCborHex_unsigned] = useState('')
-    const [txBodyCborHex_signed, setTxBodyCborHex_signed] = useState('')
-    const [submittedTxHash, setSubmittedTxHash] = useState('')
+    const { whichWalletSelected, setWhichWalletSelected,
+        walletFound, setWalletFound,
+        walletIsEnabled, setWalletIsEnabled,
+        walletName, setWalletName,
+        walletIcon, setWalletIcon,
+        walletAPIVersion, setWalletAPIVerison,
+        wallets, setWallets,
+        networkId, setNetworkId,
+        Utxos, setUtxos,
+        collatUtxos, setCollatUtxos,
+        balance, setBalance,
+        changeAddress, setChangeAddress,
+        rewardAddress, setRewardAddress,
+        usedAddress, setUsedAddress,
+        txBody, setTxBody,
+        txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
+        txBodyCborHex_signed, setTxBodyCborHex_signed,
+        submittedTxHash, setSubmittedTxHash,
+        API, setAPI,
+        protocolParams, setProtocolParams,
+    } = useStateContext()
 
     const [showModal, setShowModal] = useState(false)
-
-    /**
-     * When the wallet connects it returns a connector written to this variable
-     * All further operations on the wallet at performed using this API
-     */
-    const [API, setAPI] = useState(undefined)
-
-    /**
-     * Static protocol parameters set by Input Output Global (creators of Cardano)
-     */
-    const [protocolParams, setProtocolParams] = useState({
-        linearFee: {
-            minFeeA: "44",
-            minFeeB: "155381",
-        },
-        minUtxo: "34482",
-        poolDeposit: "500000000",
-        keyDeposit: "2000000",
-        maxValSize: 5000,
-        maxTxSize: 16384,
-        priceMem: 0.0577,
-        priceStep: 0.0000721,
-        coinsPerUtxoWord: "34482",
-    })
 
     /**
      * Checks the browser for wallet plugins
@@ -115,7 +90,7 @@ const WalletConnectV2 = () => {
      */
     const pollWallets = useCallback(() => {
 
-        let discardedWallets = [] //remove legacy versions
+        let discardedWallets = [] //remove legacy or unsupported versions
         for (const key in window.cardano) {
             if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
                 if (key === 'ccvault' || key === 'typhon') {
@@ -128,7 +103,7 @@ const WalletConnectV2 = () => {
 
     useEffect(() => {
         pollWallets()
-    },[pollWallets])
+    }, [pollWallets])
 
     /**
      * Handles user selection
@@ -137,12 +112,12 @@ const WalletConnectV2 = () => {
      */
     const handleWalletSelect = (obj) => {
         console.log('inside handleWalletSelect')
-        console.log(obj)
+        console.log('obj passed in', obj)
         // pick the wallet from the wallets[] and use obj to compare values
         // use this to set whichWalletSelected, as an element from the array wallets
         const index = wallets.indexOf(obj)
         setWhichWalletSelected(wallets[index])
-        console.log('wallet selected', whichWalletSelected)
+        setWalletIcon(wallets[index].icon)
         closeModal()
         refreshData()
     }
@@ -176,8 +151,10 @@ const WalletConnectV2 = () => {
      */
     const checkIfWalletFound = () => {
         const key = whichWalletSelected
-        console.log(whichWalletSelected)
-        console.log(key)
+        console.log('inside checkIfWalletFound:')
+        console.log('whichWalletSelected', whichWalletSelected)
+        console.log('key', key)
+        console.log('checkIfWalletFound end')
         const walletFound = !!window?.cardano?.[key]
         setWalletFound(walletFound)
         return walletFound
@@ -190,14 +167,12 @@ const WalletConnectV2 = () => {
      */
     const checkIfWalletEnabled = async () => {
         let walletEnabled = false
-
         try {
             const name = whichWalletSelected
             walletEnabled = await window.cardano[name].isEnabled()
         } catch (err) {
             console.log(err)
         }
-        // setWalletIsEnabled(() => walletEnabled) mayne this?
         setWalletIsEnabled(walletEnabled)
         return walletIsEnabled
     }
@@ -214,6 +189,7 @@ const WalletConnectV2 = () => {
             setAPI(await window.cardano[key].enable())
         } catch (err) {
             console.log(err)
+            resetWalletSelection()
         }
         return checkIfWalletEnabled()
     }
@@ -409,28 +385,29 @@ const WalletConnectV2 = () => {
      */
     const refreshData = async () => {
         generateScriptAddress()
-        console.log(generateScriptAddress())
-        console.log('refresh data')
-
+        // console.log(generateScriptAddress())
+        console.log('inside refresh data')
         try {
-            const walletFound = checkIfWalletFound()
-            console.log(walletFound)
+            await checkIfWalletFound()
+            console.log('wallet found', walletFound)
             if (walletFound) {
                 await getAPIVersion()
                 await getWalletName()
                 const enabled = await enableWallet()
-                console.log(enabled)
+                console.log('wallet enabled', enabled)
                 if (enabled) {
                     await getNetworkId()
+                    console.log('network ID', networkId)
                     await getUtxos()
+                    console.log('Utxos', Utxos)
                     // await getCollateral()
                     await getBalance()
-                    console.log(balance)
+                    console.log('balance in lovelace:', balance)
                     // await getChangeAddress()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
                 } else {
-                    console.log('no wallet enabled')
+                    console.log('no wallet enabled branch')
                     setUtxos(null)
                     setCollatUtxos(null)
                     setBalance(null)
@@ -444,7 +421,7 @@ const WalletConnectV2 = () => {
                     setSubmittedTxHash('')
                 }
             } else {
-                console.log('no wallet found')
+                console.log('no wallet found branch')
                 setWalletIsEnabled(false)
                 setUtxos(null)
                 setCollatUtxos(null)
@@ -461,6 +438,23 @@ const WalletConnectV2 = () => {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    const resetWalletSelection = async () => {
+        console.log('resetting wallet selection')
+        setWalletFound(false)
+        setWalletIsEnabled(false)
+        setUtxos(null)
+        setCollatUtxos(null)
+        setBalance(null)
+        setChangeAddress(null)
+        setRewardAddress(null)
+        setUsedAddress(null)
+
+        setTxBody(null)
+        setTxBodyCborHex_unsigned('')
+        setTxBodyCborHex_signed('')
+        setSubmittedTxHash('')
     }
 
     /**
@@ -494,7 +488,7 @@ const WalletConnectV2 = () => {
 
     /**                                              
      * !---------------------------------------------- *
-     */                                               
+     */
 
     // useEffect(() => {
     //     pollWallets()
@@ -505,24 +499,37 @@ const WalletConnectV2 = () => {
         pollWallets()
         setShowModal(true)
         document.body.style.overflow = 'hidden';
-        console.log('v2 modal opened')
     }
 
     const closeModal = () => {
         setShowModal(false)
         document.body.style.overflow = 'unset';
-        console.log('v2 modal closed')
+    }
+
+    const balanceInADA = () => {
+        const b = 'Balance: ' + Math.round(balance / 1000000) + ' ADA'
+        return b
     }
 
 
     return (
         <>
-            <Button
-                title={'Wallet'}
-                func={() => openModal()}
-                icon={<AiOutlineWallet size={'26px'} />}
-                className='p-2'
-            />
+            <div className={`${walletIsEnabled === true ? 'hidden' : ''}`}>
+                <Button
+                    title={'Wallet'}
+                    func={() => openModal()}
+                    icon={<AiOutlineWallet size={'26px'} />}
+                    className='p-2'
+                />
+            </div>
+            <div className={`${walletIsEnabled === true ? '' : 'hidden'}`}>
+                <Button
+                    title={'Wallet'}
+                    func={() => openModal()}
+                    label={`${walletIsEnabled === true ? balanceInADA() : ''}`}
+                    className='p-2'
+                />
+            </div>
             <div>
                 <Modal
                     isOpen={showModal}
