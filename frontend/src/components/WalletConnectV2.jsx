@@ -355,16 +355,16 @@ const WalletConnectV2 = () => {
     /**
      * Returns the address rewards from staking are paid into
      */
-    // const getRewardAddresses = async () => {
-    //     try {
-    //         const raw = API.getRewardAddresses()
-    //         const rawFirst = raw[0]
-    //         const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-    //         setRewardAddress(address)
-    //     } catch (err) {
-    //         console.log(err)
-    //     }
-    // }
+    const getRewardAddresses = async () => {
+        try {
+            const raw = API.getRewardAddresses()
+            const rawFirst = raw[0]
+            const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
+            setRewardAddress(address)
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     /**
      * Gets used addresses
