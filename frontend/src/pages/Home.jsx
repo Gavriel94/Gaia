@@ -113,11 +113,10 @@ const Home = () => {
                     />
                     <Header page={'home'} />
                     <Sidebar />
-
                     { 
                         topLoaderVisible 
                             &&
-                        <div className='flex justify-end h-full'>
+                        <div className='flex sm:justify-end lg:justify-center lg:pl-224 h-full'>
                             <div className='absolute bottom-20 lg:pr-52 hidden sm:block sm:pr-36'>
                                 <TopLoader />
                             </div>
