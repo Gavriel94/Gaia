@@ -36,6 +36,7 @@ export const ContextProvider = ({ children }) => {
     const [articleList, setArticleList] = useState([])
     const [articleLoading, setArticleLoading] = useState(true)
     const [sortBy, setSortBy] = useState('popular')
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     /**
      * State variables for connecting a wallet
@@ -95,6 +96,7 @@ export const ContextProvider = ({ children }) => {
                 articleList, setArticleList,
                 articleLoading, setArticleLoading,
                 sortBy, setSortBy,
+                sidebarOpen, setSidebarOpen,
                 selectedTabId, setSelectedTabId,
                 whichWalletSelected, setWhichWalletSelected,
                 walletFound, setWalletFound,

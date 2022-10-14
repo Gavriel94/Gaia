@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { AiOutlineMenu, AiOutlineHome } from 'react-icons/ai'
+import { BsArrowRight, BsArrowLeft } from 'react-icons/bs'
 import { FiInfo } from 'react-icons/fi'
 import { BsPen } from 'react-icons/bs'
+import { MdOutlineCancel } from 'react-icons/md'
 import { Link, NavLink } from 'react-router-dom';
 import Button from './Button'
 import lightLogo from '../assets/fpngs/tildelogolight.png'
@@ -15,8 +17,8 @@ import { useStateContext } from '../context/ContextProvider'
  */
 
 const Sidebar = () => {
-    const { setScreenSize, darkMode } = useStateContext();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { setScreenSize, darkMode, sidebarOpen, setSidebarOpen } = useStateContext();
+    const [sidebarButton, setSidebarButton] = useState(<BsArrowRight size={'26px'}/>) //arrow right as sidebar closed by default
     const sidebarItems = [
         {
             name: 'home',
@@ -39,11 +41,16 @@ const Sidebar = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, [setScreenSize]);
 
-    // useEffect(() => {
-    //     if (screenSize <= 1000) {
-    //         setSidebarOpen(!sidebarOpen);
-    //     }
-    // }, []);
+    const handleOpenSidebar = () => {
+        if(sidebarOpen) {
+            setSidebarOpen(false)
+            setSidebarButton(<BsArrowRight size={'26px'}/>)
+        }
+        else {
+            setSidebarOpen(true)
+            setSidebarButton(<BsArrowLeft size={'26px'}/>)
+        }
+    }
 
     return (
         <div className={`h-full w-72 fixed bg-opacity-100 hidden sm:block`}>
@@ -56,10 +63,8 @@ const Sidebar = () => {
                     <div className={`absolute -right-3 top-4 w-9 hidden md:block`}>
                         <Button
                             title={'Menu'}
-                            func={() => {
-                                setSidebarOpen(!sidebarOpen);
-                            }}
-                            icon={<AiOutlineMenu size={'26px'}/>}
+                            func={() => handleOpenSidebar()}
+                            icon={sidebarButton}
                         />
                     </div>
                     <div className='flex justify-center py-0 pt-4 pb-2'>
