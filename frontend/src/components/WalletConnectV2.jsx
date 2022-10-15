@@ -4,6 +4,7 @@ import LoadingSpinner from './LoadingSpinner'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
+import '../modal.css'
 
 import {
     Address,
@@ -55,11 +56,13 @@ import {
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import Title from './Title'
 import { useStateContext } from '../context/ContextProvider'
+import { deepCompareKeys } from '@blueprintjs/core/lib/esm/common/utils'
+import { BiBluetooth } from 'react-icons/bi'
 let Buffer = require('buffer/').Buffer
 
 const WalletConnectV2 = () => {
 
-    const { 
+    const {
         connectedWallet, setConnectedWallet,
         protocolParams
     } = useStateContext()
@@ -98,11 +101,11 @@ const WalletConnectV2 = () => {
         let discardedWallets = [] //remove legacy or unsupported wallets
         for (const key in window.cardano) {
             if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
-                if (key === 'ccvault' || key === 'typhon') {
+                if (key === 'ccvault' || key === 'typhon' || key === 'flint') {
                     discardedWallets.push(key)
                 }
-                else { 
-                    wallets.push(key) 
+                else {
+                    wallets.push(key)
                     walletIcons.push(window.cardano[key].icon)
                 }
             }
@@ -431,55 +434,42 @@ const WalletConnectV2 = () => {
                     })
                     setLoading(false)
                 } else {
-                    console.log('no wallet enabled branch')
-                    // setUtxos(null)
-                    // setCollatUtxos(null)
-                    // setBalance(null)
-                    // setChangeAddress(null)
-                    // setRewardAddress(null)
-                    // setUsedAddress(null)
-
-                    // setTxBody(null)
-                    // setTxBodyCborHex_unsigned('')
-                    // setTxBodyCborHex_signed('')
-                    // setSubmittedTxHash('')
+                    console.log('no wallet enabled')
+                    setConnectedWallet({
+                        Utxos: undefined,
+                        collatUtxos: undefined,
+                        balance: undefined,
+                        changeAddress: null,
+                        rewardAddress: null,
+                        usedAddress: null,
+                        txBody: null,
+                        txBodyCborHex_unsigned: '',
+                        txBodyCborHex_signed: '',
+                        submittedTxHash: ''
+                    })
+                    setLoading(false)
                 }
             } else {
-                console.log('no wallet found branch')
-                // setWalletIsEnabled(false)
-                // setUtxos(null)
-                // setCollatUtxos(null)
-                // setBalance(null)
-                // setChangeAddress(null)
-                // setRewardAddress(null)
-                // setUsedAddress(null)
+                console.log('no wallet found')
+                setConnectedWallet({
+                    walletIsEnabled: false,
+                    Utxos: undefined,
+                    collatUtxos: undefined,
+                    balance: undefined,
+                    changeAddress: null,
+                    rewardAddress: null,
+                    usedAddress: null,
+                    txBody: null,
+                    txBodyCborHex_unsigned: '',
+                    txBodyCborHex_signed: '',
+                    submittedTxHash: ''
 
-                // setTxBody(null)
-                // setTxBodyCborHex_unsigned('')
-                // setTxBodyCborHex_signed('')
-                // setSubmittedTxHash('')
+                })
             }
         } catch (err) {
             console.log(err)
         }
     }
-
-    // const resetWalletSelection = async () => {
-    //     console.log('resetting wallet selection')
-    //     setWalletFound(false)
-    //     setWalletIsEnabled(false)
-    //     setUtxos(null)
-    //     setCollatUtxos(null)
-    //     setBalance(null)
-    //     setChangeAddress(null)
-    //     setRewardAddress(null)
-    //     setUsedAddress(null)
-
-    //     setTxBody(null)
-    //     setTxBodyCborHex_unsigned('')
-    //     setTxBodyCborHex_signed('')
-    //     setSubmittedTxHash('')
-    // }
 
     /**
      * Every transaction requires the transaction builder and setting of protocol parameters
@@ -516,8 +506,12 @@ const WalletConnectV2 = () => {
 
     const openModal = () => {
         pollWallets()
-        setShowModal(true)
-        document.body.style.overflow = 'hidden';
+        setShowModal(!showModal)
+        if(showModal) {
+            document.body.style.overflow = 'unset'; 
+        } else {   
+            document.body.style.overflow = 'hidden';            
+        }
     }
 
     const closeModal = () => {
@@ -529,6 +523,34 @@ const WalletConnectV2 = () => {
         const b = 'Balance: ' + Math.round(connectedWallet.balance / 1000000) + ' ₳'
         return b
     }
+
+    Modal.setAppElement("#root")
+
+    // const modalStyle = {
+    //     overlay: {
+    //         position: 'absolute',
+    //         top: '95px',
+    //         bottom: '400px',
+    //         left: '50%',
+    //         marginLeft: 'auto',
+    //         marginRight: 'auto',
+    //         transform: 'translate(-50%, -0%)',
+    //         border: '10px solid #fff',
+    //         borderRadius: '100px',
+    //         overflow: 'hidden',
+    //     },
+    //     content: {
+    //         position: 'absolute',
+    //         top: '0px',
+    //         left: '0px',
+    //         right: '0px',
+    //         bottom: '0px',
+    //         background: '#FF974D',
+    //         overflow: 'scroll',
+    //         WebkitOverflowScrolling: 'touch',
+    //         padding: '5px',
+    //     }
+    // };
 
     return (
         <div className='hidden sm:block'> {/* hidden on mobile */}
@@ -557,15 +579,19 @@ const WalletConnectV2 = () => {
                 <Modal
                     isOpen={showModal}
                     onRequestClose={() => closeModal()}
-                    contentLabel="Wallet Modal"
+                    contentLabel="Wallet select Modal"
                     ariaHideApp={false} //! only false for testing change to true when done
+                    className={'walletModal'}
+                    overlayClassName={'overlayModal'}
                 >
+                <div className='pt-28 text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center'>
+                        Select Wallet
+                    </div>
                     <div>
-                        <div className='pb-20 pt-10 text-'>
-                            <Title text={'Select Wallet'} size={'text-4xl'} />
-                        </div>
                         {
-                                
+
                             wallets.map(key =>
                                 <div key={key} className='flex justify-center pt-10'>
                                     <button
