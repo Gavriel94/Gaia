@@ -43,7 +43,7 @@ export const ContextProvider = ({ children }) => {
         walletFound: undefined,
         walletIsEnabled: undefined,
         walletName: undefined,
-        walletIcon: undefined,
+        walletIcon: [],
         walletAPIVersion: undefined,
         wallets: [],
         networkId: undefined,

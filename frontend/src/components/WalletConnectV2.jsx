@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Button from './Button'
+import LoadingSpinner from './LoadingSpinner'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
@@ -62,8 +63,12 @@ const WalletConnectV2 = () => {
         connectedWallet, setConnectedWallet,
         protocolParams
     } = useStateContext()
-
     const [showModal, setShowModal] = useState(false)
+    const [wallets] = useState([])
+    const [buttonIcon, setButtonIcon] = useState(<AiOutlineWallet size={'26px'} />)
+    const [loading, setLoading] = useState(false)
+    const [walletIcons, setWalletIcons] = useState([])
+
 
     var whichWalletSelected = ''
     var walletFound = undefined
@@ -71,7 +76,6 @@ const WalletConnectV2 = () => {
     var walletName = undefined
     var walletIcon = undefined
     var walletAPIVersion = undefined
-    const [wallets] = useState([])
     var networkId = undefined
     var Utxos = undefined
     var collatUtxos = undefined
@@ -97,10 +101,13 @@ const WalletConnectV2 = () => {
                 if (key === 'ccvault' || key === 'typhon') {
                     discardedWallets.push(key)
                 }
-                else { wallets.push(key) }
+                else { 
+                    wallets.push(key) 
+                    walletIcons.push(window.cardano[key].icon)
+                }
             }
         }
-    }, [wallets])
+    }, [wallets, walletIcons])
 
     useEffect(() => {
         pollWallets()
@@ -118,7 +125,7 @@ const WalletConnectV2 = () => {
         // use this to set whichWalletSelected, as an element from the array wallets
         const index = wallets.indexOf(obj)
         whichWalletSelected = wallets[index]
-        walletIcon = wallets[index].icon
+        walletIcon = walletIcons[index]
         closeModal()
         refreshData()
     }
@@ -152,10 +159,8 @@ const WalletConnectV2 = () => {
      */
     const checkIfWalletFound = () => {
         const key = whichWalletSelected
-        console.log('inside checkIfWalletFound:')
         console.log('whichWalletSelected', whichWalletSelected)
         console.log('key', key)
-        console.log('checkIfWalletFound end')
         walletFound = !!window?.cardano?.[key]
         return walletFound
     }
@@ -385,14 +390,14 @@ const WalletConnectV2 = () => {
      * Refresh data from the users wallet
      */
     const refreshData = async () => {
-        console.log('re')
         generateScriptAddress()
         // console.log(generateScriptAddress())
-        console.log('inside refresh data')
         try {
             const f = checkIfWalletFound()
             console.log('wallet found', f)
             if (f) {
+                setLoading(true)
+                setButtonIcon(<LoadingSpinner />)
                 const wAPI = await getAPIVersion()
                 const wn = await getWalletName()
                 const enabled = await enableWallet()
@@ -403,6 +408,7 @@ const WalletConnectV2 = () => {
                     // await getCollateral()
                     const b = await getBalance()
                     console.log('balance in lovelace:', balance)
+                    console.log('utxos:', u)
                     // await getChangeAddress()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
@@ -411,8 +417,8 @@ const WalletConnectV2 = () => {
                         walletFound: f,
                         walletIsEnabled: enabled,
                         walletName: wn,
-                        walletIcon: walletIcon,
                         walletAPIVersion: wAPI,
+                        walletIcon: walletIcon,
                         wallets: wallets,
                         networkId: nID,
                         Utxos: u,
@@ -423,6 +429,7 @@ const WalletConnectV2 = () => {
                         usedAddress: undefined,
                         API: API
                     })
+                    setLoading(false)
                 } else {
                     console.log('no wallet enabled branch')
                     // setUtxos(null)
@@ -524,12 +531,12 @@ const WalletConnectV2 = () => {
     }
 
     return (
-        <>
+        <div className='hidden sm:block'> {/* hidden on mobile */}
             <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : ''}`}>
                 <Button
                     title={'Wallet'}
                     func={() => openModal()}
-                    icon={<AiOutlineWallet size={'26px'} />}
+                    icon={buttonIcon}
                     className='p-2'
                 />
             </div>
@@ -538,10 +545,13 @@ const WalletConnectV2 = () => {
                     title={'Wallet'}
                     func={''}
                     label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
-                    labelProps={'text-base'}
+                    image={connectedWallet.walletIcon}
+                    imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
+                    imageHeight={24}
+                    imageWidth={24}
+                    labelProps={'text-base pl-2'}
                     className='p-2'
                 />
-                {walletIcon}
             </div>
             <div>
                 <Modal
@@ -555,7 +565,7 @@ const WalletConnectV2 = () => {
                             <Title text={'Select Wallet'} size={'text-4xl'} />
                         </div>
                         {
-
+                                
                             wallets.map(key =>
                                 <div key={key} className='flex justify-center pt-10'>
                                     <button
@@ -575,7 +585,7 @@ const WalletConnectV2 = () => {
                     </div>
                 </Modal>
             </div>
-        </>
+        </div>
     )
 }
 
