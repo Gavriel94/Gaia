@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Button from './Button'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
@@ -59,29 +59,32 @@ let Buffer = require('buffer/').Buffer
 const WalletConnectV2 = () => {
 
     const { 
-        whichWalletSelected, setWhichWalletSelected,
-        walletFound, setWalletFound,
-        walletIsEnabled, setWalletIsEnabled,
-        walletName, setWalletName,
-        walletIcon, setWalletIcon,
-        walletAPIVersion, setWalletAPIVerison,
-        wallets, setWallets,
-        networkId, setNetworkId,
-        Utxos, setUtxos,
-        collatUtxos, setCollatUtxos,
-        balance, setBalance,
-        changeAddress, setChangeAddress,
-        rewardAddress, setRewardAddress,
-        usedAddress, setUsedAddress,
-        txBody, setTxBody,
-        txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
-        txBodyCborHex_signed, setTxBodyCborHex_signed,
-        submittedTxHash, setSubmittedTxHash,
-        API, setAPI,
-        protocolParams, setProtocolParams,
+        connectedWallet, setConnectedWallet,
+        protocolParams
     } = useStateContext()
 
     const [showModal, setShowModal] = useState(false)
+
+    var whichWalletSelected = ''
+    var walletFound = undefined
+    var walletIsEnabled = false
+    var walletName = undefined
+    var walletIcon = undefined
+    var walletAPIVersion = undefined
+    const [wallets] = useState([])
+    var networkId = undefined
+    var Utxos = undefined
+    var collatUtxos = undefined
+    var balance = undefined
+    var changeAddress = undefined
+    var rewardAddress = undefined
+    var usedAddress = undefined
+    var txBody = undefined
+    var txBodyCborHex_unsigned = ''
+    var txBodyCborHex_signed = ''
+    var submittedTxHash = ''
+    var API = undefined
+
 
     /**
      * Checks the browser for wallet plugins and adds them to state
@@ -114,8 +117,8 @@ const WalletConnectV2 = () => {
         // pick the wallet from the wallets[] and use obj to compare values
         // use this to set whichWalletSelected, as an element from the array wallets
         const index = wallets.indexOf(obj)
-        setWhichWalletSelected(wallets[index])
-        setWalletIcon(wallets[index].icon)
+        whichWalletSelected = wallets[index]
+        walletIcon = wallets[index].icon
         closeModal()
         refreshData()
     }
@@ -153,8 +156,7 @@ const WalletConnectV2 = () => {
         console.log('whichWalletSelected', whichWalletSelected)
         console.log('key', key)
         console.log('checkIfWalletFound end')
-        const walletFound = !!window?.cardano?.[key]
-        setWalletFound(walletFound)
+        walletFound = !!window?.cardano?.[key]
         return walletFound
     }
 
@@ -164,14 +166,12 @@ const WalletConnectV2 = () => {
      * @returns {Promise<boolean>}
      */
     const checkIfWalletEnabled = async () => {
-        let walletEnabled = false
         try {
             const name = whichWalletSelected
-            walletEnabled = await window.cardano[name].isEnabled()
+            walletIsEnabled = await window.cardano[name].isEnabled()
         } catch (err) {
             console.log(err)
         }
-        setWalletIsEnabled(walletEnabled)
         return walletIsEnabled
     }
 
@@ -184,10 +184,10 @@ const WalletConnectV2 = () => {
         const key = whichWalletSelected
         console.log('enable wallet', key)
         try {
-            setAPI(await window.cardano[key].enable())
+            API = await window.cardano[key].enable()
         } catch (err) {
             console.log(err)
-            resetWalletSelection()
+            // resetWalletSelection()
         }
         return checkIfWalletEnabled()
     }
@@ -199,7 +199,7 @@ const WalletConnectV2 = () => {
      */
     const getAPIVersion = () => {
         const key = whichWalletSelected
-        setWalletAPIVerison(window?.cardano?.[key].apiVersion)
+        walletAPIVersion = window?.cardano?.[key].apiVersion
         return walletAPIVersion
     }
 
@@ -211,7 +211,7 @@ const WalletConnectV2 = () => {
     const getWalletName = () => {
         const key = whichWalletSelected
         const name = window?.cardano?.[key].name
-        setWalletName(name)
+        walletName = name
         return walletName
     }
 
@@ -223,7 +223,8 @@ const WalletConnectV2 = () => {
     const getNetworkId = async () => {
         try {
             const id = await API.getNetworkId()
-            setNetworkId(id)
+            networkId = id
+            return networkId
         } catch (err) {
             console.log(err)
         }
@@ -286,7 +287,8 @@ const WalletConnectV2 = () => {
                 }
                 utxos.push(utxoObj)
             }
-            setUtxos(utxos)
+            Utxos = utxos
+            return Utxos
         } catch (err) {
             console.log(err)
         }
@@ -314,7 +316,7 @@ const WalletConnectV2 = () => {
                 const tx = TransactionUnspentOutput.from_bytes(Buffer.from(c, "hex"))
                 colUtxos.push(tx)
             }
-            setCollatUtxos(colUtxos)
+            collatUtxos = colUtxos
         } catch (err) {
             console.log(err)
         }
@@ -331,7 +333,8 @@ const WalletConnectV2 = () => {
             const balanceCBORHex = await API.getBalance()
 
             const b = Value.from_bytes(Buffer.from(balanceCBORHex, "hex")).coin().to_str()
-            setBalance(b)
+            balance = b
+            return balance
         } catch (err) {
             console.log(err)
         }
@@ -344,7 +347,7 @@ const WalletConnectV2 = () => {
         try {
             const raw = await API.getChangeAddress()
             const changeAdd = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
-            setChangeAddress(changeAdd)
+            changeAddress = changeAdd
         } catch (err) {
             console.log(err)
         }
@@ -358,7 +361,7 @@ const WalletConnectV2 = () => {
             const raw = API.getRewardAddresses()
             const rawFirst = raw[0]
             const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-            setRewardAddress(address)
+            rewardAddress = address
         } catch (err) {
             console.log(err)
         }
@@ -372,7 +375,7 @@ const WalletConnectV2 = () => {
             const raw = await API.getUsedAddresses()
             const rawFirst = raw[0]
             const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-            setUsedAddress(address)
+            usedAddress = address
         } catch (err) {
             console.log(err)
         }
@@ -387,74 +390,89 @@ const WalletConnectV2 = () => {
         // console.log(generateScriptAddress())
         console.log('inside refresh data')
         try {
-            checkIfWalletFound()
-            console.log('wallet found', walletFound)
-            if (walletFound) {
-                await getAPIVersion()
-                await getWalletName()
+            const f = checkIfWalletFound()
+            console.log('wallet found', f)
+            if (f) {
+                const wAPI = await getAPIVersion()
+                const wn = await getWalletName()
                 const enabled = await enableWallet()
                 console.log('wallet enabled', enabled)
                 if (enabled) {
-                    await getNetworkId()
-                    console.log('network ID', networkId)
-                    await getUtxos()
-                    console.log('Utxos', Utxos)
+                    const nID = await getNetworkId()
+                    const u = await getUtxos()
                     // await getCollateral()
-                    await getBalance()
+                    const b = await getBalance()
                     console.log('balance in lovelace:', balance)
                     // await getChangeAddress()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
+                    setConnectedWallet({
+                        whichWalletSelected: whichWalletSelected,
+                        walletFound: f,
+                        walletIsEnabled: enabled,
+                        walletName: wn,
+                        walletIcon: walletIcon,
+                        walletAPIVersion: wAPI,
+                        wallets: wallets,
+                        networkId: nID,
+                        Utxos: u,
+                        collatUtxos: undefined,
+                        balance: b,
+                        changeAddress: undefined,
+                        rewardAddress: undefined,
+                        usedAddress: undefined,
+                        API: API
+                    })
                 } else {
                     console.log('no wallet enabled branch')
-                    setUtxos(null)
-                    setCollatUtxos(null)
-                    setBalance(null)
-                    setChangeAddress(null)
-                    setRewardAddress(null)
-                    setUsedAddress(null)
+                    // setUtxos(null)
+                    // setCollatUtxos(null)
+                    // setBalance(null)
+                    // setChangeAddress(null)
+                    // setRewardAddress(null)
+                    // setUsedAddress(null)
 
-                    setTxBody(null)
-                    setTxBodyCborHex_unsigned('')
-                    setTxBodyCborHex_signed('')
-                    setSubmittedTxHash('')
+                    // setTxBody(null)
+                    // setTxBodyCborHex_unsigned('')
+                    // setTxBodyCborHex_signed('')
+                    // setSubmittedTxHash('')
                 }
             } else {
                 console.log('no wallet found branch')
-                setWalletIsEnabled(false)
-                setUtxos(null)
-                setCollatUtxos(null)
-                setBalance(null)
-                setChangeAddress(null)
-                setRewardAddress(null)
-                setUsedAddress(null)
+                // setWalletIsEnabled(false)
+                // setUtxos(null)
+                // setCollatUtxos(null)
+                // setBalance(null)
+                // setChangeAddress(null)
+                // setRewardAddress(null)
+                // setUsedAddress(null)
 
-                setTxBody(null)
-                setTxBodyCborHex_unsigned('')
-                setTxBodyCborHex_signed('')
-                setSubmittedTxHash('')
+                // setTxBody(null)
+                // setTxBodyCborHex_unsigned('')
+                // setTxBodyCborHex_signed('')
+                // setSubmittedTxHash('')
             }
         } catch (err) {
             console.log(err)
         }
     }
 
-    const resetWalletSelection = async () => {
-        console.log('resetting wallet selection')
-        setWalletFound(false)
-        setWalletIsEnabled(false)
-        setUtxos(null)
-        setCollatUtxos(null)
-        setBalance(null)
-        setChangeAddress(null)
-        setRewardAddress(null)
-        setUsedAddress(null)
+    // const resetWalletSelection = async () => {
+    //     console.log('resetting wallet selection')
+    //     setWalletFound(false)
+    //     setWalletIsEnabled(false)
+    //     setUtxos(null)
+    //     setCollatUtxos(null)
+    //     setBalance(null)
+    //     setChangeAddress(null)
+    //     setRewardAddress(null)
+    //     setUsedAddress(null)
 
-        setTxBody(null)
-        setTxBodyCborHex_unsigned('')
-        setTxBodyCborHex_signed('')
-        setSubmittedTxHash('')
-    }
+    //     setTxBody(null)
+    //     setTxBodyCborHex_unsigned('')
+    //     setTxBodyCborHex_signed('')
+    //     setSubmittedTxHash('')
+    // }
 
     /**
      * Every transaction requires the transaction builder and setting of protocol parameters
@@ -501,13 +519,13 @@ const WalletConnectV2 = () => {
     }
 
     const balanceInADA = () => {
-        const b = 'Balance: ' + Math.round(balance / 1000000) + ' ADA'
+        const b = 'Balance: ' + Math.round(connectedWallet.balance / 1000000) + ' ₳'
         return b
     }
 
     return (
         <>
-            <div className={`${walletIsEnabled === true ? 'hidden' : ''}`}>
+            <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : ''}`}>
                 <Button
                     title={'Wallet'}
                     func={() => openModal()}
@@ -515,11 +533,11 @@ const WalletConnectV2 = () => {
                     className='p-2'
                 />
             </div>
-            <div className={`${walletIsEnabled === true ? '' : 'hidden'}`}>
+            <div className={`${connectedWallet.walletIsEnabled === true ? '' : 'hidden'}`}>
                 <Button
                     title={'Wallet'}
-                    func={() => openModal()}
-                    label={`${walletIsEnabled === true ? balanceInADA() : ''}`}
+                    func={''}
+                    label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
                     labelProps={'text-base'}
                     className='p-2'
                 />
