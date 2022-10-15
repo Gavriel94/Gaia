@@ -38,36 +38,56 @@ export const ContextProvider = ({ children }) => {
     const [sortBy, setSortBy] = useState('popular')
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    const [connectedWallet, setConnectedWallet] = useState({
+        whichWalletSelected: '',
+        walletFound: undefined,
+        walletIsEnabled: undefined,
+        walletName: undefined,
+        walletIcon: undefined,
+        walletAPIVersion: undefined,
+        wallets: [],
+        networkId: undefined,
+        Utxos: undefined,
+        collatUtxos: undefined,
+        balance: undefined,
+        changeAddress: undefined,
+        rewardAddress: undefined,
+        usedAddress: undefined,
+        txBody: undefined,
+        txBodyCborHex_unsigned: '',
+        txBodyCborHex_signed: '',
+        submittedTxHash: '',
+        API: undefined
+    })
     /**
      * State variables for connecting a wallet
      */
-    const [selectedTabId, setSelectedTabId] = useState('1')
-    const [whichWalletSelected, setWhichWalletSelected] = useState('')
-    const [walletFound, setWalletFound] = useState(undefined)
-    const [walletIsEnabled, setWalletIsEnabled] = useState(undefined)
-    const [walletName, setWalletName] = useState(undefined)
-    const [walletIcon, setWalletIcon] = useState(undefined)
-    const [walletAPIVersion, setWalletAPIVerison] = useState(undefined)
-    const [wallets, setWallets] = useState([])
+    // const [whichWalletSelected, setWhichWalletSelected] = useState('')
+    // const [walletFound, setWalletFound] = useState(undefined)
+    // const [walletIsEnabled, setWalletIsEnabled] = useState(undefined)
+    // const [walletName, setWalletName] = useState(undefined)
+    // const [walletIcon, setWalletIcon] = useState(undefined)
+    // const [walletAPIVersion, setWalletAPIVerison] = useState(undefined)
+    // const [wallets, setWallets] = useState([])
 
-    const [networkId, setNetworkId] = useState(undefined)
-    const [Utxos, setUtxos] = useState(undefined)
-    const [collatUtxos, setCollatUtxos] = useState(undefined)
-    const [balance, setBalance] = useState(undefined)
-    const [changeAddress, setChangeAddress] = useState(undefined)
-    const [rewardAddress, setRewardAddress] = useState(undefined)
-    const [usedAddress, setUsedAddress] = useState(undefined)
+    // const [networkId, setNetworkId] = useState(undefined)
+    // const [Utxos, setUtxos] = useState(undefined)
+    // const [collatUtxos, setCollatUtxos] = useState(undefined)
+    // const [balance, setBalance] = useState(undefined)
+    // const [changeAddress, setChangeAddress] = useState(undefined)
+    // const [rewardAddress, setRewardAddress] = useState(undefined)
+    // const [usedAddress, setUsedAddress] = useState(undefined)
 
-    const [txBody, setTxBody] = useState(undefined)
-    const [txBodyCborHex_unsigned, setTxBodyCborHex_unsigned] = useState('')
-    const [txBodyCborHex_signed, setTxBodyCborHex_signed] = useState('')
-    const [submittedTxHash, setSubmittedTxHash] = useState('')
+    // const [txBody, setTxBody] = useState(undefined)
+    // const [txBodyCborHex_unsigned, setTxBodyCborHex_unsigned] = useState('')
+    // const [txBodyCborHex_signed, setTxBodyCborHex_signed] = useState('')
+    // const [submittedTxHash, setSubmittedTxHash] = useState('')
 
     /**
      * When the wallet connects it returns a connector written to this variable
      * All further operations on the wallet at performed using this API
      */
-    const [API, setAPI] = useState(undefined)
+    // const [API, setAPI] = useState(undefined)
 
     /**
      * Static protocol parameters set by Input Output Global (creators of Cardano)
@@ -97,26 +117,26 @@ export const ContextProvider = ({ children }) => {
                 articleLoading, setArticleLoading,
                 sortBy, setSortBy,
                 sidebarOpen, setSidebarOpen,
-                selectedTabId, setSelectedTabId,
-                whichWalletSelected, setWhichWalletSelected,
-                walletFound, setWalletFound,
-                walletIsEnabled, setWalletIsEnabled,
-                walletName, setWalletName,
-                walletIcon, setWalletIcon,
-                walletAPIVersion, setWalletAPIVerison,
-                wallets, setWallets,
-                networkId, setNetworkId,
-                Utxos, setUtxos,
-                collatUtxos, setCollatUtxos,
-                balance, setBalance,
-                changeAddress, setChangeAddress,
-                rewardAddress, setRewardAddress,
-                usedAddress, setUsedAddress,
-                txBody, setTxBody,
-                txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
-                txBodyCborHex_signed, setTxBodyCborHex_signed,
-                submittedTxHash, setSubmittedTxHash,
-                API, setAPI,
+                // whichWalletSelected, setWhichWalletSelected,
+                // walletFound, setWalletFound,
+                // walletIsEnabled, setWalletIsEnabled,
+                // walletName, setWalletName,
+                // walletIcon, setWalletIcon,
+                // walletAPIVersion, setWalletAPIVerison,
+                // wallets, setWallets,
+                // networkId, setNetworkId,
+                // Utxos, setUtxos,
+                // collatUtxos, setCollatUtxos,
+                // balance, setBalance,
+                // changeAddress, setChangeAddress,
+                // rewardAddress, setRewardAddress,
+                // usedAddress, setUsedAddress,
+                // txBody, setTxBody,
+                // txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
+                // txBodyCborHex_signed, setTxBodyCborHex_signed,
+                // submittedTxHash, setSubmittedTxHash,
+                // API, setAPI,
+                connectedWallet, setConnectedWallet,
                 protocolParams, setProtocolParams,
             }}
         >
