@@ -58,7 +58,8 @@ let Buffer = require('buffer/').Buffer
 
 const WalletConnectV2 = () => {
 
-    const { whichWalletSelected, setWhichWalletSelected,
+    const { 
+        whichWalletSelected, setWhichWalletSelected,
         walletFound, setWalletFound,
         walletIsEnabled, setWalletIsEnabled,
         walletName, setWalletName,
@@ -83,14 +84,11 @@ const WalletConnectV2 = () => {
     const [showModal, setShowModal] = useState(false)
 
     /**
-     * Checks the browser for wallet plugins
-     * Tries 3 times, spaced out over 3 seconds, just incase the app loads before the plugins
-     * 
-     * @param count number of times browser polled 
+     * Checks the browser for wallet plugins and adds them to state
      */
     const pollWallets = useCallback(() => {
 
-        let discardedWallets = [] //remove legacy or unsupported versions
+        let discardedWallets = [] //remove legacy or unsupported wallets
         for (const key in window.cardano) {
             if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
                 if (key === 'ccvault' || key === 'typhon') {
@@ -384,11 +382,12 @@ const WalletConnectV2 = () => {
      * Refresh data from the users wallet
      */
     const refreshData = async () => {
+        console.log('re')
         generateScriptAddress()
         // console.log(generateScriptAddress())
         console.log('inside refresh data')
         try {
-            await checkIfWalletFound()
+            checkIfWalletFound()
             console.log('wallet found', walletFound)
             if (walletFound) {
                 await getAPIVersion()
@@ -490,11 +489,6 @@ const WalletConnectV2 = () => {
      * !---------------------------------------------- *
      */
 
-    // useEffect(() => {
-    //     pollWallets()
-    //     refreshData()
-    // },[pollWallets, refreshData])
-
     const openModal = () => {
         pollWallets()
         setShowModal(true)
@@ -511,7 +505,6 @@ const WalletConnectV2 = () => {
         return b
     }
 
-
     return (
         <>
             <div className={`${walletIsEnabled === true ? 'hidden' : ''}`}>
@@ -527,21 +520,22 @@ const WalletConnectV2 = () => {
                     title={'Wallet'}
                     func={() => openModal()}
                     label={`${walletIsEnabled === true ? balanceInADA() : ''}`}
+                    labelProps={'text-base'}
                     className='p-2'
                 />
+                {walletIcon}
             </div>
             <div>
                 <Modal
                     isOpen={showModal}
                     onRequestClose={() => closeModal()}
-                    contentLabel="Example Modal"
+                    contentLabel="Wallet Modal"
                     ariaHideApp={false} //! only false for testing change to true when done
                 >
                     <div>
-                        <div className='pb-20 pt-10'>
+                        <div className='pb-20 pt-10 text-'>
                             <Title text={'Select Wallet'} size={'text-4xl'} />
                         </div>
-
                         {
 
                             wallets.map(key =>
