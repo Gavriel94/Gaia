@@ -2,14 +2,24 @@
 /*
 * Using traditional CSS as the react-modal styling is not compatible with Tailwind
 */
-.walletModal {
+.lightWalletModal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  background: #F08A12;
+  overflow: scroll;
+  border-radius: 40px;
+  outline: none;
+  padding: 20px;
+}
 
-  border: 1px solid #ccc;
-  background: #FF974D;
+.darkWalletModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #CC5500;
   overflow: scroll;
   border-radius: 40px;
   outline: none;
@@ -22,7 +32,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .ReactModal__Overlay {
