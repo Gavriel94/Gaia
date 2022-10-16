@@ -63,7 +63,7 @@ export const ContextProvider = ({ children }) => {
         txBodyCborHex_unsigned: '',
         txBodyCborHex_signed: '',
         submittedTxHash: '',
-        API: undefined
+        walletAPI: undefined
     })
 
     /**

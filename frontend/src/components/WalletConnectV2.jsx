@@ -6,6 +6,7 @@ import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
 import '../walletModal.css'
 import { BsFillCheckCircleFill, BsFillXCircleFill } from 'react-icons/bs'
+import adaHandleLogo from '../assets/adaHandleLogo.png'
 
 import {
     Address,
@@ -76,7 +77,14 @@ const WalletConnectV2 = () => {
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
     const [logoutSuccessful, setLogoutSuccessful] = useState(false)
-    const [adaHandleInput, setAdaHandleInput] = useState('')
+    var [adaHandleInput, setAdaHandleInput] = useState('')
+    const [adaHandleLogin, setAdaHandleLogin] = useState(false)
+    const [adaHandleAddress, setAdaHandleAddress] = useState('')
+    const [showAlert, setShowAlert] = useState(false)
+    /**
+     *  This is used to verify the handle. Ensures it is legitamite 
+     */
+    const adaHandlePolicyID = 'f0ff48bbb7bbe9d59a40f1ce90e9e9d0ff5002ec48f232b49ca0fb9a';
 
 
     var whichWalletSelected = ''
@@ -96,7 +104,7 @@ const WalletConnectV2 = () => {
     var txBodyCborHex_unsigned = ''
     var txBodyCborHex_signed = ''
     var submittedTxHash = ''
-    var API = undefined
+    var walletAPI = undefined
 
 
     /**
@@ -198,7 +206,7 @@ const WalletConnectV2 = () => {
         const key = whichWalletSelected
         console.log('enable wallet', key)
         try {
-            API = await window.cardano[key].enable()
+            walletAPI = await window.cardano[key].enable()
         } catch (err) {
             console.log(err)
             // resetWalletSelection()
@@ -236,7 +244,7 @@ const WalletConnectV2 = () => {
      */
     const getNetworkId = async () => {
         try {
-            const id = await API.getNetworkId()
+            const id = await walletAPI.getNetworkId()
             networkId = id
             return networkId
         } catch (err) {
@@ -251,7 +259,7 @@ const WalletConnectV2 = () => {
         let utxos = []
 
         try {
-            const rawUtxos = await API.getUtxos()
+            const rawUtxos = await walletAPI.getUtxos()
 
             for (const rawUtxo of rawUtxos) {
                 const utxo = TransactionUnspentOutput.from_bytes(Buffer.from(rawUtxo, "hex"));
@@ -321,9 +329,9 @@ const WalletConnectV2 = () => {
 
             const userWallet = whichWalletSelected
             if (userWallet === 'nami') {
-                col = await API.experimental.getCollateral()
+                col = await walletAPI.experimental.getCollateral()
             } else {
-                col = await API.getCollateral()
+                col = await walletAPI.getCollateral()
             }
 
             for (const c of col) {
@@ -345,7 +353,7 @@ const WalletConnectV2 = () => {
      */
     const getBalance = async () => {
         try {
-            const balanceCBORHex = await API.getBalance()
+            const balanceCBORHex = await walletAPI.getBalance()
 
             const b = Value.from_bytes(Buffer.from(balanceCBORHex, "hex")).coin().to_str()
             balance = b
@@ -360,7 +368,7 @@ const WalletConnectV2 = () => {
      */
     const getChangeAddress = async () => {
         try {
-            const raw = await API.getChangeAddress()
+            const raw = await walletAPI.getChangeAddress()
             const changeAdd = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
             changeAddress = changeAdd
         } catch (err) {
@@ -373,7 +381,7 @@ const WalletConnectV2 = () => {
      */
     const getRewardAddresses = async () => {
         try {
-            const raw = API.getRewardAddresses()
+            const raw = walletAPI.getRewardAddresses()
             const rawFirst = raw[0]
             const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
             rewardAddress = address
@@ -387,7 +395,7 @@ const WalletConnectV2 = () => {
      */
     const getUsedAddresses = async () => {
         try {
-            const raw = await API.getUsedAddresses()
+            const raw = await walletAPI.getUsedAddresses()
             const rawFirst = raw[0]
             const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
             usedAddress = address
@@ -419,7 +427,7 @@ const WalletConnectV2 = () => {
                     const b = await getBalance()
                     console.log('balance in lovelace:', balance)
                     console.log('utxos:', u)
-                    console.log(API)
+                    console.log(walletAPI)
                     // await getChangeAddress()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
@@ -438,8 +446,9 @@ const WalletConnectV2 = () => {
                         changeAddress: undefined,
                         rewardAddress: undefined,
                         usedAddress: undefined,
-                        API: API,
+                        walletAPI: walletAPI,
                     })
+                    console.log(walletAPI)
                     setLoading(false)
                 } else {
                     console.log('no wallet enabled')
@@ -539,19 +548,22 @@ const WalletConnectV2 = () => {
         setShowWalletLogoutModal(false)
     }
 
-    const displayLogout = () => {
-        return (
-            <div>
-                <Button func={() => setLogoutSuccessful(false)}
-                    label={'Logout Success'}
-                    labelProps={'font-medium pl-5'}
-                    icon={<BsFillCheckCircleFill size={'24px'} />}
-                />
-            </div>
-        )
+
+    function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function displayAlert() {
+        setShowAlert(true);
+        await sleep(2000);
+        setShowAlert(false);
     }
 
     const clearWallet = () => {
+        if (adaHandleLogin) {
+            setAdaHandleAddress('')
+            setAdaHandleLogin(false)
+        }
         try {
             setwalletLoginButton(<LoadingSpinner size={'26px'} />)
             setConnectedWallet({
@@ -573,6 +585,7 @@ const WalletConnectV2 = () => {
             setwalletLoginButton(<AiOutlineWallet size={'26px'} />)
             closeWalletLogoutModal()
             setLogoutSuccessful(true)
+            displayAlert()
         } catch (err) {
             console.log(err)
         }
@@ -582,116 +595,213 @@ const WalletConnectV2 = () => {
         setAdaHandleInput(e)
     }
 
+    const submitAdaHandle = async () => {
+        if (adaHandleInput.length === 0) {
+            console.log('Handles cannot be empty')
+        }
+        if (adaHandleInput.charAt(0) === '$') {
+            adaHandleInput = adaHandleInput.slice(1)
+        }
+        try {
+            const assetName = Buffer.from(adaHandleInput).toString('hex');
+            console.log(adaHandleInput)
+            console.log(assetName)
+            const data = await fetch(
+                `https://cardano-mainnet.blockfrost.io/api/v0/assets/${adaHandlePolicyID}${assetName}/addresses`,
+                {
+                    headers: {
+                        // Your Blockfrost API key
+                        project_id: process.env.REACT_APP_BF_API,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then(res => res.json());
+
+            /**
+             * Gets detailed wallet information 
+             */
+            const [{ address }] = data;
+            console.log(address);
+
+            const addresses = await fetch(
+                `https://cardano-mainnet.blockfrost.io/api/v0/addresses/${address}`,
+                {
+                    headers: {
+                        // Your Blockfrost API key
+                        project_id: process.env.REACT_APP_BF_API,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then(res => res.json());
+
+            /**
+             * Uses the stake_address parameter to find more details about the wallet including balance
+             */
+            const accounts = await fetch(
+                `https://cardano-mainnet.blockfrost.io/api/v0/accounts/${addresses.stake_address}`,
+                {
+                    headers: {
+                        // Your Blockfrost API key
+                        project_id: process.env.REACT_APP_BF_API,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then(res => res.json());
+
+            console.log(accounts)
+            console.log(accounts.controlled_amount)
+
+            setConnectedWallet({
+                whichWalletSelected: 'handle',
+                walletFound: true,
+                walletIsEnabled: true,
+                walletIcon: adaHandleLogo,
+                balance: accounts.controlled_amount,
+                //get utxos from blockfrost
+                Utxos: undefined,
+                collatUtxos: undefined,
+                changeAddress: null,
+                rewardAddress: null,
+                usedAddress: null,
+                txBody: null,
+                txBodyCborHex_unsigned: '',
+                txBodyCborHex_signed: '',
+                submittedTxHash: ''
+            })
+
+            // * Testing Ends   * \\
+            setAdaHandleLogin(true)
+            setAdaHandleAddress(address)
+            closeWalletSelectModal()
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     Modal.setAppElement("#root")
 
     return (
         <div className='hidden sm:block'> {/* hidden on mobile */}
-            <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : '' || logoutSuccessful === true ? 'hidden' : ''}`}>
-                <Button
-                    title={'Wallet'}
-                    func={() => openWalletSelectModal()}
-                    icon={walletLoginButton}
-                    className='p-2'
-                />
-            </div>
-            <div className={`${connectedWallet.walletIsEnabled === true ? '' : 'hidden'}`}>
-                <Button
-                    title={'Wallet'}
-                    func={() => openWalletLogoutModal()}
-                    label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
-                    image={connectedWallet.walletIcon}
-                    imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
-                    imageHeight={24}
-                    imageWidth={24}
-                    labelProps={'text-base pl-2'}
-                    className='p-2'
-                />
-            </div>
-            <div>
-                <Modal
-                    isOpen={showWalletSelectModal}
-                    onRequestClose={() => closeWalletSelectModal()}
-                    contentLabel="Wallet Select Modal"
-                    ariaHideApp={false} //! only false for testing change to true when done
-                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
-                    overlayClassName={'overlayModal'}
-                >
-                    <div className='pt-28 text-4xl font-bold 
+            {
+                showAlert && (
+                    <div className='opacity-100 animate-pulse ease-in-out
+                     mt-5 bg-light-orange dark:bg-dark-orange border-black border-1 text-light-white rounded-lg'>
+                        <div className='p-2'>
+                            <p>Logged out successfully.</p>
+                        </div>
+                    </div>
+                )
+            }<div className={`${showAlert && 'hidden'}`}>
+                <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : ''} `}>
+                    <Button
+                        title={'Wallet'}
+                        func={() => openWalletSelectModal()}
+                        icon={walletLoginButton}
+                        className='p-2'
+                    />
+                </div>
+                {/* Cardano lib button */}
+                <div className={`${connectedWallet.walletIsEnabled === true ? '' : 'hidden'}`}>
+                    <Button
+                        title={'Wallet'}
+                        func={() => openWalletLogoutModal()}
+                        label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
+                        image={connectedWallet.walletIcon}
+                        imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
+                        imageHeight={24}
+                        imageWidth={24}
+                        labelProps={'text-base pl-2'}
+                        className='p-2'
+                    />
+                </div>
+                <div>
+                    <Modal
+                        isOpen={showWalletSelectModal}
+                        onRequestClose={() => closeWalletSelectModal()}
+                        contentLabel="Wallet Select Modal"
+                        ariaHideApp={false} //! only false for testing change to true when done
+                        className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                        overlayClassName={'overlayModal'}
+                    >
+                        <div className='pt-28 text-4xl font-bold 
                     text-light-white
                     transition-colors duration-500 select-none text-center'>
-                        Select Wallet
-                    </div>
-                    <div>
-                        {
+                            Select Wallet
+                        </div>
+                        <div>
+                            {
 
-                            wallets.map(key =>
-                                <div key={key} className='flex justify-center pt-10'>
-                                    <button
-                                        type='button'
-                                        onClick={() => handleWalletSelect(key)}
-                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-80 rounded-full duration-150 ease-in-out'>
-                                        <div className='flex flex-row justify-center'>
-                                            <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
-                                            <p className='pt-3'>{window.cardano[key].name}</p>
-                                        </div>
-                                    </button>
-                                </div>
-                            )}
-                        <div className='flex justify-center pt-10'>
-                            <input
-                                className='p-5 grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
+                                wallets.map(key =>
+                                    <div key={key} className='flex justify-center pt-10'>
+                                        <button
+                                            type='button'
+                                            onClick={() => handleWalletSelect(key)}
+                                            className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-80 rounded-full duration-150 ease-in-out'>
+                                            <div className='flex flex-row justify-center'>
+                                                <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
+                                                <p className='pt-3'>{window.cardano[key].name}</p>
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
+                            <div className='flex justify-center pt-10'>
+                                <img src={adaHandleLogo} height={48} width={48} alt={'Ada Handle Logo'}></img>
+                                <input
+                                    className='p-5 grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
                                 bg-light-white border-light-white input-black
                                 dark:bg-dark-silver dark:border-dark-silver dark:input-light-white 
                                 focus:outline-none focus:bg-light-white focus:border-light-orange'
-                                required={false}
-                                type='input'
-                                placeholder='Ada Handle'
-                                onChange={e => handleAdaHandleInput(e.target.value)}>
-                            </input>
-                            <div className={`${adaHandleInput === '' ? 'hidden' : 'block'} pl-3`}>
-                                <Button
-                                    icon={<BsFillCheckCircleFill size={'26px'} />} //! need to do submit function
-                                />
+                                    required={false}
+                                    type='input'
+                                    placeholder='Ada Handle'
+                                    onChange={e => handleAdaHandleInput(e.target.value)}>
+                                </input>
+                                <div className={`${adaHandleInput === '' ? 'hidden' : 'block'} pl-3`}>
+                                    <Button
+                                        icon={<BsFillCheckCircleFill size={'26px'} />}
+                                        func={submitAdaHandle}
+                                    />
+                                </div>
+                            </div>
+                            <div className='flex justify-center pt-20 pb-4'>
+                                <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                             </div>
                         </div>
-                        <div className='flex justify-center pt-20 pb-4'>
-                            <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
-                        </div>
-                    </div>
-                </Modal>
-            </div>
+                    </Modal>
+                </div>
 
 
-            <div>
-                <Modal
-                    isOpen={showWalletLogoutModal}
-                    onRequestClose={() => closeWalletLogoutModal()}
-                    contentLabel="Wallet Logout Modal"
-                    ariaHideApp={false} //! only false for testing change to true when done
-                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
-                    overlayClassName={'overlayModal'}
-                >
-                    <div className='pb-10 text-4xl font-bold 
+                <div>
+                    <Modal
+                        isOpen={showWalletLogoutModal}
+                        onRequestClose={() => closeWalletLogoutModal()}
+                        contentLabel="Wallet Logout Modal"
+                        ariaHideApp={false} //! only false for testing change to true when done
+                        className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                        overlayClassName={'overlayModal'}
+                    >
+                        <div className='pb-10 text-4xl font-bold 
                     text-light-white
                     transition-colors duration-500 select-none text-center'>
-                        Logout?
-                    </div>
-                    <div className='flex flex-row space-x-10'>
-                        <Button
-                            title={'Confirm'}
-                            func={() => clearWallet()}
-                            icon={<BsFillCheckCircleFill size={'26px'} />}
-                        />
-                        <Button
-                            title={'Cancel'}
-                            func={() => closeWalletLogoutModal()}
-                            icon={<BsFillXCircleFill size={'26px'} />}
-                        />
-                    </div>
-                </Modal>
-            </div>
-            <div className={`${logoutSuccessful ? 'block' : 'hidden'}`}>
-                {displayLogout()}
+                            Logout?
+                        </div>
+                        <div className='flex flex-row space-x-10'>
+                            <Button
+                                title={'Confirm'}
+                                func={() => clearWallet()}
+                                icon={<BsFillCheckCircleFill size={'26px'} />}
+                            />
+                            <Button
+                                title={'Cancel'}
+                                func={() => closeWalletLogoutModal()}
+                                icon={<BsFillXCircleFill size={'26px'} />}
+                            />
+                        </div>
+                    </Modal>
+                </div>
+                {/* <div className={`${logoutSuccessful ? 'block' : 'hidden'}`}>
+                    {displayLogout()}
+                </div> */}
             </div>
         </div>
     )
