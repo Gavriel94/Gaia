@@ -4,7 +4,8 @@ import LoadingSpinner from './LoadingSpinner'
 import { AiOutlineWallet } from 'react-icons/ai'
 import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
-import '../modal.css'
+import '../walletModal.css'
+import { BsFillCheckCircleFill, BsFillXCircleFill } from 'react-icons/bs'
 
 import {
     Address,
@@ -63,14 +64,19 @@ let Buffer = require('buffer/').Buffer
 const WalletConnectV2 = () => {
 
     const {
-        connectedWallet, setConnectedWallet,
-        protocolParams
+        connectedWallet,
+        setConnectedWallet,
+        protocolParams,
+        darkMode
     } = useStateContext()
-    const [showModal, setShowModal] = useState(false)
+    const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
+    const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
     const [wallets] = useState([])
-    const [buttonIcon, setButtonIcon] = useState(<AiOutlineWallet size={'26px'} />)
+    const [walletLoginButton, setwalletLoginButton] = useState(<AiOutlineWallet size={'26px'} />)
     const [loading, setLoading] = useState(false)
-    const [walletIcons, setWalletIcons] = useState([])
+    const [walletIcons] = useState([])
+    const [logoutSuccessful, setLogoutSuccessful] = useState(false)
+    const [adaHandleInput, setAdaHandleInput] = useState('')
 
 
     var whichWalletSelected = ''
@@ -129,7 +135,7 @@ const WalletConnectV2 = () => {
         const index = wallets.indexOf(obj)
         whichWalletSelected = wallets[index]
         walletIcon = walletIcons[index]
-        closeModal()
+        closeWalletSelectModal()
         refreshData()
     }
 
@@ -325,6 +331,7 @@ const WalletConnectV2 = () => {
                 colUtxos.push(tx)
             }
             collatUtxos = colUtxos
+            return collatUtxos
         } catch (err) {
             console.log(err)
         }
@@ -393,14 +400,14 @@ const WalletConnectV2 = () => {
      * Refresh data from the users wallet
      */
     const refreshData = async () => {
-        generateScriptAddress()
+        // generateScriptAddress()
         // console.log(generateScriptAddress())
         try {
             const f = checkIfWalletFound()
             console.log('wallet found', f)
             if (f) {
                 setLoading(true)
-                setButtonIcon(<LoadingSpinner />)
+                setwalletLoginButton(<LoadingSpinner />)
                 const wAPI = await getAPIVersion()
                 const wn = await getWalletName()
                 const enabled = await enableWallet()
@@ -408,10 +415,11 @@ const WalletConnectV2 = () => {
                 if (enabled) {
                     const nID = await getNetworkId()
                     const u = await getUtxos()
-                    // await getCollateral()
+                    const c = await getCollateral() // throws error
                     const b = await getBalance()
                     console.log('balance in lovelace:', balance)
                     console.log('utxos:', u)
+                    console.log(API)
                     // await getChangeAddress()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
@@ -425,12 +433,12 @@ const WalletConnectV2 = () => {
                         wallets: wallets,
                         networkId: nID,
                         Utxos: u,
-                        collatUtxos: undefined,
+                        collatUtxos: undefined, // undefined for now
                         balance: b,
                         changeAddress: undefined,
                         rewardAddress: undefined,
                         usedAddress: undefined,
-                        API: API
+                        API: API,
                     })
                     setLoading(false)
                 } else {
@@ -463,7 +471,6 @@ const WalletConnectV2 = () => {
                     txBodyCborHex_unsigned: '',
                     txBodyCborHex_signed: '',
                     submittedTxHash: ''
-
                 })
             }
         } catch (err) {
@@ -504,18 +511,18 @@ const WalletConnectV2 = () => {
      * !---------------------------------------------- *
      */
 
-    const openModal = () => {
+    const openWalletSelectModal = () => {
         pollWallets()
-        setShowModal(!showModal)
-        if(showModal) {
-            document.body.style.overflow = 'unset'; 
-        } else {   
-            document.body.style.overflow = 'hidden';            
+        setshowWalletSelectModal(!showWalletSelectModal)
+        if (showWalletSelectModal) {
+            document.body.style.overflow = 'unset';
+        } else {
+            document.body.style.overflow = 'hidden';
         }
     }
 
-    const closeModal = () => {
-        setShowModal(false)
+    const closeWalletSelectModal = () => {
+        setshowWalletSelectModal(false)
         document.body.style.overflow = 'unset';
     }
 
@@ -524,48 +531,73 @@ const WalletConnectV2 = () => {
         return b
     }
 
-    Modal.setAppElement("#root")
+    const openWalletLogoutModal = () => {
+        setShowWalletLogoutModal(true)
+    }
 
-    // const modalStyle = {
-    //     overlay: {
-    //         position: 'absolute',
-    //         top: '95px',
-    //         bottom: '400px',
-    //         left: '50%',
-    //         marginLeft: 'auto',
-    //         marginRight: 'auto',
-    //         transform: 'translate(-50%, -0%)',
-    //         border: '10px solid #fff',
-    //         borderRadius: '100px',
-    //         overflow: 'hidden',
-    //     },
-    //     content: {
-    //         position: 'absolute',
-    //         top: '0px',
-    //         left: '0px',
-    //         right: '0px',
-    //         bottom: '0px',
-    //         background: '#FF974D',
-    //         overflow: 'scroll',
-    //         WebkitOverflowScrolling: 'touch',
-    //         padding: '5px',
-    //     }
-    // };
+    const closeWalletLogoutModal = () => {
+        setShowWalletLogoutModal(false)
+    }
+
+    const displayLogout = () => {
+        return (
+            <div>
+                <Button func={() => setLogoutSuccessful(false)}
+                    label={'Logout Success'}
+                    labelProps={'font-medium pl-5'}
+                    icon={<BsFillCheckCircleFill size={'24px'} />}
+                />
+            </div>
+        )
+    }
+
+    const clearWallet = () => {
+        try {
+            setwalletLoginButton(<LoadingSpinner size={'26px'} />)
+            setConnectedWallet({
+                whichWalletSelected: '',
+                walletFound: undefined,
+                walletIsEnabled: false,
+                Utxos: undefined,
+                collatUtxos: undefined,
+                balance: undefined,
+                changeAddress: null,
+                rewardAddress: null,
+                usedAddress: null,
+                txBody: null,
+                txBodyCborHex_unsigned: '',
+                txBodyCborHex_signed: '',
+                submittedTxHash: ''
+
+            })
+            setwalletLoginButton(<AiOutlineWallet size={'26px'} />)
+            closeWalletLogoutModal()
+            setLogoutSuccessful(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const handleAdaHandleInput = (e) => {
+        setAdaHandleInput(e)
+    }
+
+    Modal.setAppElement("#root")
 
     return (
         <div className='hidden sm:block'> {/* hidden on mobile */}
-            <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : ''}`}>
+            <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : '' || logoutSuccessful === true ? 'hidden' : ''}`}>
                 <Button
                     title={'Wallet'}
-                    func={() => openModal()}
-                    icon={buttonIcon}
+                    func={() => openWalletSelectModal()}
+                    icon={walletLoginButton}
                     className='p-2'
                 />
             </div>
             <div className={`${connectedWallet.walletIsEnabled === true ? '' : 'hidden'}`}>
                 <Button
                     title={'Wallet'}
-                    func={''}
+                    func={() => openWalletLogoutModal()}
                     label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
                     image={connectedWallet.walletIcon}
                     imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
@@ -577,14 +609,14 @@ const WalletConnectV2 = () => {
             </div>
             <div>
                 <Modal
-                    isOpen={showModal}
-                    onRequestClose={() => closeModal()}
-                    contentLabel="Wallet select Modal"
+                    isOpen={showWalletSelectModal}
+                    onRequestClose={() => closeWalletSelectModal()}
+                    contentLabel="Wallet Select Modal"
                     ariaHideApp={false} //! only false for testing change to true when done
-                    className={'walletModal'}
+                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
                     overlayClassName={'overlayModal'}
                 >
-                <div className='pt-28 text-4xl font-bold 
+                    <div className='pt-28 text-4xl font-bold 
                     text-light-white
                     transition-colors duration-500 select-none text-center'>
                         Select Wallet
@@ -605,11 +637,61 @@ const WalletConnectV2 = () => {
                                     </button>
                                 </div>
                             )}
+                        <div className='flex justify-center pt-10'>
+                            <input
+                                className='p-5 grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
+                                bg-light-white border-light-white input-black
+                                dark:bg-dark-silver dark:border-dark-silver dark:input-light-white 
+                                focus:outline-none focus:bg-light-white focus:border-light-orange'
+                                required={false}
+                                type='input'
+                                placeholder='Ada Handle'
+                                onChange={e => handleAdaHandleInput(e.target.value)}>
+                            </input>
+                            <div className={`${adaHandleInput === '' ? 'hidden' : 'block'} pl-3`}>
+                                <Button
+                                    icon={<BsFillCheckCircleFill size={'26px'} />} //! need to do submit function
+                                />
+                            </div>
+                        </div>
                         <div className='flex justify-center pt-20 pb-4'>
-                            <Button func={() => closeModal()} icon={<MdOutlineCancel />} />
+                            <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                         </div>
                     </div>
                 </Modal>
+            </div>
+
+
+            <div>
+                <Modal
+                    isOpen={showWalletLogoutModal}
+                    onRequestClose={() => closeWalletLogoutModal()}
+                    contentLabel="Wallet Logout Modal"
+                    ariaHideApp={false} //! only false for testing change to true when done
+                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                    overlayClassName={'overlayModal'}
+                >
+                    <div className='pb-10 text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center'>
+                        Logout?
+                    </div>
+                    <div className='flex flex-row space-x-10'>
+                        <Button
+                            title={'Confirm'}
+                            func={() => clearWallet()}
+                            icon={<BsFillCheckCircleFill size={'26px'} />}
+                        />
+                        <Button
+                            title={'Cancel'}
+                            func={() => closeWalletLogoutModal()}
+                            icon={<BsFillXCircleFill size={'26px'} />}
+                        />
+                    </div>
+                </Modal>
+            </div>
+            <div className={`${logoutSuccessful ? 'block' : 'hidden'}`}>
+                {displayLogout()}
             </div>
         </div>
     )
