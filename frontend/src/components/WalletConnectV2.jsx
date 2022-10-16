@@ -56,10 +56,7 @@ import {
     StakeCredential,
     TransactionBuilderConfig
 } from "@emurgo/cardano-serialization-lib-asmjs"
-import Title from './Title'
 import { useStateContext } from '../context/ContextProvider'
-import { deepCompareKeys } from '@blueprintjs/core/lib/esm/common/utils'
-import { BiBluetooth } from 'react-icons/bi'
 let Buffer = require('buffer/').Buffer
 
 const WalletConnectV2 = () => {
@@ -77,12 +74,13 @@ const WalletConnectV2 = () => {
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
     const [logoutSuccessful, setLogoutSuccessful] = useState(false)
-    var [adaHandleInput, setAdaHandleInput] = useState('')
-    const [adaHandleLogin, setAdaHandleLogin] = useState(false)
-    const [adaHandleAddress, setAdaHandleAddress] = useState('')
     const [showAlert, setShowAlert] = useState(false)
+    const [adaHandleDetected, setadaHandleDetected] = useState(false)
+    const [adaHandleName, setadaHandleName] = useState([])
+    const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
+    const [adaHandleSelected, setAdaHandleSelected] = useState('')
     /**
-     *  This is used to verify the handle. Ensures it is legitamite 
+     *  This is used to verify the ada handle and ensures it is legitamite 
      */
     const adaHandlePolicyID = 'f0ff48bbb7bbe9d59a40f1ce90e9e9d0ff5002ec48f232b49ca0fb9a';
 
@@ -207,6 +205,7 @@ const WalletConnectV2 = () => {
         console.log('enable wallet', key)
         try {
             walletAPI = await window.cardano[key].enable()
+            console.log(walletAPI)
         } catch (err) {
             console.log(err)
             // resetWalletSelection()
@@ -280,8 +279,9 @@ const WalletConnectV2 = () => {
 
                     for (let i = 0; i < N; i++) {
                         const policyId = keys.get(i);
+                        console.log(policyId)
                         const policyIdHex = Buffer.from(policyId.to_bytes(), "utf8").toString("hex");
-                        // console.log(`policyId: ${policyIdHex}`)
+                        console.log(`policyId: ${policyIdHex}`)  //policyID
                         const assets = multiasset.get(policyId)
                         const assetNames = assets.keys();
                         const K = assetNames.len()
@@ -292,9 +292,14 @@ const WalletConnectV2 = () => {
                             const assetNameString = Buffer.from(assetName.name(), "utf8").toString();
                             const assetNameHex = Buffer.from(assetName.name(), "utf8").toString("hex")
                             const multiassetAmt = multiasset.get_asset(policyId, assetName)
+                            if (policyIdHex === adaHandlePolicyID) {
+                                adaHandleName.push(assetNameString)
+                                setadaHandleDetected(true)
+                            }
                             multiAssetStr += `+ ${multiassetAmt.to_str()} + ${policyIdHex}.${assetNameHex} (${assetNameString})`
-                            // console.log(assetNameString)
+                            console.log(assetNameString)
                             // console.log(`Asset Name: ${assetNameHex}`)
+                            console.log(multiassetAmt)
                         }
                     }
                 }
@@ -371,6 +376,8 @@ const WalletConnectV2 = () => {
             const raw = await walletAPI.getChangeAddress()
             const changeAdd = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
             changeAddress = changeAdd
+            return changeAddress
+            console.log(changeAddress)
         } catch (err) {
             console.log(err)
         }
@@ -423,12 +430,14 @@ const WalletConnectV2 = () => {
                 if (enabled) {
                     const nID = await getNetworkId()
                     const u = await getUtxos()
-                    const c = await getCollateral() // throws error
+                    console.log(adaHandleName)
+                    // const c = await getCollateral() // throws error
                     const b = await getBalance()
                     console.log('balance in lovelace:', balance)
                     console.log('utxos:', u)
                     console.log(walletAPI)
-                    // await getChangeAddress()
+                    const ca = await getChangeAddress()
+                    // await getAssets()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
                     setConnectedWallet({
@@ -443,7 +452,7 @@ const WalletConnectV2 = () => {
                         Utxos: u,
                         collatUtxos: undefined, // undefined for now
                         balance: b,
-                        changeAddress: undefined,
+                        changeAddress: ca,
                         rewardAddress: undefined,
                         usedAddress: undefined,
                         walletAPI: walletAPI,
@@ -555,15 +564,15 @@ const WalletConnectV2 = () => {
 
     async function displayAlert() {
         setShowAlert(true);
-        await sleep(2000);
+        await sleep(1000);
         setShowAlert(false);
     }
 
+    const shortenAddress = () => {
+        return String(connectedWallet.changeAddress).slice(0, 8) + '...'
+    }
+
     const clearWallet = () => {
-        if (adaHandleLogin) {
-            setAdaHandleAddress('')
-            setAdaHandleLogin(false)
-        }
         try {
             setwalletLoginButton(<LoadingSpinner size={'26px'} />)
             setConnectedWallet({
@@ -584,6 +593,10 @@ const WalletConnectV2 = () => {
             })
             setwalletLoginButton(<AiOutlineWallet size={'26px'} />)
             closeWalletLogoutModal()
+            setadaHandleDetected(false)
+            setadaHandleName([])
+            setDisplayAdaHandle(false)
+            setAdaHandleSelected(undefined)
             setLogoutSuccessful(true)
             displayAlert()
         } catch (err) {
@@ -591,91 +604,13 @@ const WalletConnectV2 = () => {
         }
     }
 
-    const handleAdaHandleInput = (e) => {
-        setAdaHandleInput(e)
-    }
 
-    const submitAdaHandle = async () => {
-        if (adaHandleInput.length === 0) {
-            console.log('Handles cannot be empty')
-        }
-        if (adaHandleInput.charAt(0) === '$') {
-            adaHandleInput = adaHandleInput.slice(1)
-        }
-        try {
-            const assetName = Buffer.from(adaHandleInput).toString('hex');
-            console.log(adaHandleInput)
-            console.log(assetName)
-            const data = await fetch(
-                `https://cardano-mainnet.blockfrost.io/api/v0/assets/${adaHandlePolicyID}${assetName}/addresses`,
-                {
-                    headers: {
-                        // Your Blockfrost API key
-                        project_id: process.env.REACT_APP_BF_API,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            ).then(res => res.json());
-
-            /**
-             * Gets detailed wallet information 
-             */
-            const [{ address }] = data;
-            console.log(address);
-
-            const addresses = await fetch(
-                `https://cardano-mainnet.blockfrost.io/api/v0/addresses/${address}`,
-                {
-                    headers: {
-                        // Your Blockfrost API key
-                        project_id: process.env.REACT_APP_BF_API,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            ).then(res => res.json());
-
-            /**
-             * Uses the stake_address parameter to find more details about the wallet including balance
-             */
-            const accounts = await fetch(
-                `https://cardano-mainnet.blockfrost.io/api/v0/accounts/${addresses.stake_address}`,
-                {
-                    headers: {
-                        // Your Blockfrost API key
-                        project_id: process.env.REACT_APP_BF_API,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            ).then(res => res.json());
-
-            console.log(accounts)
-            console.log(accounts.controlled_amount)
-
-            setConnectedWallet({
-                whichWalletSelected: 'handle',
-                walletFound: true,
-                walletIsEnabled: true,
-                walletIcon: adaHandleLogo,
-                balance: accounts.controlled_amount,
-                //get utxos from blockfrost
-                Utxos: undefined,
-                collatUtxos: undefined,
-                changeAddress: null,
-                rewardAddress: null,
-                usedAddress: null,
-                txBody: null,
-                txBodyCborHex_unsigned: '',
-                txBodyCborHex_signed: '',
-                submittedTxHash: ''
-            })
-
-            // * Testing Ends   * \\
-            setAdaHandleLogin(true)
-            setAdaHandleAddress(address)
-            closeWalletSelectModal()
-        } catch (err) {
-            console.log(err)
-        }
+    const handleAdaHandleSelect = (obj) => {
+        const index = adaHandleName.indexOf(obj)
+        const adaHandleSelected = adaHandleName[index]
+        setAdaHandleSelected('$' + adaHandleSelected)
+        setDisplayAdaHandle(true)
+        closeWalletLogoutModal()
     }
 
     Modal.setAppElement("#root")
@@ -700,13 +635,13 @@ const WalletConnectV2 = () => {
                         className='p-2'
                     />
                 </div>
-                {/* Cardano lib button */}
                 <div className={`${connectedWallet.walletIsEnabled === true ? '' : 'hidden'}`}>
                     <Button
                         title={'Wallet'}
                         func={() => openWalletLogoutModal()}
-                        label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
-                        image={connectedWallet.walletIcon}
+                        // label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
+                        label={`${displayAdaHandle ? adaHandleSelected : shortenAddress()}`}
+                        image={`${displayAdaHandle ? adaHandleLogo : connectedWallet.walletIcon}`}
                         imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
                         imageHeight={24}
                         imageWidth={24}
@@ -744,25 +679,6 @@ const WalletConnectV2 = () => {
                                         </button>
                                     </div>
                                 )}
-                            <div className='flex justify-center pt-10'>
-                                <img src={adaHandleLogo} height={48} width={48} alt={'Ada Handle Logo'}></img>
-                                <input
-                                    className='p-5 grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
-                                bg-light-white border-light-white input-black
-                                dark:bg-dark-silver dark:border-dark-silver dark:input-light-white 
-                                focus:outline-none focus:bg-light-white focus:border-light-orange'
-                                    required={false}
-                                    type='input'
-                                    placeholder='Ada Handle'
-                                    onChange={e => handleAdaHandleInput(e.target.value)}>
-                                </input>
-                                <div className={`${adaHandleInput === '' ? 'hidden' : 'block'} pl-3`}>
-                                    <Button
-                                        icon={<BsFillCheckCircleFill size={'26px'} />}
-                                        func={submitAdaHandle}
-                                    />
-                                </div>
-                            </div>
                             <div className='flex justify-center pt-20 pb-4'>
                                 <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                             </div>
@@ -783,25 +699,44 @@ const WalletConnectV2 = () => {
                         <div className='pb-10 text-4xl font-bold 
                     text-light-white
                     transition-colors duration-500 select-none text-center'>
-                            Logout?
+                            Options
+                        </div>
+                        <div className={`${adaHandleDetected ? 'pb-10' : 'hidden'}`}>
+                            <div className='pb-5 flex justify-center text-white'>
+                                Display ADA Handle?
+                            </div>
+                            <div>{adaHandleName.map(key =>
+                                <div key={key} className='flex justify-center min-w-full pb-5'>
+                                    <div> {/** Could add className to hide handle if picked */} 
+                                        <Button
+                                            label={adaHandleName}
+                                            labelProps={'flex justify-center pl-10 pt-3'}
+                                            image={adaHandleLogo}
+                                            imageHeight={48}
+                                            imageWidth={48}
+                                            func={() => handleAdaHandleSelect(key)} />
+                                    </div>
+                                </div>
+                            )}</div>
                         </div>
                         <div className='flex flex-row space-x-10'>
                             <Button
                                 title={'Confirm'}
                                 func={() => clearWallet()}
                                 icon={<BsFillCheckCircleFill size={'26px'} />}
+                                label={'Logout'}
+                                labelProps={'pl-10'}
                             />
                             <Button
                                 title={'Cancel'}
                                 func={() => closeWalletLogoutModal()}
                                 icon={<BsFillXCircleFill size={'26px'} />}
+                                label={'Cancel'}
+                                labelProps={'pl-10'}
                             />
                         </div>
                     </Modal>
                 </div>
-                {/* <div className={`${logoutSuccessful ? 'block' : 'hidden'}`}>
-                    {displayLogout()}
-                </div> */}
             </div>
         </div>
     )
