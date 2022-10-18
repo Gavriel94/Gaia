@@ -38,6 +38,10 @@ export const ContextProvider = ({ children }) => {
     const [articleLoading, setArticleLoading] = useState(true)
     const [sortBy, setSortBy] = useState('popular')
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [showLogoutAlert, setshowLogoutAlert] = useState(false)
+    const [showErrorAlert, setShowErrorAlert] = useState(false)
+    const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
+    const [adaHandleSelected, setAdaHandleSelected] = useState('')
 
     /**
      * State variables for connecting a wallet
@@ -94,27 +98,12 @@ export const ContextProvider = ({ children }) => {
                 articleLoading, setArticleLoading,
                 sortBy, setSortBy,
                 sidebarOpen, setSidebarOpen,
-                // whichWalletSelected, setWhichWalletSelected,
-                // walletFound, setWalletFound,
-                // walletIsEnabled, setWalletIsEnabled,
-                // walletName, setWalletName,
-                // walletIcon, setWalletIcon,
-                // walletAPIVersion, setWalletAPIVerison,
-                // wallets, setWallets,
-                // networkId, setNetworkId,
-                // Utxos, setUtxos,
-                // collatUtxos, setCollatUtxos,
-                // balance, setBalance,
-                // changeAddress, setChangeAddress,
-                // rewardAddress, setRewardAddress,
-                // usedAddress, setUsedAddress,
-                // txBody, setTxBody,
-                // txBodyCborHex_unsigned, setTxBodyCborHex_unsigned,
-                // txBodyCborHex_signed, setTxBodyCborHex_signed,
-                // submittedTxHash, setSubmittedTxHash,
-                // API, setAPI,
                 connectedWallet, setConnectedWallet,
                 protocolParams, setProtocolParams,
+                showLogoutAlert, setshowLogoutAlert,
+                showErrorAlert, setShowErrorAlert,
+                displayAdaHandle, setDisplayAdaHandle,
+                adaHandleSelected, setAdaHandleSelected
             }}
         >
             {children}
