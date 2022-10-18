@@ -6,7 +6,7 @@ import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
 import '../walletModal.css'
 import { BsFillCheckCircleFill, BsFillXCircleFill } from 'react-icons/bs'
-import adaHandleLogo from '../assets/adaHandleLogo.png'
+import adaHandleLogo from '../assets/adaHandleLogoRounded.png'
 
 import {
     Address,
@@ -65,7 +65,11 @@ const WalletConnectV2 = () => {
         connectedWallet,
         setConnectedWallet,
         protocolParams,
-        darkMode
+        darkMode,
+        showLogoutAlert, setshowLogoutAlert,
+        showErrorAlert, setShowErrorAlert,
+        displayAdaHandle, setDisplayAdaHandle,
+        adaHandleSelected, setAdaHandleSelected
     } = useStateContext()
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
     const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
@@ -74,11 +78,8 @@ const WalletConnectV2 = () => {
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
     const [logoutSuccessful, setLogoutSuccessful] = useState(false)
-    const [showAlert, setShowAlert] = useState(false)
     const [adaHandleDetected, setadaHandleDetected] = useState(false)
     const [adaHandleName, setadaHandleName] = useState([])
-    const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
-    const [adaHandleSelected, setAdaHandleSelected] = useState('')
     /**
      *  This is used to verify the ada handle and ensures it is legitamite 
      */
@@ -205,7 +206,6 @@ const WalletConnectV2 = () => {
         console.log('enable wallet', key)
         try {
             walletAPI = await window.cardano[key].enable()
-            console.log(walletAPI)
         } catch (err) {
             console.log(err)
             // resetWalletSelection()
@@ -279,9 +279,8 @@ const WalletConnectV2 = () => {
 
                     for (let i = 0; i < N; i++) {
                         const policyId = keys.get(i);
-                        console.log(policyId)
                         const policyIdHex = Buffer.from(policyId.to_bytes(), "utf8").toString("hex");
-                        console.log(`policyId: ${policyIdHex}`)  //policyID
+                        // console.log(`policyId: ${policyIdHex}`)  //policyID
                         const assets = multiasset.get(policyId)
                         const assetNames = assets.keys();
                         const K = assetNames.len()
@@ -297,9 +296,9 @@ const WalletConnectV2 = () => {
                                 setadaHandleDetected(true)
                             }
                             multiAssetStr += `+ ${multiassetAmt.to_str()} + ${policyIdHex}.${assetNameHex} (${assetNameString})`
-                            console.log(assetNameString)
+                            // console.log(assetNameString)
                             // console.log(`Asset Name: ${assetNameHex}`)
-                            console.log(multiassetAmt)
+                            // console.log(multiassetAmt)
                         }
                     }
                 }
@@ -433,8 +432,6 @@ const WalletConnectV2 = () => {
                     console.log(adaHandleName)
                     // const c = await getCollateral() // throws error
                     const b = await getBalance()
-                    console.log('balance in lovelace:', balance)
-                    console.log('utxos:', u)
                     console.log(walletAPI)
                     const ca = await getChangeAddress()
                     // await getAssets()
@@ -450,46 +447,22 @@ const WalletConnectV2 = () => {
                         wallets: wallets,
                         networkId: nID,
                         Utxos: u,
-                        collatUtxos: undefined, // undefined for now
+                        collatUtxos: undefined, 
                         balance: b,
                         changeAddress: ca,
                         rewardAddress: undefined,
                         usedAddress: undefined,
                         walletAPI: walletAPI,
                     })
-                    console.log(walletAPI)
+                    // console.log(walletAPI)
                     setLoading(false)
                 } else {
                     console.log('no wallet enabled')
-                    setConnectedWallet({
-                        Utxos: undefined,
-                        collatUtxos: undefined,
-                        balance: undefined,
-                        changeAddress: null,
-                        rewardAddress: null,
-                        usedAddress: null,
-                        txBody: null,
-                        txBodyCborHex_unsigned: '',
-                        txBodyCborHex_signed: '',
-                        submittedTxHash: ''
-                    })
-                    setLoading(false)
+                    clearWallet('error')
                 }
             } else {
                 console.log('no wallet found')
-                setConnectedWallet({
-                    walletIsEnabled: false,
-                    Utxos: undefined,
-                    collatUtxos: undefined,
-                    balance: undefined,
-                    changeAddress: null,
-                    rewardAddress: null,
-                    usedAddress: null,
-                    txBody: null,
-                    txBodyCborHex_unsigned: '',
-                    txBodyCborHex_signed: '',
-                    submittedTxHash: ''
-                })
+                clearWallet('error')
             }
         } catch (err) {
             console.log(err)
@@ -549,6 +522,10 @@ const WalletConnectV2 = () => {
         return b
     }
 
+    const longAddress = () => {
+        return connectedWallet.changeAddress
+    }
+
     const openWalletLogoutModal = () => {
         setShowWalletLogoutModal(true)
     }
@@ -562,17 +539,23 @@ const WalletConnectV2 = () => {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
-    async function displayAlert() {
-        setShowAlert(true);
+    async function displayLogoutAlert() {
+        setshowLogoutAlert(true);
         await sleep(1000);
-        setShowAlert(false);
+        setshowLogoutAlert(false);
+    }
+
+    async function displayErrorAlert() {
+        setShowErrorAlert(true);
+        await sleep(2000);
+        setShowErrorAlert(false);
     }
 
     const shortenAddress = () => {
         return String(connectedWallet.changeAddress).slice(0, 8) + '...'
     }
 
-    const clearWallet = () => {
+    const clearWallet = (reason) => {
         try {
             setwalletLoginButton(<LoadingSpinner size={'26px'} />)
             setConnectedWallet({
@@ -598,12 +581,16 @@ const WalletConnectV2 = () => {
             setDisplayAdaHandle(false)
             setAdaHandleSelected(undefined)
             setLogoutSuccessful(true)
-            displayAlert()
+            if (reason === 'logout') {
+                displayLogoutAlert()
+            }
+            if(reason === 'error') {
+                displayErrorAlert()
+            }
         } catch (err) {
             console.log(err)
         }
     }
-
 
     const handleAdaHandleSelect = (obj) => {
         const index = adaHandleName.indexOf(obj)
@@ -618,15 +605,26 @@ const WalletConnectV2 = () => {
     return (
         <div className='hidden sm:block'> {/* hidden on mobile */}
             {
-                showAlert && (
-                    <div className='opacity-100 animate-pulse ease-in-out
+                showLogoutAlert && (
+                    <div className='opacity-100 animate-bounce flex justify-center pl-5
                      mt-5 bg-light-orange dark:bg-dark-orange border-black border-1 text-light-white rounded-lg'>
-                        <div className='p-2'>
+                        <div className='p-2 flex justify-center'>
                             <p>Logged out successfully.</p>
                         </div>
                     </div>
                 )
-            }<div className={`${showAlert && 'hidden'}`}>
+            }
+            {
+                showErrorAlert && (
+                    <div className='opacity-100 animate-bounce flex justify-center
+                     mt-5 bg-light-red border-black border-1 text-light-white rounded-lg'>
+                        <div className='p-2'>
+                            <p>Wallet not connected.</p>
+                        </div>
+                    </div>
+                )
+            }
+            <div className={`${showLogoutAlert && 'hidden'} ${showErrorAlert && 'hidden'}`}>
                 <div className={`${connectedWallet.walletIsEnabled === true ? 'hidden' : ''} `}>
                     <Button
                         title={'Wallet'}
@@ -707,10 +705,10 @@ const WalletConnectV2 = () => {
                             </div>
                             <div>{adaHandleName.map(key =>
                                 <div key={key} className='flex justify-center min-w-full pb-5'>
-                                    <div> {/** Could add className to hide handle if picked */} 
+                                    <div> {/** Could add className to hide handle if picked */}
                                         <Button
-                                            label={adaHandleName}
-                                            labelProps={'flex justify-center pl-10 pt-3'}
+                                            label={'$' + key}
+                                            labelProps={'flex justify-center pl-5 pt-3'}
                                             image={adaHandleLogo}
                                             imageHeight={48}
                                             imageWidth={48}
@@ -719,10 +717,13 @@ const WalletConnectV2 = () => {
                                 </div>
                             )}</div>
                         </div>
+                        <div className='flex justify-center pb-10 text-white'>
+                            <p>{balanceInADA()}</p>
+                        </div>
                         <div className='flex flex-row space-x-10'>
                             <Button
                                 title={'Confirm'}
-                                func={() => clearWallet()}
+                                func={() => clearWallet('logout')}
                                 icon={<BsFillCheckCircleFill size={'26px'} />}
                                 label={'Logout'}
                                 labelProps={'pl-10'}
