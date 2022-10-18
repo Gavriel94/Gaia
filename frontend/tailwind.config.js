@@ -19,7 +19,7 @@ const Rotate = plugin(function ({ addUtilities }) {
 
 module.exports = {
     content: [
-        "./src/**/*.{js,jsx,ts}",
+        "./src/**/*.{js,jsx,ts,}", './public/index.html'
     ],
     darkMode: 'class',
     theme: {
@@ -78,7 +78,7 @@ module.exports = {
             "light-red": "#720E07",
             "light-purple": "#0F0326",
             "dark-orange": "#CC5500",
-            "dark-grey": "#3C3C3C",
+            "dark-grey": "#212121",
             "dark-silver": "#C1BCAC",
             "black": "#000000",
             "light-orange-hover": "#F4AC57",
@@ -137,6 +137,9 @@ module.exports = {
             minHeight: {
                 590: "590px",
             },
+            backgroundColor: {
+                color: '#000000',
+            }
         },
     },
     plugins: [
