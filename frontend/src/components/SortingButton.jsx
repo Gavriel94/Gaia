@@ -5,7 +5,7 @@ import { TbSun, TbSunrise } from 'react-icons/tb'
 import Button from './Button'
 
 const SortingButton = ({ page }) => {
-    const { sortBy, setSortBy, } = useStateContext()
+    const { sortBy, setSortBy, showLogoutAlert, showErrorAlert } = useStateContext()
     const [sortingIcon, setSortingIcon] = useState(<AiOutlineStar size={'26px'} />) //initial icon because popular is default sort
     function handleUserChoice(choice) {
         if (sortBy === 'new') {
@@ -19,14 +19,15 @@ const SortingButton = ({ page }) => {
 
     return (
         <>
-            <div className='py-3 flex flex-row'>
+            <div className={`${showLogoutAlert && 'hidden'} ${showErrorAlert && 'hidden'} py-3`}>
                 <Button
                     title={'Sort'}
                     icon={sortingIcon}
                     func={() => handleUserChoice()}
+                    label={`Sorting by ${sortBy}`}
+                    labelProps={'text-sm pt-1 pl-2'}
                 />
             </div>
-            <p className='dark:text-dark-silver text-dark-grey'>Sorting by {sortBy}</p>
         </>
     )
 }
