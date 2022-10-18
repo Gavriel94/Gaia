@@ -126,9 +126,6 @@ const Home = () => {
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} />
-                            <div className='mt-10'>
-                                <SortingButton />
-                            </div>
                             <div className='mt-10 overflow-auto flex flex-row'>
                                 <ArticleView />
                             </div>
