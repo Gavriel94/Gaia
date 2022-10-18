@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import placeholder from '../assets/fpngs/placeholder.png'
-import { NavLink } from 'react-router-dom'
-import { Button, FlipCard, Header } from '../components'
+import { Link } from 'react-router-dom'
+import { Button, FlipCard, Header, LandingPageVideo } from '../components'
 import frameZero from '../assets/fpngs/animated/blankFrame.png'
 import frameOne from '../assets/fpngs/animated/frame1.png'
 import frameTwo from '../assets/fpngs/animated/frame2.png'
@@ -9,6 +9,7 @@ import frameThree from '../assets/fpngs/animated/frame3.png'
 import frameFour from '../assets/fpngs/animated/frame4.png'
 import frameFive from '../assets/fpngs/animated/frame5.png'
 import frameSix from '../assets/fpngs/animated/frame6.png'
+
 /**
  * Landing page for instant information for the user to see what the project is about 
  * TODO: change the Flipcards into animations and make the page scrollable with 'enter app' on a fixed header above
@@ -18,11 +19,19 @@ const Landing = () => {
     const [currentFrame, setCurrentFrame] = useState(null)
     const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
     const [hover, setHover] = useState(false)
+    const [showButton, setShowButton] = useState(false)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowButton(true)
+        }, 18000);
+        return () => clearTimeout(timer);
+    }, []);
+
 
     let timeInMs = 80
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentFrame(6)
             if (currentFrame === frames.length - 1) {
                 setCurrentFrame(0)
             }
@@ -33,24 +42,40 @@ const Landing = () => {
         return () => clearInterval(interval)
     },)
 
+    /**
+     * Ensures the animation always starts on the same frame, looks more fluid
+     */
+    const handleHoverIn = () => {
+        setCurrentFrame(6)
+        setHover(true)
+    }
+
     return (
         <>
-            <div className='flex justify-end top-5 h-16 px-10'>
-                <div className=''>
-                    <Header/>
+            <div className='h-48'>
+                <div>
+                    <Header page={'landing'} />
                 </div>
             </div>
-            <div className='absolute mt-40 left-1/2 transform -translate-x-1/2 -translate-y-1/2' onMouseOver={() => setHover(true)} onMouseOut={() =>setHover(false)}>
-                <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
+            <div className='absolute mt-100 left-1/2 transform -translate-x-1/2 -translate-y-1/2' onMouseOver={() => handleHoverIn()} onMouseOut={() => setHover(false)}>
+                {/* <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
                 {
                     hover && (
                         <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px] ease-in-out duration-200' />
                     )
-                }
+                } */}
+                <LandingPageVideo />
+                <div className='mt-20'>
+                    <div className={`${showButton ? 'flex justify-center' : 'invisible'}`}>
+                        <Link to='/home'>
+                            <Button title={'Enter App'} icon={'Enter App'} />
+                        </Link>
+                    </div>
+                </div>
             </div>
             <div className='mt-100 justify-center'>
-                <div className='container mx-auto p-2 grid grid-cols-2 gap-y-10 content-evenly'>
-                    <div className='flex justify-center'>
+                {/* <div className='container mx-auto p-2 grid grid-cols-2 gap-y-10 content-evenly'>
+                    {/* <div className='flex justify-center'>
                         <FlipCard
                             image={placeholder}
                             alt={'Card with an image of a placeholder and text describing placeholder'}
@@ -103,17 +128,12 @@ const Landing = () => {
                                     <p>Each Section contains Drops which can be any kind of content.</p>
                                 </>
                             }
-                        />
-                    </div>
-                </div>
-            </div>
+                        /> */}
+                {/* </div> */}
+                {/* </div> */}
 
-            <div className='flex justify-center p-6 dark:bg-dark-gray'>
-                <NavLink to='/home'>
-                    <Button title={'Enter App'} icon={'Enter App'} />
-                </NavLink>
             </div>
-            </>
+        </>
     )
 }
 
