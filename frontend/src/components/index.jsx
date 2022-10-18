@@ -17,3 +17,4 @@
  export { default as WalletConnectV2 } from './WalletConnectV2'
  export { default as SortingButton } from './SortingButton'
  export { default as LoadingSpinner } from './LoadingSpinner'
+ export { default as LandingPageVideo } from './LandingPageVideo'
