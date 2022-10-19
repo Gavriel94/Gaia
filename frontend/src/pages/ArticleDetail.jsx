@@ -3,13 +3,14 @@ import { Title, Sidebar, Header, Button } from "../components";
 import API from '../API'
 import { useParams, useNavigate } from "react-router-dom";
 import { ArticleLoading } from "../components";
+import { useStateContext } from "../context/ContextProvider";
 
 /**
  * Displays a single Article in a full page view
  */
 
 const ArticleDetail = () => {
-
+    const { darkMode } = useStateContext()
     const [article, setArticle] = useState('')
     const { id } = useParams()
     let history = useNavigate()
@@ -34,8 +35,8 @@ const ArticleDetail = () => {
     }
     else {
         return (
-            <>
-                <div className='fixed justify-center m-auto left-0 right-0 dark:bg-dark-grey'>
+            <div className={`${darkMode && 'text-white'}`}>
+                <div className='fixed justify-center m-auto left-0 right-0'>
                     <Header />
                     <Sidebar />
                 </div>
@@ -66,7 +67,7 @@ const ArticleDetail = () => {
                         />
                     </div>
                 </div>
-            </>
+            </div>
         )
     }
 }
