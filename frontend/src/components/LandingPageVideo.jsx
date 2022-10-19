@@ -13,7 +13,7 @@ const LandingPageVideo = () => {
       console.log(showButton)
     }, 18000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [showButton]);
 
   return (
     <>

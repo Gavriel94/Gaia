@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BsSun, BsMoon } from 'react-icons/bs'
 import Button from './Button'
@@ -17,6 +17,14 @@ import SortingButton from './SortingButton'
 
 const Header = ({ page }) => {
     const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert } = useStateContext();
+    const [showSkip, setShowSkip] = useState(true)
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowSkip(false)
+      }, 18000);
+      return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div>
@@ -37,7 +45,7 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page !== 'landing' && 'hidden'} py-3 px-2`}>
+                        <div className={`${page !== 'landing' && 'hidden'} py-3 px-2 ${!showSkip && 'hidden'}`}>
                             <Link to='/home'>
                                 <button
                                     type='button'
