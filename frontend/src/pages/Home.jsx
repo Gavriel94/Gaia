@@ -78,7 +78,7 @@ const Home = () => {
                             </Link>
                         }
                         secondTrend={
-                            <Link to={`/article/${articleList?.[1]?.id}`}>
+                            <Link to={`/articles/${articleList?.[1]?.id}`}>
                                 <TrendCard
                                     id={articleList?.[1]?.id}
                                     // image={articles?.[1].image}
