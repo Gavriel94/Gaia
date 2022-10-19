@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import placeholder from '../assets/fpngs/placeholder.png'
-import { Link } from 'react-router-dom'
-import { Button, FlipCard, Header, LandingPageVideo } from '../components'
-import frameZero from '../assets/fpngs/animated/blankFrame.png'
-import frameOne from '../assets/fpngs/animated/frame1.png'
-import frameTwo from '../assets/fpngs/animated/frame2.png'
-import frameThree from '../assets/fpngs/animated/frame3.png'
-import frameFour from '../assets/fpngs/animated/frame4.png'
-import frameFive from '../assets/fpngs/animated/frame5.png'
-import frameSix from '../assets/fpngs/animated/frame6.png'
+import { Header, LandingPageVideo } from '../components'
 
 /**
  * Landing page for instant information for the user to see what the project is about 
@@ -16,124 +7,12 @@ import frameSix from '../assets/fpngs/animated/frame6.png'
  */
 
 const Landing = () => {
-    const [currentFrame, setCurrentFrame] = useState(null)
-    const frames = [frameZero, frameOne, frameTwo, frameThree, frameFour, frameFive, frameSix, frameSix, frameSix, frameFive, frameFour, frameThree, frameTwo, frameOne, frameZero]
-    const [hover, setHover] = useState(false)
-    const [showButton, setShowButton] = useState(false)
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowButton(true)
-        }, 18000);
-        return () => clearTimeout(timer);
-    }, []);
-
-
-    let timeInMs = 80
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (currentFrame === frames.length - 1) {
-                setCurrentFrame(0)
-            }
-            else {
-                setCurrentFrame(currentFrame + 1)
-            }
-        }, timeInMs)
-        return () => clearInterval(interval)
-    },)
-
-    /**
-     * Ensures the animation always starts on the same frame, looks more fluid
-     */
-    const handleHoverIn = () => {
-        setCurrentFrame(6)
-        setHover(true)
-    }
 
     return (
-        <>
-            <div className='h-48'>
-                <div>
-                    <Header page={'landing'} />
-                </div>
-            </div>
-            <div className='absolute mt-100 left-1/2 transform -translate-x-1/2 -translate-y-1/2' onMouseOver={() => handleHoverIn()} onMouseOut={() => setHover(false)}>
-                {/* <img src={frameSix} alt={'icon'} className={`w-[400px] ${hover && 'hidden'}`}/>
-                {
-                    hover && (
-                        <img src={frames[currentFrame]} alt={'animated icon'} className='w-[400px] ease-in-out duration-200' />
-                    )
-                } */}
-                <LandingPageVideo />
-                <div className='mt-20'>
-                    <div className={`${showButton ? 'flex justify-center' : 'invisible'}`}>
-                        <Link to='/home'>
-                            <Button title={'Enter App'} icon={'Enter App'} />
-                        </Link>
-                    </div>
-                </div>
-            </div>
-            <div className='mt-100 justify-center'>
-                {/* <div className='container mx-auto p-2 grid grid-cols-2 gap-y-10 content-evenly'>
-                    {/* <div className='flex justify-center'>
-                        <FlipCard
-                            image={placeholder}
-                            alt={'Card with an image of a placeholder and text describing placeholder'}
-                            header={'Community Gauge'}
-                            text={'Sentiment is displayed on each Drop'}
-                            backText={
-                                <>
-                                    <p>Readers can vote on how they feel about the content.</p>
-                                    <p>This combats misinformation and allows readers to get a quick glance into how the community feels overall.</p>
-                                </>
-                            }
-                        />
-                    </div>
-                    <div className='col-span-1 flex justify-center'>
-                        <FlipCard
-                            image={placeholder}
-                            header={'Self Sufficient'}
-                            text={'Drops are by the community, for the community'}
-                            alt={'Card with an image of a placeholder and text describing placeholder'}
-                            backText={
-                                <>
-                                    <p>Anyone can create a Drop containing the content they desire.</p>
-                                    <p>Drop articles, music, videos and more.</p>
-                                    <p> Develop a community in a Section</p>
-                                </>
-                            }
-                        />
-                    </div>
-                    <div className='col-span-1 flex justify-center'>
-                        <FlipCard
-                            image={placeholder}
-                            header={'Explore'}
-                            text={'Stay Informed'}
-                            backText={
-                                <>
-                                    <p>Gaia is no microblogging platform. Find real, in-depth information here.</p>
-                                    <p>This is a decentralised news source where you can find what you need to find. No biases, no algorithms dictating how content is displayed.</p>
-                                </>
-                            }
-                        />
-                    </div>
-                    <div className='col-span-1 flex justify-center'>
-                        <FlipCard
-                            image={placeholder}
-                            header={'One Stop Shop'}
-                            text={'Discover music, videos, in-depth articles and more'}
-                            backText={
-                                <>
-                                    <p>Information is split into Sections.</p>
-                                    <p>Each Section contains Drops which can be any kind of content.</p>
-                                </>
-                            }
-                        /> */}
-                {/* </div> */}
-                {/* </div> */}
-
-            </div>
-        </>
+        <div>
+            <LandingPageVideo />
+            <Header page={'landing'} />
+        </div>
     )
 }
 
