@@ -2,4 +2,5 @@
 frontend/node_modules/*
 !frontend/node_modules/axios
 package.json
+frontend/src/assets/GaiaAnimPrototype.mp4
 #temp
