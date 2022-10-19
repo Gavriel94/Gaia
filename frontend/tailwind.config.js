@@ -19,7 +19,7 @@ const Rotate = plugin(function ({ addUtilities }) {
 
 module.exports = {
     content: [
-        "./src/**/*.{js,jsx,ts,}", './public/index.html'
+        "./src/**/*.{js,jsx,ts, css}",
     ],
     darkMode: 'class',
     theme: {
@@ -143,6 +143,7 @@ module.exports = {
         },
     },
     plugins: [
+        require('@tailwindcss/typography'),
         Rotate,
     ],
 };
