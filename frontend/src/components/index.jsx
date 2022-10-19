@@ -18,3 +18,5 @@
  export { default as SortingButton } from './SortingButton'
  export { default as LoadingSpinner } from './LoadingSpinner'
  export { default as LandingPageVideo } from './LandingPageVideo'
+ export { default as Editor } from './Editor'
+ export { default as InputField } from './InputField'
