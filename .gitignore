@@ -4,3 +4,4 @@ frontend/node_modules/*
 package.json
 frontend/src/assets/GaiaAnimPrototype.mp4
 #temp
+frontend/yarn-error.log
