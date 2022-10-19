@@ -4,6 +4,7 @@ import { RiHeartLine, RiDislikeLine } from 'react-icons/ri'
 import Button from './Button'
 import { Link } from 'react-router-dom'
 import API from '../API'
+import parser from 'html-react-parser'
 
 /**
  * Scrollable cards containing article information.
@@ -45,7 +46,7 @@ const MiniArticle = ({ id, title, content, tags }) => {
                     <Link to={`/articles/${id}`}>
                         <Title text={title} size={'text-2xl'} />
                         <div className='mt-10 text-center text-black dark:text-light-white'>
-                            {content.length > 80 ? shortenContent(content) : content}
+                            {content.length > 80 ? shortenContent(parser(content)) : parser(content)}
                         </div>
                         <div className='mt-4 text-black dark:text-light-white'>
                             {tags}
