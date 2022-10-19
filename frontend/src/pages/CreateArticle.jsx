@@ -61,18 +61,7 @@ const CreateArticle = () => {
                         >
                             Title
                         </label>
-                        <div className='border-1 border-light-orange dark:border-dark-orange rounded-lg'>
-                            <input className='block p-5 grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
-                        bg-light-white border-light-white input-black
-                        dark:bg-dark-silver dark:border-dark-silver dark:input-light-white 
-                        focus:outline-none focus:bg-light-white focus:border-light-orange'
-                                required={true}
-                                type='input'
-                                placeholder='title'
-                                defaultValue={''}
-                                onChange={e => handleTitle(e.target.value)}
-                            />
-                        </div>
+
                         <div className='mt-8'>
                             <label className='block input-dark-grey dark:input-light-white font-bold mb-1 md:mb-0 pr-4'
                                 htmlFor='content'
