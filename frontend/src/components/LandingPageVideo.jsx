@@ -19,7 +19,7 @@ const LandingPageVideo = () => {
     <>
 
       <div className='video-container'>
-        <video autoPlay muted controls src={GaiaAnim} />
+        <video autoPlay muted src={GaiaAnim} />
       </div>
       <div className={`${showButton ? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : 'hidden'}`}>
         <Link to={'/home'}>
