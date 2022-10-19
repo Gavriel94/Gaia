@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Button from './Button'
 import LoadingSpinner from './LoadingSpinner'
 import { AiOutlineWallet } from 'react-icons/ai'
+import { IoWalletOutline } from 'react-icons/io5'
 import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
 import '../walletModal.css'
@@ -74,7 +75,7 @@ const WalletConnectV2 = () => {
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
     const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
     const [wallets] = useState([])
-    const [walletLoginButton, setwalletLoginButton] = useState(<AiOutlineWallet size={'26px'} />)
+    const [walletLoginButton, setwalletLoginButton] = useState(<IoWalletOutline size={'26px'} />)
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
     const [logoutSuccessful, setLogoutSuccessful] = useState(false)
