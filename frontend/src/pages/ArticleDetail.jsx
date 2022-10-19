@@ -4,6 +4,7 @@ import API from '../API'
 import { useParams, useNavigate } from "react-router-dom";
 import { ArticleLoading } from "../components";
 import { useStateContext } from "../context/ContextProvider";
+import parser from 'html-react-parser'
 
 /**
  * Displays a single Article in a full page view
@@ -40,12 +41,12 @@ const ArticleDetail = () => {
                     <Header />
                     <Sidebar />
                 </div>
-                <div className='contents-center'>
-                    <div className='pt-20'>
+                <div className='pt-20'>
                         <Title text={`${article.title}`} size={'text-6xl'} />
                     </div>
-                    <div className='mt-20 overflow-auto flex justify-center'>
-                        {article.content}
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pt-40'>
+                    <div className='mt-20 justify-center'>
+                        {parser(article.content)}
                     </div>
                     <div className='mt-10 flex justify-center'>
                         {article.tags}
