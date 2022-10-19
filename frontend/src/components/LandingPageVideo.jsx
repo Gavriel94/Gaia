@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import Button from './Button'
-import GaiaAnim from '../assets/GaiaAnimPrototype.mp4'
+import GaiaAnim from '../assets/GaiaAnimCompressed.mp4'
 import '../video.css'
 import { CgEnter } from 'react-icons/cg'
 
