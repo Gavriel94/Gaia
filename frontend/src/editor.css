@@ -92,6 +92,11 @@ hr {
 	height: 1px;
 }
 
+a {
+	color: #CC5500;
+	text-decoration: underline;
+}
+
 button.editor {
 	border: 2px solid black;
 	padding: 6px;
@@ -111,16 +116,25 @@ button.is-active {
 }
 
 .ProseMirror {
-	outline:none;
+	height: 450px;
+	width: 100%;
+	max-width:630px;
+	overflow-y: auto;
 }
+
 .ProseMirror:focus {
 	outline:none;
 }
 
+p {
+	width: 100%;
+}
+
 p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  float: left;
   color: #adb5bd;
+  pointer-events: none;
+  float: left;
   pointer-events: none;
   height: 0;
 }
