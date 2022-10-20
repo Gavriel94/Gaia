@@ -5,32 +5,70 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
 import LineBreak from '@tiptap/extension-hard-break'
-import React, { useState } from 'react'
+import Image from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import BubbleMenu from '@tiptap/extension-bubble-menu'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
     AiOutlineBold,
     AiOutlineItalic,
     AiOutlineStrikethrough,
     AiOutlineOrderedList,
     AiOutlineUnorderedList,
-    AiOutlineUndo,
-    AiOutlineRedo,
     AiOutlineUnderline
 } from 'react-icons/ai'
-import { BsCode, BsCodeSquare, BsBlockquoteLeft } from 'react-icons/bs'
+import { BsCode, BsCodeSquare, BsBlockquoteLeft, BsCardImage } from 'react-icons/bs'
 import { MdOutlineHorizontalRule } from 'react-icons/md'
 import { FaHeading } from 'react-icons/fa'
-import { TbHeading } from 'react-icons/tb'
+import { TbHeading, TbLink, TbUnlink } from 'react-icons/tb'
+import Modal from 'react-modal'
+
+import { useStateContext } from '../context/ContextProvider'
+
+/**
+ * TODO: Sanitise all HTML input 
+ * @returns an editor component made using TipTap and extended for Gaia
+ */
 
 const MenuBar = ({ editor }) => {
 
-    const [isActive, setUseActive] = useState(false)
+    const addImage = () => {
+        const url = window.prompt('URL')
 
-    if (!editor) {
-        return null
+        if (url) {
+            editor.chain().focus().setImage({ src: url }).run()
+        }
     }
 
+    const setLink = useCallback(() => {
+        const previousUrl = editor.getAttributes('link').href
+        const url = window.prompt('URL', previousUrl)
+    
+        // cancelled
+        if (url === null) {
+          return
+        }
+    
+        // empty
+        if (url === '') {
+          editor.chain().focus().extendMarkRange('link').unsetLink()
+            .run()
+    
+          return
+        }
+    
+        // update link
+        editor.chain().focus().extendMarkRange('link').setLink({ href: url })
+          .run()
+      }, [editor])
+    
+      if (!editor) {
+        return null
+      }
+    
+
     return (
-        <div className='flex pb-10'>
+        <div className='flex pb-2'>
             <div className='justify-start'>
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -134,46 +172,81 @@ const MenuBar = ({ editor }) => {
                     <BsBlockquoteLeft size={'26px'} />
                 </button>
                 <button onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                        className='editor'
+                    className='editor'
                 >
                     <MdOutlineHorizontalRule size={'26px'} />
+                </button>
+                <button onClick={(event) => {
+                    addImage()
+                }
+                }
+                    className='editor'
+                >
+                    <BsCardImage size={'26px'} />
+                </button>
+                <button onClick={setLink} className={editor.isActive('link') ? 'is-active' : 'editor'}>
+                    <TbLink size={'26px'}/>
+                </button>
+                <button
+                    onClick={() => editor.chain().focus().unsetLink().run()}
+                    disabled={!editor.isActive('link')}
+                    className='editor'
+                >
+                    <TbUnlink size={'26px'}/>
                 </button>
             </div>
         </div>
     )
 }
 
-const Editor = ({setContent}) => {
+const Editor = ({ setContent }) => {
+
+    const { darkMode } = useStateContext()
+
     const editor = useEditor({
         extensions: [
-            StarterKit, 
-            Underline, 
+            StarterKit,
+            Underline,
             Placeholder.configure({
                 emptyEditorClass: 'is-editor-empty',
-                placeholder: 'Content'
+                placeholder: 'Content',
             }),
-            LineBreak.extend({
-                addKeyboardShortcuts () {
-                  return {
-                    Enter: () => this.editor.commands.setHardBreak()
-                  }
+            LineBreak,
+            // LineBreak.extend({
+            //     addKeyboardShortcuts() {
+            //         return {
+            //             Enter: () => this.editor.commands.setHardBreak()
+            //         }
+            //     }
+            // }),
+            Image,
+            BubbleMenu.configure({
+                element: document.querySelector('.menu'),
+                shouldShow: true,
+            }),
+            Link.configure({
+                HTMLAttributes: {
+                    class: ''
                 }
-              })
+            }),
         ],
-        content: '',
-    onUpdate: ({editor}) => {
-        const html = editor.getHTML();
-        setContent(html)
-    },
+        content: `
+        `,
+        onUpdate: ({ editor }) => {
+            const html = editor.getHTML();
+            setContent(html)
+        },
     })
 
     return (
-        <div className='border-2 rounded-lg border-light-orange dark:border-dark-orange p-5'>
-            <MenuBar editor={editor} />
-            <div className='border rounded-lg border-light-orange dark:border-dark-orange p-5'>
+        <>
+            <div className='border-2 rounded-lg border-light-orange dark:border-dark-orange pt-5 pl-5 pr-5'>
+            <div className='border-b-2 border-light-orange mb-5'>
+                <MenuBar editor={editor} />
+                </div>
                 <EditorContent editor={editor} />
             </div>
-        </div>
+        </>
     )
 }
 
