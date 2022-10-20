@@ -63,7 +63,7 @@ const Home = () => {
     else {
         return (
             <>
-                <div className='justify-center m-auto left-0 right-0 h-full w-full dark:bg-dark-grey'>
+                <div className='justify-center m-auto left-0 right-0 h-full w-full'>
                     {/* To keep with DRY could use mapping but need votes first */}
                     <TrendBar
                         firstTrend={
