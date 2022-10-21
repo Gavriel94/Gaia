@@ -66,7 +66,7 @@ const ArticleDetail = () => {
                                 {article.dislikes} dislikes
                             </div>
                         </div>
-                        <div className='flex justify-center pt-5 pb-10'>
+                        <div className='flex justify-center pt-5 pb-20 sm:pb-10'>
                             <Button label={"Back"}
                                 func={() => history(-1)}
                             />
