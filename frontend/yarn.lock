@@ -1947,6 +1947,15 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bullet-list/-/extension-bullet-list-2.0.0-beta.199.tgz#72df0c94c6a9a5bce97ee1e0180657f1a63ffe18"
   integrity sha512-gGRQRqdQqCZQstB3ztSy8yzIdm5/5IIYxhCuFNb3Z9c9p/CzyRmaNqa7XkRLrXSajp4lS0OH8RkFUJqL6U+/9w==
 
+"@tiptap/extension-code-block-lowlight@^2.0.0-beta.199":
+  version "2.0.0-beta.199"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block-lowlight/-/extension-code-block-lowlight-2.0.0-beta.199.tgz#1861abababe8d17f3cd36ebcefb39ba95b649dc1"
+  integrity sha512-1FWMdut6ZB/c0/3qbd+ljiB1M/YWADiGHBpm9bVhnoMcPGGkVS5ww+bUYpLBdBpTDcemfzkt7FtrfV0SKEg3+g==
+  dependencies:
+    prosemirror-model "^1.18.1"
+    prosemirror-state "^1.4.1"
+    prosemirror-view "^1.28.2"
+
 "@tiptap/extension-code-block@^2.0.0-beta.199":
   version "2.0.0-beta.199"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block/-/extension-code-block-2.0.0-beta.199.tgz#145baa37276601bce75ddad55ab4926bc78b28fc"
@@ -2058,6 +2067,16 @@
   version "2.0.0-beta.199"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-strike/-/extension-strike-2.0.0-beta.199.tgz#5fc6e067728009d92027e58a042f18449f2fa264"
   integrity sha512-KyN5+d9o9FGvrSiSuh81oo4+XjMDsZVY4UHc9lBY0nAzaGAkJOwkCjk40RfyO5ZJ2GdEEQ6Nh/3YqVMcJTY+rA==
+
+"@tiptap/extension-subscript@^2.0.0-beta.199":
+  version "2.0.0-beta.199"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-subscript/-/extension-subscript-2.0.0-beta.199.tgz#74b59c2f6d6a57148db187baaa00ad81fd301dc0"
+  integrity sha512-Endfqf0HA8EfmuxOFrFx6ma1HGKWQVeNSo+EFyD9b9anpun5tC0yQ8iVehmDFCixUjpmrU6GMAvBGwC2rVzyvw==
+
+"@tiptap/extension-superscript@^2.0.0-beta.199":
+  version "2.0.0-beta.199"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-superscript/-/extension-superscript-2.0.0-beta.199.tgz#bab9fdb8d863a679e548ba76ea30000335cdc1b6"
+  integrity sha512-PQiTshgQ6pv9tpaBVj8PI3Oaez/Tng90egXgYWog1HYCTxqgzYQrOzPKyGN1r1JoX7lyLwSmdI+JUvxmX502ow==
 
 "@tiptap/extension-text@^2.0.0-beta.199":
   version "2.0.0-beta.199"
@@ -2243,6 +2262,20 @@
   dependencies:
     "@types/node" "*"
 
+"@types/hast@^2.0.0":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@types/hast/-/hast-2.3.4.tgz#8aa5ef92c117d20d974a82bdfb6a648b08c0bafc"
+  integrity sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==
+  dependencies:
+    "@types/unist" "*"
+
+"@types/highlight.js@^10.1.0":
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-10.1.0.tgz#89bb0c202997d7a90a07bd2ec1f7d00c56bb90b4"
+  integrity sha512-77hF2dGBsOgnvZll1vymYiNUtqJ8cJfXPD6GG/2M0aLRc29PkvB7Au6sIDjIEFcSICBhCh2+Pyq6WSRS7LUm6A==
+  dependencies:
+    highlight.js "*"
+
 "@types/html-minifier-terser@^6.0.0":
   version "6.1.0"
   resolved "https://registry.npmjs.org/@types/html-minifier-terser/-/html-minifier-terser-6.1.0.tgz"
@@ -2408,6 +2441,11 @@
   version "2.0.2"
   resolved "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.2.tgz"
   integrity sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==
+
+"@types/unist@*":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
+  integrity sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==
 
 "@types/ws@^8.5.1":
   version "8.5.3"
@@ -4832,6 +4870,13 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
+fault@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fault/-/fault-2.0.1.tgz#d47ca9f37ca26e4bd38374a7c500b5a384755b6c"
+  integrity sha512-WtySTkS4OKev5JtpHXnib4Gxiurzh5NCGvWrFaZ34m6JehfTUhKZvn9njTfw48t6JumVQOmrKqpmGcdwxnhqBQ==
+  dependencies:
+    format "^0.2.0"
+
 faye-websocket@^0.11.3:
   version "0.11.4"
   resolved "https://registry.npmjs.org/faye-websocket/-/faye-websocket-0.11.4.tgz"
@@ -4979,6 +5024,11 @@ form-data@^4.0.0:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
+
+format@^0.2.0:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/format/-/format-0.2.2.tgz#d6170107e9efdc4ed30c9dc39016df942b5cb58b"
+  integrity sha512-wzsgA6WOq+09wrU1tsJ09udeR/YZRaeArL9e1wPbFg3GG2yDnC2ldKpxs4xunpFF9DgqCqOIra3bc1HWrJ37Ww==
 
 forwarded@0.2.0:
   version "0.2.0"
@@ -5247,6 +5297,11 @@ header-case@^2.0.4:
   dependencies:
     capital-case "^1.0.4"
     tslib "^2.0.3"
+
+highlight.js@*, highlight.js@^11.6.0, highlight.js@~11.6.0:
+  version "11.6.0"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.6.0.tgz#a50e9da05763f1bb0c1322c8f4f755242cff3f5a"
+  integrity sha512-ig1eqDzJaB0pqEvlPVIpSSyMaO92bH1N2rJpLMN/nX396wTpDA4Eq0uK+7I/2XG17pFaaKE0kjV/XPeGt7Evjw==
 
 hoopy@^0.1.4:
   version "0.1.4"
@@ -6607,6 +6662,15 @@ lower-case@^2.0.2:
   integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
   dependencies:
     tslib "^2.0.3"
+
+lowlight@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/lowlight/-/lowlight-2.7.0.tgz#2d3f267aa3006bb20473db5363f9941ffd7bab11"
+  integrity sha512-RRdrHalFfjpxL91ITTX7KhJYH3QmX5bW9Uie2D2E5GPIR3XBYDYhScBjE291ewFZkStz/k2PN9KC+8deNLiI3Q==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    fault "^2.0.0"
+    highlight.js "~11.6.0"
 
 lru-cache@^6.0.0:
   version "6.0.0"

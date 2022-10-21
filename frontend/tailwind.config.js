@@ -79,6 +79,7 @@ module.exports = {
             "light-purple": "#0F0326",
             "dark-orange": "#CC5500",
             "dark-grey": "#212121",
+            "dark-grey-lighter": "#262626",
             "dark-silver": "#C1BCAC",
             "black": "#000000",
             "light-orange-hover": "#F4AC57",
