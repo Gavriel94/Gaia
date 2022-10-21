@@ -59,7 +59,7 @@ const Sidebar = () => {
                 ${sidebarOpen ? 'w-72 duration-500' : 'w-20 duration-500'}` 
             }
             >
-                <div className='dark:bg-dark-grey h-full'>
+                <div className='dark:bg-dark-grey-lighter h-full'>
                     <div className={`absolute -right-3 top-4 w-9 hidden md:block`}>
                         <Button
                             title={'Menu'}
@@ -68,7 +68,7 @@ const Sidebar = () => {
                         />
                     </div>
                     <div className='flex justify-center py-0 pt-4 pb-2'>
-                        <Link to='/home'>
+                        <Link to='/home' style={{ textDecoration: 'none' }}>
                             <img
                                 src={`${darkMode === true ? darkLogo : lightLogo}`}
                                 className={`${sidebarOpen ? 'w-40 duration-500' : 'w-0 duration-500'} hidden md:block`}
@@ -78,7 +78,7 @@ const Sidebar = () => {
                     </div>
                     <div className={`absolute-column justify-right content-center pt-16`}>
                         {sidebarItems.map((item) => (
-                            <NavLink
+                            <Link style={{ textDecoration: 'none' }}
                                 to={`/${item.name}`}
                                 key={item.name}
                                 className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
@@ -90,7 +90,7 @@ const Sidebar = () => {
                             <span className={`${!sidebarOpen && 'hidden'} flex ease-in-out duration-500 origin-left font-semibold text-xl`}>
                                 {item.name}
                             </span>
-                            </NavLink>
+                            </Link>
                         ))}
                     </div>
                 </div>

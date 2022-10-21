@@ -666,11 +666,11 @@ const WalletConnectV2 = () => {
                             {
 
                                 wallets.map(key =>
-                                    <div key={key} className='flex justify-center pt-10'>
+                                    <div key={key} className={`flex justify-center pt-10 ${darkMode && 'text-white'}`}>
                                         <button
                                             type='button'
                                             onClick={() => handleWalletSelect(key)}
-                                            className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-80 rounded-full duration-150 ease-in-out'>
+                                            className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-80 rounded-full duration-150 ease-in-out p-5'>
                                             <div className='flex flex-row justify-center'>
                                                 <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
                                                 <p className='pt-3'>{window.cardano[key].name}</p>

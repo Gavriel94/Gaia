@@ -22,6 +22,7 @@ export const ContextProvider = ({ children }) => {
             const userMedia =
                 window.matchMedia('(prefers-color-scheme: dark)')
             if (userMedia.matches) {
+                document.body.classList.toggle('dark')
                 return true
             }
         }

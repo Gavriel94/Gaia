@@ -43,7 +43,7 @@ const MiniArticle = ({ id, title, content, tags }) => {
         <>
             <div>
                 <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 sm:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
-                    <Link to={`/articles/${id}`}>
+                    <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
                         <Title text={title} size={'text-2xl'} />
                         <div className='mt-10 text-center text-black dark:text-light-white'>
                             {content.length > 80 ? shortenContent(parser(content)) : parser(content)}
