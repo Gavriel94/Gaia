@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import API from '../API'
 
 const StateContext = createContext();
 
 export const ContextProvider = ({ children }) => {
-
 
     /**
      * Gets the theme of the users system 
@@ -88,6 +88,20 @@ export const ContextProvider = ({ children }) => {
         priceStep: 0.0000721,
         coinsPerUtxoWord: "34482",
     })
+
+    /**
+     * Fetch articles and save to state context
+     */
+    useEffect(() => {
+        const refreshArticles = () => {
+            API.get('/articles/')
+                .then((res) => {
+                    setArticleList(res.data)
+                })
+                .catch(console.error)
+        }
+        refreshArticles()
+    }, [setArticleList])
 
     return (
         <StateContext.Provider
