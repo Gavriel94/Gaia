@@ -120,6 +120,7 @@ button.is-active {
 	width: 100%;
 	max-width:630px;
 	overflow-y: auto;
+	background-color: white;
 }
 
 .ProseMirror:focus {
