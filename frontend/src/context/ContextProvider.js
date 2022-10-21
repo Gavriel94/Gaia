@@ -22,7 +22,6 @@ export const ContextProvider = ({ children }) => {
             const userMedia =
                 window.matchMedia('(prefers-color-scheme: dark)')
             if (userMedia.matches) {
-                document.body.classList.toggle('dark')
                 return true
             }
         }
@@ -87,6 +86,14 @@ export const ContextProvider = ({ children }) => {
         priceMem: 0.0577,
         priceStep: 0.0000721,
         coinsPerUtxoWord: "34482",
+    })
+
+    useEffect(() => {
+        if(darkMode) {
+            document.body.classList.toggle('dark')
+        }else {
+            document.body.classList.remove('dark')
+        }
     })
 
     /**
