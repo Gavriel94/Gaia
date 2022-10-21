@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Button from './Button'
 import LoadingSpinner from './LoadingSpinner'
-import { AiOutlineWallet } from 'react-icons/ai'
 import { IoWalletOutline } from 'react-icons/io5'
 import Modal from 'react-modal'
 import { MdOutlineCancel } from 'react-icons/md'
@@ -59,6 +58,12 @@ import {
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../context/ContextProvider'
 let Buffer = require('buffer/').Buffer
+
+
+/**
+ * TODO: Hardcode which wallets are allowed (typhoncip30, eternl & nami) instead of polling the browser
+ *
+ */
 
 const WalletConnectV2 = () => {
 
@@ -575,7 +580,7 @@ const WalletConnectV2 = () => {
                 submittedTxHash: ''
 
             })
-            setwalletLoginButton(<AiOutlineWallet size={'26px'} />)
+            setwalletLoginButton(<IoWalletOutline size={'26px'} />)
             closeWalletLogoutModal()
             setadaHandleDetected(false)
             setadaHandleName([])
