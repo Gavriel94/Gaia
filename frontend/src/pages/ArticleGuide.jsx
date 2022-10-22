@@ -1,6 +1,7 @@
 import React from 'react'
 import Title from '../components/Title'
-import { Header, Sidebar } from '../components'
+import { Header, Sidebar, Button } from '../components'
+import { useNavigate } from 'react-router-dom'
 
 /**
  * To contain information on how to write a article.
@@ -8,6 +9,7 @@ import { Header, Sidebar } from '../components'
  */
 
 const ArticleGuide = () => {
+    let history = useNavigate()
     return (
         <>
             <div className='fixed justify-center m-auto left-0 right-0 '>
@@ -35,9 +37,10 @@ const ArticleGuide = () => {
                     </div>
                 </div>
             </div>
-            <div className='absolute right-3 mt-40'>
-
-
+            <div className='flex justify-center pt-5 pb-20 sm:pb-10'>
+                <Button label={"Back"}
+                    func={() => history(-1)}
+                />
             </div>
         </>
     )
