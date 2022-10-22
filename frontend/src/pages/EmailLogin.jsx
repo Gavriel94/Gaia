@@ -3,6 +3,11 @@ import { Header, InputField, Title, LoadingSpinner, Button } from '../components
 import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useStateContext } from '../context/ContextProvider'
 
+/**
+ * For now this functionality hasn't been confirmed to make it into the final build
+ * Email login will inevitably have to come with 'forgot password' functionality
+ */
+
 const EmailLogin = () => {
     const { darkMode } = useStateContext()
     const [email, setEmail] = useState('')
