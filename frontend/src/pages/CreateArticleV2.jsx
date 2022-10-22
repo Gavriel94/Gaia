@@ -1,15 +1,22 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, Navigate } from 'react-router-dom'
 import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner } from '../components'
 import API from '../API'
+import { useStateContext } from '../context/ContextProvider'
+import { RiQuillPenLine } from 'react-icons/ri'
+
+// Get HTTP response, and load article detail page for new post
 
 const CreateArticleV2 = () => {
 
+  const { darkMode } = useStateContext()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
   const [submit, setSubmit] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [IDSet, setIDSet] = useState(false)
+  const [ID, setID] = useState('')
 
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -22,6 +29,7 @@ const CreateArticleV2 = () => {
     await sleep(1000);
     setSubmitted(false)
     setSubmit(false);
+    loadNew()
   }
 
   const handleTitle = (e) => {
@@ -32,26 +40,36 @@ const CreateArticleV2 = () => {
     setTags(e)
   }
 
-  function handleSubmit(e) {
-    if (content.length === 0) {
-      console.log('content is empty')
-    }
+  async function handleSubmit() {
     const article = {
       title: title,
       content: content,
       tags: tags,
     }
     try {
-      API.post("/create/", { ...article });
+      var id = await API.post("/create/", { ...article }).then(response => id =response.data.id)
+      setID(id)
       confirmSubmit()
     } catch (err) {
-      console.log(err)
+      console.log(err.response)
+      console.log(err.request)
+      console.log(err.message)
     }
   }
 
-  // write a condition, if content is empty don't submit
+  const loadNew = () => {
+    setIDSet(true)
+  }
+
   return (
     <>
+      {
+        IDSet && (
+          <>
+            <Navigate to={`/articles/${ID}/`} replace={true} />
+          </>
+        )
+      }
       {
         submit && (
           <>
@@ -86,8 +104,19 @@ const CreateArticleV2 = () => {
                 defaultValue={''}
                 onChange={e => handleTitle(e.target.value)}
               />
+              <div className={`${title === '' ? 'block mt-2' : 'hidden'}`}>
+                <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter a title</span>
+                </p>
+              </div>
               <div className='py-5' />
               <Editor setContent={setContent} />
+              {/* Editor leaves empty <p> tags if content was added then deleted */}
+              <div className={`${content === '' ? 'block mt-2' : content === '<p></p>' ? 'block mt-2' : 'hidden'}`}>
+                <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter content</span>
+                </p>
+              </div>
               <div className='py-5' />
               <InputField
                 required={true}
@@ -96,11 +125,16 @@ const CreateArticleV2 = () => {
                 defaultValue={''}
                 onChange={e => handleTags(e.target.value)}
               />
+              <div className={`${tags === '' ? 'block mt-2' : 'hidden'}`}>
+                <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter tags</span>
+                </p>
+              </div>
               <div className='py-5' />
               <div className='flex justify-center'>
                 <Button label={'Submit'} func={handleSubmit} />
               </div>
-              <div className='flex justify-center'>
+              <div className='flex justify-center pb-20 sm:pb-10'>
                 <p className='text-center mt-2 text-black dark:text-white'>Unsure how to start? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
               </div>
             </div>
