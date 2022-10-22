@@ -733,7 +733,7 @@ const LoginButton = () => {
                 </Modal>
             </div>
 
-             {/* Handles wallet selection on Cardano option from above modal */}
+            {/* Handles wallet selection on Cardano option from above modal */}
             <div>
                 <Modal
                     isOpen={showWalletSelectModal}
@@ -765,12 +765,19 @@ const LoginButton = () => {
                                 </div>
                             )
                         }
-                        <div className='flex justify-center pt-5 pl-5 pr-5'>
-                            <div className='flex justify-center pt-10 pb-4'>
-                                <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
-                            </div>
+
+                        <div className='justify-center pt-5 pl-5 pr-5' />
+                        <div>
+                            <span className={`${darkMode && 'text-white'} block pt-2`}>
+                            This is free and does not give Gaia permission to access funds.
+                            <br/>
+                            </span>
+                        </div>
+                        <div className='flex justify-center pt-10 pb-4'>
+                            <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                         </div>
                     </div>
+
                 </Modal>
 
                 {/* Handles logout options */}
@@ -808,6 +815,7 @@ const LoginButton = () => {
                                     </div>
                                 </div>
                             )}
+
                             </div>
                         </div>
                         <div className='flex justify-center pb-10 text-white'>
