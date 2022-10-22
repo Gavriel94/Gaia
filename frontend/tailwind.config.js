@@ -74,8 +74,8 @@ module.exports = {
         colors: {
             "light-orange": "#F08A12",
             "light-white": "#FFF8F0",
-            "light-green": "#3AF41",
-            "light-red": "#720E07",
+            "light-green": "#41CE00",
+            "light-red": "#CE2600",
             "light-purple": "#0F0326",
             "dark-orange": "#CC5500",
             "dark-grey": "#212121",
