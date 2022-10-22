@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, Header, Title, TrendCard, ArticleLoading, ArticleView, TopLoader, SortingButton } from '../components'
+import { TrendBar, Sidebar, Header, Title, ArticleLoading, ArticleView, TopLoader } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 
 /**
@@ -8,7 +8,7 @@ import { useStateContext } from '../context/ContextProvider'
  */
 
 const Home = () => {
-    const { articleList, setArticleList, articleLoading, setArticleLoading } = useStateContext()
+    const { articleList, setArticleList, articleLoading } = useStateContext()
     const [topLoaderVisible, setTopLoaderVisible] = useState(false)
 
     // shows TopLoader after scrolling down the page
@@ -56,7 +56,7 @@ const Home = () => {
         return (
             <>
                 <div className='justify-center m-auto left-0 right-0 h-full w-full'>
-                    <TrendBar/>
+                    <TrendBar />
                     <Header page={'home'} />
                     <Sidebar />
                     {
