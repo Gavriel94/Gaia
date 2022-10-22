@@ -108,7 +108,7 @@ export const ContextProvider = ({ children }) => {
                 .catch(console.error)
         }
         refreshArticles()
-    }, [setArticleList])
+    }, [])
 
     return (
         <StateContext.Provider
