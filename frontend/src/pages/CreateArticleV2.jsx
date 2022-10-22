@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner } from '../components'
 import API from '../API'
@@ -106,7 +106,7 @@ const CreateArticleV2 = () => {
               />
               <div className={`${title === '' ? 'block mt-2' : 'hidden'}`}>
                 <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter a title</span>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter a title</span>
                 </p>
               </div>
               <div className='py-5' />
@@ -114,7 +114,7 @@ const CreateArticleV2 = () => {
               {/* Editor leaves empty <p> tags if content was added then deleted */}
               <div className={`${content === '' ? 'block mt-2' : content === '<p></p>' ? 'block mt-2' : 'hidden'}`}>
                 <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter content</span>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter content</span>
                 </p>
               </div>
               <div className='py-5' />
@@ -127,7 +127,7 @@ const CreateArticleV2 = () => {
               />
               <div className={`${tags === '' ? 'block mt-2' : 'hidden'}`}>
                 <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                  <RiQuillPenLine size={'26px'} /> <span className='pl-3'>Please enter tags</span>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter tags</span>
                 </p>
               </div>
               <div className='py-5' />
@@ -135,7 +135,7 @@ const CreateArticleV2 = () => {
                 <Button label={'Submit'} func={handleSubmit} />
               </div>
               <div className='flex justify-center pb-20 sm:pb-10'>
-                <p className='text-center mt-2 text-black dark:text-white'>Unsure how to start? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
+                <p className='text-center mt-2 text-black dark:text-white select-none'>Unsure how to start? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
               </div>
             </div>
           </div>
