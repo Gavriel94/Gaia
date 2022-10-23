@@ -6,7 +6,7 @@ import Button from './Button'
 
 const SortingButton = ({ page }) => {
     const { sortBy, setSortBy, showLogoutAlert, showErrorAlert } = useStateContext()
-    const [sortingIcon, setSortingIcon] = useState(<AiOutlineStar size={'26px'} />) //initial icon because popular is default sort
+    const [sortingIcon, setSortingIcon] = useState(<TbSunrise size={'26px'} />) //initial icon because new is default sort
     function handleUserChoice(choice) {
         if (sortBy === 'new') {
             setSortBy('popular')
