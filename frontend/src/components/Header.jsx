@@ -7,6 +7,7 @@ import { BiTrendingUp } from 'react-icons/bi'
 import LoginButton from './LoginButton'
 import SortingButton from './SortingButton'
 import { useNavigate } from 'react-router-dom'
+import RefreshArticles from './RefreshArticles'
 
 
 /**
@@ -32,6 +33,9 @@ const Header = ({ page }) => {
             <div className='flex items-end flex-col'>
                 <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 opacity-100 sm:bg-opacity-0 sm:dark:bg-opacity-0 bg-white dark:bg-dark-grey'>
                     <div className='flex flex-row pr-10'>
+                    <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                            <RefreshArticles />
+                        </div>
                         <div className={`${page === 'home' ? 'block' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <SortingButton />
                         </div>
@@ -59,7 +63,7 @@ const Header = ({ page }) => {
                             </Link>
                         </div>
                         <div className={`${page !== 'login' ? 'hidden' : 'block'} py-3 px-2`}>
-                        <Button label={"Back"}
+                            <Button label={"Back"}
                                 func={() => history(-1)}
                             />
                         </div>
