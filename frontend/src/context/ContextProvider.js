@@ -36,12 +36,13 @@ export const ContextProvider = ({ children }) => {
     const [article, setArticle] = useState(null)
     const [articleList, setArticleList] = useState([])
     const [articleLoading, setArticleLoading] = useState(true)
-    const [sortBy, setSortBy] = useState('popular')
+    const [sortBy, setSortBy] = useState('new')
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [showLogoutAlert, setshowLogoutAlert] = useState(false)
     const [showErrorAlert, setShowErrorAlert] = useState(false)
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
     const [adaHandleSelected, setAdaHandleSelected] = useState('')
+    const [refreshing, setRefreshing] = useState(false)
 
     /**
      * State variables for connecting a wallet
@@ -97,7 +98,8 @@ export const ContextProvider = ({ children }) => {
     })
 
     /**
-     * Fetch articles and save to state context
+     * Does an initial fetch of articles and save to state context
+     * Only runs once
      */
     useEffect(() => {
         const refreshArticles = () => {
@@ -125,7 +127,8 @@ export const ContextProvider = ({ children }) => {
                 showLogoutAlert, setshowLogoutAlert,
                 showErrorAlert, setShowErrorAlert,
                 displayAdaHandle, setDisplayAdaHandle,
-                adaHandleSelected, setAdaHandleSelected
+                adaHandleSelected, setAdaHandleSelected,
+                refreshing, setRefreshing
             }}
         >
             {children}
