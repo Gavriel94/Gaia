@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { TrendBar, Sidebar, Header, Title, ArticleLoading, ArticleView, TopLoader } from '../components'
+import { TrendBar, Sidebar, Header, Title, ArticleLoading, ArticleView, TopLoader, RefreshPosts } from '../components'
 import { useStateContext } from '../context/ContextProvider'
 
 /**
@@ -8,7 +7,7 @@ import { useStateContext } from '../context/ContextProvider'
  */
 
 const Home = () => {
-    const { articleList, setArticleList, articleLoading } = useStateContext()
+    const { articleList, articleLoading, refreshing } = useStateContext()
     const [topLoaderVisible, setTopLoaderVisible] = useState(false)
 
     // shows TopLoader after scrolling down the page
@@ -71,9 +70,14 @@ const Home = () => {
 
                     <div className='flex justify-center'>
                         <div className='pt-20'>
-                            <Title text={'home'} size={'text-6xl'} />
-                            <div className='mt-10 overflow-auto flex flex-row pb-20 sm:pb-10'>
+                            <Title text={'home'} size={'text-6xl'} /> 
+                            <div className={`${refreshing ? 'hidden' : 'mt-10 overflow-auto flex flex-row pb-20 sm:pb-10'}`}>
                                 <ArticleView />
+                            </div>
+                            <div className={`${refreshing ? 'block mt-10 overflow-auto pb-20 sm:pb-10' : 'hidden'}`}>
+                                <ArticleLoading/>
+                                <ArticleLoading/>
+                                <ArticleLoading/>
                             </div>
                         </div>
                     </div>
