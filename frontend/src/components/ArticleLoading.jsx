@@ -10,9 +10,6 @@ const ArticleLoading = ({ pageTitle }) => {
     return (
         <div>
             <div className='flex justify-center'>
-                <div className='mt-60'>
-                    <Title text={pageTitle} size={'text-6xl'} />
-                </div>
                 <div className='flex pt-14' />
             </div>
             <div className='grid columns-1 content-center justify-center mt-20'>
