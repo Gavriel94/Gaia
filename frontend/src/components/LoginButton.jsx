@@ -652,6 +652,8 @@ const LoginButton = () => {
                         title={'Wallet'}
                         func={() => openLoginOptionModal()}
                         icon={walletLoginButton}
+                        label={'Login'}
+                        labelProps={'text-sm pt-1 pl-2'}
                         className='p-2'
                     />
                 </div>
