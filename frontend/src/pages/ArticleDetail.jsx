@@ -13,6 +13,7 @@ import parser from 'html-react-parser'
 /**
  * TODO: Sidebar with details about the author, (wallet address or handle, picture if they have one, otherwise default)
  * TODO: Tip button on the bottom denominating ADA
+ * TODO: Fix pub_date to be a 24 hour clock. (Needs to be done in Django)
  */
 
 const ArticleDetail = () => {
@@ -31,6 +32,21 @@ const ArticleDetail = () => {
         }
         articleDetail()
     }, [])
+
+    const formatDate = (e) => {
+        const year = e?.substring(0,4)
+        const month = e?.substring(5,7)
+        const day = e?.substring(8, 10)
+        const hour = e?.substring(11, 13)
+        const minute = e?.substring(14, 16)
+        const seconds = e?.substring(17, 19)
+
+        console.log(hour)
+        console.log(minute)
+        console.log(seconds)
+
+        return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
+    }
 
     if (article === '') {
         return (
@@ -56,7 +72,8 @@ const ArticleDetail = () => {
                             tags: {article.tags}
                         </div>
                         <div className='flex justify-center mt-10'>
-                            {article.pubdate}
+                        {console.log('pubdate here')}
+                            {formatDate(article.pub_date)} 
                         </div>
                         <div className='mt-10 flex flex-row justify-center'>
                             <div className='px-2'>
