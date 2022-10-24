@@ -76,8 +76,6 @@ const Home = () => {
                             </div>
                             <div className={`${refreshing ? 'block mt-10 overflow-auto pb-20 sm:pb-10' : 'hidden'}`}>
                                 <ArticleLoading/>
-                                <ArticleLoading/>
-                                <ArticleLoading/>
                             </div>
                         </div>
                     </div>
