@@ -52,16 +52,6 @@ const MiniArticle = ({ id, title, content, tags }) => {
                             {tags}
                         </div>
                     </Link>
-                    <div>
-                        <div className='mt-2 flex flex-row justify-center'>
-                            <div className='rounded-full pr-2'>
-                                <Button icon={<RiHeartLine />} func={() => putLike()} />
-                            </div>
-                            <div className='rounded-full'>
-                                <Button icon={<RiDislikeLine />} func={() => putDislike()} />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </>
