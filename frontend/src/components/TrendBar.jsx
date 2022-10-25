@@ -19,7 +19,7 @@ const TrendBar = ({ firstTrend, secondTrend, thirdTrend, fourthTrend }) => {
 
     return (
         <div>
-            <div className={`flex invisible lg:visible items-end px-10
+            <div className={`flex invisible xl:visible items-end px-10
             }
             flex-col h-full 
             border-light-orange dark:border-dark-orange border-opacity-50`}>

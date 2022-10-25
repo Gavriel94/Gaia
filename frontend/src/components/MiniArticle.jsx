@@ -24,7 +24,7 @@ const MiniArticle = ({ id, title, content, tags, image }) => {
     return (
         <>
             <div>
-                <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 sm:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
+                <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 md:w-[500px] lg:w-[700px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
                         <Title text={title} size={'text-2xl'} /> <img src ={`${image}`} alt="" height={'80'} width={'80'}/>
                         <div className='mt-10 text-center text-black dark:text-light-white'>

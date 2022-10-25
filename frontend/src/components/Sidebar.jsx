@@ -60,7 +60,7 @@ const Sidebar = () => {
             }
             >
                 <div className='dark:bg-dark-grey-lighter h-full'>
-                    <div className={`absolute -right-3 top-4 w-9 hidden md:block`}>
+                    <div className={`absolute -right-3 top-4 w-9 hidden xl:block`}>
                         <Button
                             title={'Menu'}
                             func={() => handleOpenSidebar()}
