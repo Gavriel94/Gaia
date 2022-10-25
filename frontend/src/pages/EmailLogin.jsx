@@ -6,6 +6,8 @@ import { useStateContext } from '../context/ContextProvider'
 /**
  * For now this functionality hasn't been confirmed to make it into the final build
  * Email login will inevitably have to come with 'forgot password' functionality
+ * TODO: Password strength checking
+ * TODO: Limit num of login attempts and link to the 'forgot password' functionality 
  */
 
 const EmailLogin = () => {
