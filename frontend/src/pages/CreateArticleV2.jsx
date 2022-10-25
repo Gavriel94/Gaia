@@ -4,8 +4,11 @@ import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner } fr
 import API from '../API'
 import { useStateContext } from '../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
+import { BsCardImage } from 'react-icons/bs'
 
-// Get HTTP response, and load article detail page for new post
+/**
+ * TODO: Make tags field split with ',' and only allow 5
+ */
 
 const CreateArticleV2 = () => {
 
@@ -13,6 +16,7 @@ const CreateArticleV2 = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
+  const [previewImage, setPreviewImage] = useState(undefined)
   const [submit, setSubmit] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [IDSet, setIDSet] = useState(false)
@@ -40,14 +44,22 @@ const CreateArticleV2 = () => {
     setTags(e)
   }
 
+  const handleImageUpload = e => {
+    setPreviewImage(e.target.files[0])
+  }
+
   async function handleSubmit() {
-    const article = {
-      title: title,
-      content: content,
-      tags: tags,
-    }
+    let newArticle = new FormData()
+    newArticle.append('title', title)
+    newArticle.append('content', content)
+    newArticle.append('tags', tags)
+    newArticle.append('preview_image', previewImage)
     try {
-      var id = await API.post("/create/", { ...article }).then(response => id =response.data.id)
+      var id = await API.post("/create/", newArticle, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      }).then(response => id = response.data.id)
       setID(id)
       confirmSubmit()
     } catch (err) {
@@ -60,6 +72,9 @@ const CreateArticleV2 = () => {
   const loadNew = () => {
     setIDSet(true)
   }
+
+
+
 
   return (
     <>
@@ -96,7 +111,29 @@ const CreateArticleV2 = () => {
         <div className='flex justify-center'>
           <div className='pt-20'>
             <Title text={'Create'} size={'text-6xl'} />
-            <div className='mt-20'>
+
+
+
+            <div className='flex justify-center mt-20'>
+              <p className='rounded-full focus:outline-none
+              bg-light-orange hover:bg-light-white  
+              text-light-white dark:bg-dark-orange dark:text-white 
+                w-[100px] py-2 px-4 text-xl font-bold cursor-pointer z-0 absolute content-center'>
+                <div className='flex justify-center'>
+                  <BsCardImage size={'26px'} />
+                </div>
+              </p>
+              <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
+            </div>
+            <div className={`${previewImage === undefined ? 'block mt-2' : 'hidden'}`}>
+                <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
+                </p>
+              </div>
+
+
+
+            <div className='py-5'>
               <InputField
                 required={true}
                 type='input'

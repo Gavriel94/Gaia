@@ -65,6 +65,9 @@ const ArticleDetail = () => {
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20'>
                         <Title text={`${article.title}`} size={'text-6xl'} />
+                        <div>
+                        <img src ={`${article.preview_image}`} alt="" height={'200px'} width={'200px'}/>
+                        </div>
                         <div className='mt-20 overflow-auto '>
                             {parser(article.content)}
                         </div>

@@ -13,6 +13,7 @@ const ArticleView = () => {
                     title={article.title}
                     content={article.content}
                     tags={article.tags}
+                    image={article.preview_image}
                 />
             </div>
         )

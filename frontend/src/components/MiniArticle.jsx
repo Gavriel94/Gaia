@@ -11,32 +11,14 @@ import parser from 'html-react-parser'
  * Similar to the trending cards but can display in an order the user desires (new/popular etc)
  */
 
-const MiniArticle = ({ id, title, content, tags }) => {
+const MiniArticle = ({ id, title, content, tags, image }) => {
 
     function shortenContent(content) {
         let reducedContent = ''
-        if (content.length > 80) {
-            reducedContent = content.slice(0, 80) + '...'
+        if (content.length > 120) {
+            reducedContent = content.slice(0, 120) + '...'
         }
         return reducedContent
-    }
-
-    const putLike = () => {
-        API.patch(`/articles/${id}/like`).catch((error) => {
-            if (error.response) {
-                console.log(error.response.data)
-            }
-        })
-        console.log("like pressed")
-    }
-
-    const putDislike = () => {
-        API.patch(`/articles/${id}/`).then(response => { console.log(response.data) })
-            .catch((error) => {
-                if (error.response) {
-                    console.log(error.response.data)
-                }
-            })
     }
 
     return (
@@ -44,7 +26,7 @@ const MiniArticle = ({ id, title, content, tags }) => {
             <div>
                 <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 sm:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
-                        <Title text={title} size={'text-2xl'} />
+                        <Title text={title} size={'text-2xl'} /> <img src ={`${image}`} alt="" height={'80'} width={'80'}/>
                         <div className='mt-10 text-center text-black dark:text-light-white'>
                             {content.length > 80 ? shortenContent(parser(content)) : parser(content)}
                         </div>
