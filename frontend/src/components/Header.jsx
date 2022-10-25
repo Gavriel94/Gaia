@@ -36,21 +36,23 @@ const Header = ({ page }) => {
                     <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <RefreshArticles />
                         </div>
-                        <div className={`${page === 'home' ? 'block' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`${page === 'home' ? 'block pr-2' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <SortingButton />
                         </div>
-                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} px-4 py-3`}>
-                            <LoginButton />
-                        </div>
-                        <div className={`py-3 px-2 sm:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`py-3 px-2 xl:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <Link to={'/trending'}>
                                 <Button
                                     title={'Trending'}
                                     icon={<BiTrendingUp size={'26px'} />}
+                                    label={'Trending'}
+                                    labelProps={'text-sm pt-1 pl-2'}
                                 />
                             </Link>
                         </div>
-                        <div className={`${page !== 'landing' && 'hidden'} py-3 px-2 ${!showSkip && 'hidden'}`}>
+                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} pr-2 py-3`}>
+                            <LoginButton />
+                        </div>
+                        <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkip && 'hidden'}`}>
                             <Link to={'/home'}>
                                 <button
                                     type='button'

@@ -45,6 +45,10 @@ const CreateArticleV2 = () => {
   }
 
   const handleImageUpload = e => {
+    if(e.target.files[0].size > 8192) {
+      alert('Image must be less than 8MB')
+      return
+    }
     setPreviewImage(e.target.files[0])
   }
 

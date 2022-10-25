@@ -68,7 +68,7 @@ const ArticleDetail = () => {
                         <div>
                         <img src ={`${article.preview_image}`} alt="" height={'200px'} width={'200px'}/>
                         </div>
-                        <div className='mt-20 overflow-auto '>
+                        <div className='mt-20'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>

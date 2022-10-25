@@ -18,19 +18,19 @@ import { useStateContext } from '../context/ContextProvider'
 
 const Sidebar = () => {
     const { setScreenSize, darkMode, sidebarOpen, setSidebarOpen } = useStateContext();
-    const [sidebarButton, setSidebarButton] = useState(<BsArrowRight size={'26px'}/>) //arrow right as sidebar closed by default
+    const [sidebarButton, setSidebarButton] = useState(<BsArrowRight size={'26px'} />) //arrow right as sidebar closed by default
     const sidebarItems = [
         {
             name: 'home',
-            icon: <AiOutlineHome size={'26px'}/>,
+            icon: <AiOutlineHome size={'26px'} />,
         },
         {
             name: 'create',
-            icon: <BsPen size={'26px'}/>,
+            icon: <BsPen size={'26px'} />,
         },
         {
             name: 'about',
-            icon: <FiInfo size={'26px'}/>,
+            icon: <FiInfo size={'26px'} />,
         },
     ];
 
@@ -42,13 +42,13 @@ const Sidebar = () => {
     }, [setScreenSize]);
 
     const handleOpenSidebar = () => {
-        if(sidebarOpen) {
+        if (sidebarOpen) {
             setSidebarOpen(false)
-            setSidebarButton(<BsArrowRight size={'26px'}/>)
+            setSidebarButton(<BsArrowRight size={'26px'} />)
         }
         else {
             setSidebarOpen(true)
-            setSidebarButton(<BsArrowLeft size={'26px'}/>)
+            setSidebarButton(<BsArrowLeft size={'26px'} />)
         }
     }
 
@@ -56,8 +56,8 @@ const Sidebar = () => {
         <div className={`h-full w-72 fixed bg-opacity-100 hidden sm:block`}>
             <div
                 className={`absolute left-0 h-full border-r-1 border-light-orange dark:border-dark-orange 
-                ${sidebarOpen ? 'w-72 duration-500' : 'w-20 duration-500'}` 
-            }
+                ${sidebarOpen ? 'w-72 duration-500' : 'w-20 duration-500'}`
+                }
             >
                 <div className='dark:bg-dark-grey-lighter h-full'>
                     <div className={`absolute -right-3 top-4 w-9 hidden xl:block`}>
@@ -82,14 +82,14 @@ const Sidebar = () => {
                                 to={`/${item.name}`}
                                 key={item.name}
                                 className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
-                  gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default mt-2 overflow-auto'
+                                gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default mt-2 overflow-auto'
                             >
-                             <span className={`${!sidebarOpen && 'duration-500'} ease-in-out duration-500 origin-left font-semibold text-xl`}>
-                                {item.icon}
-                            </span> 
-                            <span className={`${!sidebarOpen && 'hidden'} flex ease-in-out duration-500 origin-left font-semibold text-xl`}>
-                                {item.name}
-                            </span>
+                                <span className={`${!sidebarOpen && 'duration-500'} ease-in-out duration-500 origin-left font-semibold text-xl`}>
+                                    {item.icon}
+                                </span>
+                                <span className={`${!sidebarOpen && 'hidden'} flex ease-in-out duration-500 origin-left font-semibold text-xl`}>
+                                    {item.name}
+                                </span>
                             </Link>
                         ))}
                     </div>
