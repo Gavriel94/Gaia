@@ -34,8 +34,8 @@ const ArticleDetail = () => {
     }, [])
 
     const formatDate = (e) => {
-        const year = e?.substring(0,4)
-        const month = e?.substring(5,7)
+        const year = e?.substring(0, 4)
+        const month = e?.substring(5, 7)
         const day = e?.substring(8, 10)
         const hour = e?.substring(11, 13)
         const minute = e?.substring(14, 16)
@@ -58,25 +58,30 @@ const ArticleDetail = () => {
     else {
         return (
             <>
-                <div className='fixed justify-center m-auto left-0 right-0 '>
+                <div className='fixed justify-center m-auto left-0 right-0'>
                     <Header />
                     <Sidebar />
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20'>
-                        <Title text={`${article.title}`} size={'text-6xl'} />
-                        <div>
-                        <img src ={`${article.preview_image}`} alt="" height={'200px'} width={'200px'}/>
+                        {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
+                        <div className='flex justify-center flex-row'>
+                            <div className='pt-5'>
+                                <Title text={`${article.title}`} size={'text-6xl'} />
+                            </div>
+                            <div className='pr-2 sm:pr-0 pl-2 md:pl-10'>
+                                <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
+                            </div>
                         </div>
-                        <div className='mt-20'>
+                        <div className='mt-20 justify-center content-center text-center pl-20 w-[400px] sm:w-[600px] xl:w-[1000px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
                             tags: {article.tags}
                         </div>
                         <div className='flex justify-center mt-10'>
-                        {console.log('pubdate here')}
-                            {formatDate(article.pub_date)} 
+                            {console.log('pubdate here')}
+                            {formatDate(article.pub_date)}
                         </div>
                         <div className='mt-10 flex flex-row justify-center'>
                             <div className='px-2'>
