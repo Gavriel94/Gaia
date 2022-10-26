@@ -11,10 +11,11 @@ const Home = () => {
     const [topLoaderVisible, setTopLoaderVisible] = useState(false)
 
     // shows TopLoader after scrolling down the page
-    useEffect(() => {
-        window.addEventListener("scroll", listenToScroll)
-        return () => window.removeEventListener("scroll", listenToScroll)
-    }, [])
+    //! Re-renders ArticleView component when reaching top and bottom of page
+    // useEffect(() => {
+    //     window.addEventListener("scroll", listenToScroll)
+    //     return () => window.removeEventListener("scroll", listenToScroll)
+    // }, [])
 
     const listenToScroll = () => {
         let showFrom = 300
@@ -46,6 +47,7 @@ const Home = () => {
     if (articleList.length === 0) {
         return (
             <>
+                <div className='mt-20'/>
                 <Title text={'home'} size={'text-6xl'} />
                 <ArticleLoading pageTitle={'Home'} />
                 {/* {serverTimeout()} */}
