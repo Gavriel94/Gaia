@@ -5,7 +5,7 @@ import React from 'react'
  * borderColor must be defined as the whole Tailwind class string 'border-x'
  */
 
-const InputField = ({ required, type, placeholder, defaultValue, onChange, borderColor }) => {
+const InputField = ({ required, type, placeholder, defaultValue, onChange, borderColor, autoComplete }) => {
     return (
 
         <div className={`border-4 ${borderColor === undefined ? 'border-light-orange' : borderColor} rounded-lg`}>
@@ -16,6 +16,7 @@ const InputField = ({ required, type, placeholder, defaultValue, onChange, borde
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 onChange={onChange}
+                autoComplete={autoComplete}
             />
         </div>
     )

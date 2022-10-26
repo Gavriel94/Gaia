@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Header, InputField, Title, LoadingSpinner, Button } from '../components'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
 import { useStateContext } from '../context/ContextProvider'
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 
 /**
  * For now this functionality hasn't been confirmed to make it into the final build
@@ -17,6 +18,8 @@ const EmailLogin = () => {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [submit, setSubmit] = useState(false)
     const [submitted, setSubmitted] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [showPasswordIcon, setShowPasswordIcon] = useState(<AiOutlineEye />)
 
     // password validity checks
     const [containsUL, setContainsUL] = useState(false) // uppercase letter
@@ -39,6 +42,17 @@ const EmailLogin = () => {
 
     const handleConfirmPassword = (e) => {
         setConfirmPassword(e)
+    }
+
+    const handleShowPassword = () => {
+        if (showPassword) {
+            setShowPassword(false)
+            setShowPasswordIcon(<AiOutlineEye />)
+        } else {
+            setShowPassword(true)
+
+            setShowPasswordIcon(<AiOutlineEyeInvisible />)
+        }
     }
 
     function sleep(ms) {
@@ -91,7 +105,7 @@ const EmailLogin = () => {
                 <Header page={'login'} />
             </div>
             <div className='flex justify-center'>
-                <div className='pt-20'>
+                <form className='pt-20'>
                     <Title text={'Login'} size={'text-6xl'} />
                     <div className='mt-20'>
                         <InputField
@@ -100,37 +114,37 @@ const EmailLogin = () => {
                             placeholder={'Email'}
                             defaultValue={''}
                             onChange={e => handleEmail(e.target.value)}
+                            autoComplete={'email'}
                         />
                     </div>
-                    <div className='mt-5'>
+                    <div className='mt-5 flex'>
                         <InputField
                             required={true}
-                            type={'password'}
+                            type={`${showPassword ? 'text' : 'password'}`}
                             placeholder={'Password'}
                             defaultValue={''}
                             onChange={e => handlePassword(e.target.value)}
+                            autoComplete={'password'}
                         />
                     </div>
                     <div className={`mt-5 ${password === '' ? 'hidden' : 'block'} flex flex-row`}>
                         <InputField
                             required={true}
-                            type={'password'}
+                            type={`${showPassword ? 'text' : 'password'}`}
                             placeholder={'Confirm password'}
                             defaultValue={''}
                             onChange={e => handleConfirmPassword(e.target.value)}
                             borderColor={`${password === confirmPassword && confirmPassword !== '' ? 'border-light-green' : 'border-light-red'}`}
+                            autoComplete={'password'}
                         />
-                    </div>
-                    <div className={`flex justify-center space mt-5 ${darkMode && 'text-white'} ${password === confirmPassword && confirmPassword !== '' ? 'block' : 'hidden'}`}>
-                        Passwords match
-                        <div className='px-5'>
-                            <BsFillCheckCircleFill size={'26px'} />
+                        <div className={`pl-10 ${password !== '' ? 'block mt-3' : 'hidden'}`}>
+                            <Button icon={showPasswordIcon} func={() => handleShowPassword()} />
                         </div>
                     </div>
                     <div className='flex justify-center py-5'>
                         <Button label={'Submit'} func={handleSubmit} />
                     </div>
-                </div>
+                </form>
             </div>
         </>
     )
