@@ -45,7 +45,7 @@ const CreateArticleV2 = () => {
   }
 
   const handleImageUpload = e => {
-    if(e.target.files[0].size > 8192) {
+    if (e.target.files[0].size > 800000) {
       alert('Image must be less than 8MB')
       return
     }
@@ -67,9 +67,7 @@ const CreateArticleV2 = () => {
       setID(id)
       confirmSubmit()
     } catch (err) {
-      console.log(err.response)
-      console.log(err.request)
-      console.log(err.message)
+      console.log(err)
     }
   }
 
@@ -130,10 +128,10 @@ const CreateArticleV2 = () => {
               <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
             </div>
             <div className={`${previewImage === undefined ? 'block mt-2' : 'hidden'}`}>
-                <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
-                </p>
-              </div>
+              <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
+              </p>
+            </div>
 
 
 
