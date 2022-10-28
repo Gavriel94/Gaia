@@ -112,7 +112,7 @@ const CreateArticleV2 = () => {
         </div>
         <div className='flex justify-center'>
           <div className='pt-20'>
-            <Title text={'Create'} size={'text-6xl'} />
+            <Title text={title} size={'text-6xl'} />
 
 
 
@@ -132,9 +132,6 @@ const CreateArticleV2 = () => {
                 <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
               </p>
             </div>
-
-
-
             <div className='py-5'>
               <InputField
                 required={true}
@@ -174,7 +171,7 @@ const CreateArticleV2 = () => {
                 <Button label={'Submit'} func={handleSubmit} />
               </div>
               <div className='flex justify-center pb-20 sm:pb-10'>
-                <p className='text-center mt-2 text-black dark:text-white select-none'>Unsure how to start? Read the full <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
+                <p className='text-center mt-2 text-black dark:text-white select-none'>Articles must comply with the terms of service. Find out more in the <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@ const MiniArticle = ({ id, title, content, tags, image }) => {
                         <div className='flex'>
                             <div className='w-2/3'>
                                 <div>
-                                    <Title text={title} size={'text-2xl'} />
+                                    <Title text={title} size={'text-3xl'} />
                                 </div>
                                 <div className='mt-10 text-center text-black dark:text-light-white'>
                                     {contentPreview()}

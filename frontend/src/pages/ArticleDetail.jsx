@@ -41,10 +41,6 @@ const ArticleDetail = () => {
         const minute = e?.substring(14, 16)
         const seconds = e?.substring(17, 19)
 
-        console.log(hour)
-        console.log(minute)
-        console.log(seconds)
-
         return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
     }
 
@@ -63,7 +59,7 @@ const ArticleDetail = () => {
                     <Sidebar />
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
-                    <div className='pt-20'>
+                    <div className='pt-20 justify-center mx-autow-full'>
                         {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
                         <div className='flex justify-center flex-row'>
                             <div className='pt-5'>
@@ -73,14 +69,14 @@ const ArticleDetail = () => {
                                 <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
                             </div>
                         </div>
-                        <div className='mt-20 justify-center content-center text-center pl-20 w-[400px] sm:w-[600px] xl:w-[1000px]'>
+                        <div className='mt-20'/>
+                        <div className='justify-center content-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
                             tags: {article.tags}
                         </div>
                         <div className='flex justify-center mt-10'>
-                            {console.log('pubdate here')}
                             {formatDate(article.pub_date)}
                         </div>
                         <div className='mt-10 flex flex-row justify-center'>
@@ -92,7 +88,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='flex justify-center pt-5 pb-20 sm:pb-10'>
-                            <Button label={"Back"}
+                            <Button label={"Home"}
                                 func={() => history(-1)}
                             />
                         </div>

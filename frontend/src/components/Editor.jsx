@@ -112,7 +112,7 @@ const MenuBar = ({ editor }) => {
                         !editor.can()
                             .chain()
                             .focus()
-                            .toggleItalic()
+                            .toggleUnderline()
                             .run()
                     }
                     className={editor.isActive('underline') ? 'is-active' : 'editor'}
@@ -249,7 +249,7 @@ const Editor = ({ setContent }) => {
 
     return (
         <>
-            <div className='border-2 rounded-lg border-light-orange dark:border-dark-orange pt-5 pl-5 pr-5 bg-white'>
+            <div className='border-4 rounded-lg border-light-orange dark:border-dark-orange pt-5 pl-5 pr-5 bg-white'>
                 <div className='border-b-2 border-light-orange mb-5'>
                     <MenuBar editor={editor} />
                 </div>
