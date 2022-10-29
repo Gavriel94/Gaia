@@ -15,7 +15,11 @@ const CreateArticleV2 = () => {
   const { darkMode } = useStateContext()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [tags, setTags] = useState('')
+
+  const [tagInput, setTagInput] = useState('')
+  const [tags, setTags] = useState([])
+  const [deleteOneTag, setDeleteOneTag] = useState(false)
+
   const [previewImage, setPreviewImage] = useState(undefined)
   const [submit, setSubmit] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -40,8 +44,8 @@ const CreateArticleV2 = () => {
     setTitle(e)
   }
 
-  const handleTags = (e) => {
-    setTags(e)
+  const deleteTag = (index) => {
+    setTags(prevState => prevState.filter((tag, i) => i !== index))
   }
 
   const handleImageUpload = e => {
@@ -113,9 +117,6 @@ const CreateArticleV2 = () => {
         <div className='flex justify-center'>
           <div className='pt-20'>
             <Title text={title} size={'text-6xl'} />
-
-
-
             <div className='flex justify-center mt-20'>
               <p className='rounded-full focus:outline-none
               bg-light-orange hover:bg-light-white  
@@ -155,12 +156,53 @@ const CreateArticleV2 = () => {
               </div>
               <div className='py-5' />
               <InputField
+                id='tag field'
                 required={true}
                 type='input'
                 placeholder='Tags'
-                defaultValue={''}
-                onChange={e => handleTags(e.target.value)}
+                value={tagInput}
+                onChange={(e) => {
+                  const { value } = e.target
+                  setTagInput(value)
+                }}
+                onKeyDown={(e) => {
+                  const { key } = e
+                  const trimmedInput = tagInput.trim()
+                  if (key === ',' && trimmedInput.length && !tags.includes(trimmedInput)) {
+                    e.preventDefault() //makes sure a comma is not added to the tag
+                    setTags(prevState => [...prevState, trimmedInput])
+                    setTagInput('')
+                  }
+                  if (key === 'Backspace' && tagInput.length && tags.length) {
+                    e.preventDefault() //doesn't delete a single character
+                    const tempTags = [...tags]
+                    const pop = tempTags.pop()
+                    setTags(tempTags)
+                    setTagInput(pop)
+                  }
+                  setDeleteOneTag(false)
+                }
+                }
+                onKeyUp={() => {
+                  setDeleteOneTag(true)
+                }}
               />
+              <div className='flex justify-center pt-5'>
+                {tags.map((tag, index) => <div className='px-2'>
+                  <div className='rounded-full focus:outline-none
+                  border-light-orange border-2 text-light-orange dark:text-dark-orange hover:bg-light-orange hover:text-light-orange 
+                  dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange py-2 px-2 text-sm font-bold transition-color duration-500'>
+                    <div className='grid grid-cols-2 space-x-2'>
+                      <div>
+                        {tag}
+                      </div>
+                      <button onClick={() => deleteTag(index)} className='bg-light-red rounded-full'>
+                        x
+                      </button>
+                    </div>
+                  </div>
+                </div>)}
+              </div>
               <div className={`${tags === '' ? 'block mt-2' : 'hidden'}`}>
                 <p className={`${darkMode && 'text-white'} flex justify-center`}>
                   <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter tags</span>
