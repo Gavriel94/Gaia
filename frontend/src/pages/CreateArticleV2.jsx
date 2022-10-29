@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner } from '../components'
+import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner, TagIcon } from '../components'
 import API from '../API'
 import { useStateContext } from '../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
 import { BsCardImage } from 'react-icons/bs'
-
-/**
- * TODO: Make tags field split with ',' and only allow 5
- */
+import { MdOutlineCancel } from 'react-icons/md'
 
 const CreateArticleV2 = () => {
 
@@ -16,9 +13,13 @@ const CreateArticleV2 = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
-  const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState([])
-  const [deleteOneTag, setDeleteOneTag] = useState(false)
+  const [tagInput, setTagInput] = useState('')
+  const [tagTooShort, setTagTooShort] = useState(undefined)
+  const [tagTooLong, setTagTooLong] = useState(undefined)
+  const [uniqueTag, setUniqueTag] = useState(undefined)
+  const [enoughTags, setEnoughTags] = useState(false)
+  const [tooManyTags, setTooManyTags] = useState(false)
 
   const [previewImage, setPreviewImage] = useState(undefined)
   const [submit, setSubmit] = useState(false)
@@ -42,6 +43,63 @@ const CreateArticleV2 = () => {
 
   const handleTitle = (e) => {
     setTitle(e)
+  }
+
+  const writeTag = (e) => {
+    const { key } = e
+    const trimmedInput = tagInput.trim()
+
+    if (trimmedInput.length < 2) {
+      setTagTooShort(true)
+      return
+    } else {
+      setTagTooShort(false)
+    }
+
+    if (trimmedInput.length > 9) {
+      setTagTooLong(true)
+      return
+    } else {
+      setTagTooLong(false)
+    }
+
+    if (tags.includes(trimmedInput)) {
+      setUniqueTag(false)
+      return
+    } else {
+      setUniqueTag(true)
+    }
+
+    if (tags.length < 1) {
+    } else {
+      setEnoughTags(true)
+    }
+
+    if (tags.length > 4) {
+      return
+    } else {
+      setTooManyTags(false)
+    }
+
+    if(trimmedInput.includes(',')) {
+      return
+    }
+
+    if (key === ',') {
+      e.preventDefault()
+      setTags(prevState => [...prevState, trimmedInput])
+      setTagInput('')
+    }
+  }
+
+  const splitTag = (e) => {
+    const { key } = e
+    const trimmedInput = tagInput.trim()
+    if (key === ',' && trimmedInput.length && !tags.includes(trimmedInput)) {
+      e.preventDefault() //makes sure a comma is not added to the tag
+      setTags(prevState => [...prevState, trimmedInput])
+      setTagInput('')
+    }
   }
 
   const deleteTag = (index) => {
@@ -118,14 +176,14 @@ const CreateArticleV2 = () => {
           <div className='pt-20'>
             <Title text={title} size={'text-6xl'} />
             <div className='flex justify-center mt-20'>
-              <p className='rounded-full focus:outline-none
+              <div className='rounded-full focus:outline-none
               bg-light-orange hover:bg-light-white  
               text-light-white dark:bg-dark-orange dark:text-white 
                 w-[100px] py-2 px-4 text-xl font-bold cursor-pointer z-0 absolute content-center'>
                 <div className='flex justify-center'>
                   <BsCardImage size={'26px'} />
                 </div>
-              </p>
+              </div>
               <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
             </div>
             <div className={`${previewImage === undefined ? 'block mt-2' : 'hidden'}`}>
@@ -165,47 +223,29 @@ const CreateArticleV2 = () => {
                   const { value } = e.target
                   setTagInput(value)
                 }}
-                onKeyDown={(e) => {
-                  const { key } = e
-                  const trimmedInput = tagInput.trim()
-                  if (key === ',' && trimmedInput.length && !tags.includes(trimmedInput)) {
-                    e.preventDefault() //makes sure a comma is not added to the tag
-                    setTags(prevState => [...prevState, trimmedInput])
-                    setTagInput('')
-                  }
-                  if (key === 'Backspace' && tagInput.length && tags.length) {
-                    e.preventDefault() //doesn't delete a single character
-                    const tempTags = [...tags]
-                    const pop = tempTags.pop()
-                    setTags(tempTags)
-                    setTagInput(pop)
-                  }
-                  setDeleteOneTag(false)
-                }
-                }
-                onKeyUp={() => {
-                  setDeleteOneTag(true)
-                }}
+                onKeyDown={(e) => writeTag(e)}
               />
               <div className='flex justify-center pt-5'>
-                {tags.map((tag, index) => <div className='px-2'>
-                  <div className='rounded-full focus:outline-none
-                  border-light-orange border-2 text-light-orange dark:text-dark-orange hover:bg-light-orange hover:text-light-orange 
-                  dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange py-2 px-2 text-sm font-bold transition-color duration-500'>
-                    <div className='grid grid-cols-2 space-x-2'>
-                      <div>
-                        {tag}
-                      </div>
-                      <button onClick={() => deleteTag(index)} className='bg-light-red rounded-full'>
-                        x
-                      </button>
-                    </div>
-                  </div>
-                </div>)}
+                {tags.map((tag, index) =>
+                  <div className='px-2'>
+                    <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />}/>
+                  </div>)}
               </div>
-              <div className={`${tags === '' ? 'block mt-2' : 'hidden'}`}>
+              <div className='flex justify-center dark:text-white pt-5'>
+              <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
+                  Tags must be between 3-10 characters
+              </div>
+              <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
+                  Add at least 2 tags
+              </div>
+              <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
+                  Too many tags!
+              </div>
+
+              </div>
+              <div className={`${tags.length === 0 ? 'block mt-2' : 'hidden'}`}>
                 <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter tags</span>
+                  <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Add up to 5 tags. Seperate them with a comma.</span>
                 </p>
               </div>
               <div className='py-5' />
@@ -223,4 +263,4 @@ const CreateArticleV2 = () => {
   )
 }
 
-export default CreateArticleV2
+export default CreateArticleV2 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Title, Sidebar, Header, Button } from "../components";
+import { Title, Sidebar, Header, Button, TagIcon } from "../components";
 import API from '../API'
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArticleLoading } from "../components";
 import { useStateContext } from "../context/ContextProvider";
 import parser from 'html-react-parser'
@@ -14,6 +14,7 @@ import parser from 'html-react-parser'
  * TODO: Sidebar with details about the author, (wallet address or handle, picture if they have one, otherwise default)
  * TODO: Tip button on the bottom denominating ADA
  * TODO: Fix pub_date to be a 24 hour clock. (Needs to be done in Django)
+ * TODO: Link to tags needs implementation
  */
 
 const ArticleDetail = () => {
@@ -44,6 +45,21 @@ const ArticleDetail = () => {
         return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
     }
 
+    const formatTags = (e) => {
+        var tagList = []
+        const tagString = e?.split(',')
+        tagString?.forEach(tag => tagList.push(tag))
+        console.log(tagList)
+        return (
+            tagList.map((tag) =>
+                <div className='px-2'>
+                    <Link>
+                        {tag}
+                    </Link>
+                </div>)
+        )
+    }
+
     if (article === '') {
         return (
             <>
@@ -69,12 +85,13 @@ const ArticleDetail = () => {
                                 <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
                             </div>
                         </div>
-                        <div className='mt-20'/>
+                        <div className='mt-20' />
                         <div className='justify-center content-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
-                            tags: {article.tags}
+                            tags: {formatTags(article.tags)}
+                            {/* tags: {article.tags} */}
                         </div>
                         <div className='flex justify-center mt-10'>
                             {formatDate(article.pub_date)}
