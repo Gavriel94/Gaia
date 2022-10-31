@@ -92,16 +92,6 @@ const CreateArticleV2 = () => {
     }
   }
 
-  const splitTag = (e) => {
-    const { key } = e
-    const trimmedInput = tagInput.trim()
-    if (key === ',' && trimmedInput.length && !tags.includes(trimmedInput)) {
-      e.preventDefault() //makes sure a comma is not added to the tag
-      setTags(prevState => [...prevState, trimmedInput])
-      setTagInput('')
-    }
-  }
-
   const deleteTag = (index) => {
     setTags(prevState => prevState.filter((tag, i) => i !== index))
   }
@@ -228,19 +218,19 @@ const CreateArticleV2 = () => {
               <div className='flex justify-center pt-5'>
                 {tags.map((tag, index) =>
                   <div className='px-2'>
-                    <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />}/>
+                    <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />} />
                   </div>)}
               </div>
               <div className='flex justify-center dark:text-white pt-5'>
-              <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
+                <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
                   Tags must be between 3-10 characters
-              </div>
-              <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
+                </div>
+                <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
                   Add at least 2 tags
-              </div>
-              <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
+                </div>
+                <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
                   Too many tags!
-              </div>
+                </div>
 
               </div>
               <div className={`${tags.length === 0 ? 'block mt-2' : 'hidden'}`}>
