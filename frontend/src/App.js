@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useStateContext } from './context/ContextProvider';
-import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, CreateArticle, Trending, UnresolvedPath, CreateArticleV2 } from './pages'
-import EmailLogin from './pages/EmailLogin';
-// /**
-//  * App function with routing
-//  */
+import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, Trending, UnresolvedPath, CreateArticleV2, EmailUserRegister, UserProfile } from './pages'
+
+/**
+* App function with routing
+*/
 
 function App() {
 
@@ -24,8 +24,9 @@ function App() {
             <Route path='/articles/:id/' element={<ArticleDetail />} />
             <Route path='/create' element={<CreateArticleV2 />} />
             <Route path='/trending' element={<Trending />} />
-            <Route path='/login' element={<EmailLogin />} />
+            <Route path='/login' element={<EmailUserRegister />} />
             <Route path={'*'} element={<UnresolvedPath />} />
+            <Route path='/profiles/:id/' element={<UserProfile/>} />
           </Routes>
         </BrowserRouter>
       </div>
