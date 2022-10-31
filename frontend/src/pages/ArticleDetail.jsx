@@ -86,7 +86,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='mt-20' />
-                        <div className='justify-center content-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
+                        <div className='justify-center content-center text-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
