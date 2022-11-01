@@ -14,14 +14,21 @@ import { useStateContext } from '../context/ContextProvider'
 const UserProfile = () => {
   const { darkMode } = useStateContext()
   const [profile, setProfile] = useState('')
-  const { id } = useParams()
+  const { sessionToken } = useStateContext()
 
   useEffect(() => {
     const profileDetail = () => {
-      API.get(`/profiles/${id}`).then((res) => {
+      console.log(sessionToken)
+      API.get(`/profile/user`, {
+        headers: {
+          'Authorization': `Token ${sessionToken}`
+        }
+      }
+      ).then((res) => {
         setProfile(res.data)
-      }).catch(console.error)
+      }).catch(console.err)
     }
+
     profileDetail()
   }, [])
 

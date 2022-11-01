@@ -104,6 +104,10 @@ const CreateArticleV2 = () => {
     setPreviewImage(e.target.files[0])
   }
 
+  /**
+   * TODO: Get 'author' and add their details to the POST
+   */
+
   async function handleSubmit() {
     let newArticle = new FormData()
     newArticle.append('title', title)
@@ -111,7 +115,7 @@ const CreateArticleV2 = () => {
     newArticle.append('tags', tags)
     newArticle.append('preview_image', previewImage)
     try {
-      var id = await API.post("/create/", newArticle, {
+      var id = await API.post("articles/article/create/", newArticle, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -120,6 +124,9 @@ const CreateArticleV2 = () => {
       confirmSubmit()
     } catch (err) {
       console.log(err)
+      if(err.message.includes('401')) {
+        alert('you must login')
+      }
     }
   }
 

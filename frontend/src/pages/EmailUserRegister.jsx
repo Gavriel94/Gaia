@@ -5,6 +5,7 @@ import { useStateContext } from '../context/ContextProvider'
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import API from '../API'
 import { Link, Navigate } from 'react-router-dom'
+import defaultProfileImage from '../assets/fpngs/DefaultAvatar.png'
 
 /**
  * For now this functionality hasn't been confirmed to make it into the final build
@@ -42,6 +43,8 @@ const EmailUserRegister = () => {
 
     const [newUserID, setNewUserID] = useState('')
     const [newProfileSuccess, setNewProfileSuccess] = useState(false)
+
+    const [newUserToken, setNewUserToken] = useState('')
 
     const handleEmail = (e) => {
         setEmail(e)
@@ -95,12 +98,15 @@ const EmailUserRegister = () => {
         newUser.append('bio', content)
         newUser.append('username', username)
         try {
-            var userID = await API.post("/profile/create", newUser, {
+            var id 
+            var userT = await API.post("/profile/user/create", newUser, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
-            }).then(response => userID = response.data.id)
-            setNewUserID(userID)
+            }).then(response => console.log(response))
+            // }).then(response => userID = response.data.id)
+            setNewUserToken(userT)
+            setNewUserID(id)
             confirmSubmit()
         } catch (err) {
             console.log(err.response.data)
@@ -120,7 +126,7 @@ const EmailUserRegister = () => {
             {
                 moreOptions && (
                     <>
-                        <form className='pt-20'>
+                        <form className='pt-20' required={false}>
                             <Title text={'Details'} size={'text-6xl'} />
                             <div className='flex justify-center mt-20'>
                                 <div className='rounded-full focus:outline-none
@@ -131,7 +137,7 @@ const EmailUserRegister = () => {
                                         <BsCardImage size={'26px'} />
                                     </div>
                                 </div>
-                                <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
+                                <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
                             </div>
                             <Editor setContent={setContent} />
                         </form>
@@ -143,7 +149,7 @@ const EmailUserRegister = () => {
             {
                 newProfileSuccess && (
                     <>
-                        <Navigate to={`/profiles/${newUserID}`} replace={true} />
+                        <Navigate to={`/profiles/${newUserID}}`} replace={true} />
                     </>
                 )
             }
@@ -172,7 +178,7 @@ const EmailUserRegister = () => {
                     </div>
                     <div className='flex justify-center'>
                         <form className='pt-20'>
-                            <Title text={'Login'} size={'text-6xl'} />
+                            <Title text={'Register'} size={'text-6xl'} />
                             <div className='mt-20'>
                                 <InputField
                                     required={true}
@@ -205,7 +211,7 @@ const EmailUserRegister = () => {
                                 />
                             </div>
                             <div className={`${confirmPassword !== '' ? 'hidden' : 'mt-5 dark:text-white'}`}>
-                                Already have an account? <Link style={{ textDecoration: 'none' }} >Login</Link>
+                                Already have an account? <Link to={'/login'} style={{ textDecoration: 'none' }} >Login</Link>
                             </div>
                             <div className={`${password !== '' ? 'flex mt-3 justify-center' : 'hidden'}`}>
                                 <Button icon={showPasswordIcon} func={() => handleShowPassword()} label={showPasswordString} labelProps={'text-base pl-2'} />
@@ -217,7 +223,6 @@ const EmailUserRegister = () => {
                         </form>
                     </div>
                 </div>
-
             }
         </>
     )

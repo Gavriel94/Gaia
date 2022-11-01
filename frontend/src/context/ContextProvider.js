@@ -43,6 +43,7 @@ export const ContextProvider = ({ children }) => {
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
     const [adaHandleSelected, setAdaHandleSelected] = useState('')
     const [refreshing, setRefreshing] = useState(false)
+    const [sessionToken, setSessionToken] = useState('')
 
     /**
      * State variables for connecting a wallet
@@ -103,7 +104,7 @@ export const ContextProvider = ({ children }) => {
      */
     useEffect(() => {
         const refreshArticles = () => {
-            API.get('/articles/')
+            API.get('/articles/all/')
                 .then((res) => {
                     setArticleList(res.data)
                 })
@@ -128,7 +129,8 @@ export const ContextProvider = ({ children }) => {
                 showErrorAlert, setShowErrorAlert,
                 displayAdaHandle, setDisplayAdaHandle,
                 adaHandleSelected, setAdaHandleSelected,
-                refreshing, setRefreshing
+                refreshing, setRefreshing,
+                sessionToken, setSessionToken,
             }}
         >
             {children}

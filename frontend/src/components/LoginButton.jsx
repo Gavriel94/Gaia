@@ -78,7 +78,7 @@ const LoginButton = () => {
         showLogoutAlert, setshowLogoutAlert,
         showErrorAlert, setShowErrorAlert,
         displayAdaHandle, setDisplayAdaHandle,
-        adaHandleSelected, setAdaHandleSelected
+        adaHandleSelected, setAdaHandleSelected,
     } = useStateContext()
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
     const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
@@ -711,7 +711,7 @@ const LoginButton = () => {
                                 </button>
                             </div>
                             <div className='block justify-center pt-5'>
-                                <Link to={'/login'}>
+                                <Link to={'/register'}>
                                     <button
                                         type='button'
                                         className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-60 rounded-full duration-150 ease-in-out p-3'>

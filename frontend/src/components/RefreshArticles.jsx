@@ -19,7 +19,7 @@ const RefreshArticles = () => {
         setButtonIcon(<LoadingSpinner />)
         setRefreshing(true)
         await sleep(2000);
-        API.get('/articles/')
+        API.get('/articles/all/')
         .then((res) => {
             setArticleList(res.data)
         })

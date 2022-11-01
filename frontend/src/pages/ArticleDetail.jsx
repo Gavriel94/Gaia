@@ -25,7 +25,7 @@ const ArticleDetail = () => {
 
     useEffect(() => {
         const articleDetail = () => {
-            API.get(`/articles/${id}`)
+            API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
                 })
@@ -49,10 +49,10 @@ const ArticleDetail = () => {
         var tagList = []
         const tagString = e?.split(',')
         tagString?.forEach(tag => tagList.push(tag))
-        console.log(tagList)
+
         return (
             tagList.map((tag) =>
-                <div className='px-2'>
+                <div key={tag} className='px-2'>
                     <Link>
                         {tag}
                     </Link>

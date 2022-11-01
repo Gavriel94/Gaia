@@ -17,7 +17,7 @@ import RefreshArticles from './RefreshArticles'
  */
 
 const Header = ({ page }) => {
-    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert } = useStateContext();
+    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, sessionToken } = useStateContext();
     const [showSkip, setShowSkip] = useState(true)
     let history = useNavigate()
 
