@@ -60,12 +60,16 @@ import {
     TransactionBuilderConfig
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../context/ContextProvider'
+import API from '../API'
 let Buffer = require('buffer/').Buffer
 
 
 /**
  * TODO: Hardcode which wallets are allowed (typhoncip30, eternl & nami) instead of polling the browser
- *
+ * TODO: Create a new model which is a Web3 User: 
+ * ?   Require walletAddress 
+ * ?   Return sessionToken
+ * ?   
  */
 
 const LoginButton = () => {
@@ -79,6 +83,11 @@ const LoginButton = () => {
         showErrorAlert, setShowErrorAlert,
         displayAdaHandle, setDisplayAdaHandle,
         adaHandleSelected, setAdaHandleSelected,
+        sessionToken, setSessionToken,
+        walletUser, setWalletUser,
+        loggedInProfile, setLoggedInProfile,
+        adaHandleDetected, setadaHandleDetected,
+        adaHandleName, setadaHandleName,
     } = useStateContext()
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
     const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
@@ -87,10 +96,12 @@ const LoginButton = () => {
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
     const [logoutSuccessful, setLogoutSuccessful] = useState(false)
-    const [adaHandleDetected, setadaHandleDetected] = useState(false)
-    const [adaHandleName, setadaHandleName] = useState([])
+    // const [adaHandleDetected, setadaHandleDetected] = useState(false)
+    // const [adaHandleName, setadaHandleName] = useState([])
     const [showLoginOptionModal, setShowLoginOptionModal] = useState(false)
     const [loginOption, setLoginOption] = useState('')
+    const [addressAsID, setAddressAsID] = useState('')
+    const [userID, setUserID] = useState('')
     /**
      *  This is used to verify the ada handle and ensures it is legitamite 
      */
@@ -421,6 +432,14 @@ const LoginButton = () => {
         }
     }
 
+    const handleUserID = (e) => {
+        setAddressAsID(e)
+    }
+
+    const handleNewToken = (e) => {
+        setSessionToken(e)
+    }
+
     /**
      * Refresh data from the users wallet
      */
@@ -445,6 +464,7 @@ const LoginButton = () => {
                     const b = await getBalance()
                     console.log(walletAPI)
                     const ca = await getChangeAddress()
+                    handleUserID(ca)
                     // await getAssets()
                     // await getRewardAddresses()
                     // await getUsedAddresses()
@@ -465,8 +485,9 @@ const LoginButton = () => {
                         usedAddress: undefined,
                         walletAPI: walletAPI,
                     })
+                    //more
+                    authenticate()
                     // console.log(walletAPI)
-                    setLoading(false)
                 } else {
                     console.log('no wallet enabled')
                     clearWallet('error')
@@ -477,6 +498,82 @@ const LoginButton = () => {
             }
         } catch (err) {
             console.log(err)
+        }
+    }
+
+    const randomNumberGenerator = () => {
+        var num = Uint16Array(10)
+        Crypto.getRandomValue(num)
+        return num
+    }
+
+    const getUserProfile = (e) => {
+        console.log('prole', e)
+        API.get("/profile/user", {
+            headers: {
+                'Authorization': `Token ${e}`
+            },
+        }).then((res) => {
+            setLoggedInProfile(res.data)
+        }).catch(console.err)
+    }
+
+    const authenticate = async () => {
+        //Tries to login, if it fails, create a new account
+        let walletUser = new FormData()
+        console.log(connectedWallet.changeAddress)
+        console.log(addressAsID)
+        const ca = await getChangeAddress()
+        console.log(ca)
+        walletUser.append('username', ca)
+        walletUser.append('password', 'password') //run 'password' through hashing function on the server. Ensure no random seed 
+        walletUser.append('email', 'none1@gaia.com') // Email address must be random so maybe us rng? or delete it altogether?
+        walletUser.append('bio', 'walletUser')
+        // walletUser.append('profile_image', '')
+        try {
+            var userID
+            var sessionToken = await API.post("/profile/login", walletUser, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+            }).then(response => {
+                console.log(response)
+                sessionToken = response.data.token
+                console.log('in login', sessionToken)
+                userID = response.data.user.id
+                handleNewToken(response.data.token)
+                getUserProfile(response.data.token)
+            })
+            setUserID(userID)
+            setWalletUser(true)
+
+            setLoading(false)
+        } catch (err) {
+            if (err.response.status === 404) {
+                try {
+                    sessionToken = await API.post("profile/user/create", walletUser, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                    }).then(response => {
+                        sessionToken = response.data.token
+                        console.log('in create', sessionToken)
+                        handleNewToken(response.data.token)
+                        getUserProfile(response.data.token)
+                    })
+                    setUserID(userID)
+                    setWalletUser(true)
+                    getUserProfile()
+                    setLoading(false)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+            else {
+                console.log('response not 404', err)
+                console.log(err.response.data)
+            }
+            setLoading(false) //could display an error message
         }
     }
 
@@ -592,6 +689,7 @@ const LoginButton = () => {
             setadaHandleName([])
             setDisplayAdaHandle(false)
             setAdaHandleSelected(undefined)
+            setWalletUser(false)
             setLogoutSuccessful(true)
             if (reason === 'logout') {
                 displayLogoutAlert()
@@ -770,22 +868,23 @@ const LoginButton = () => {
 
                         <div className='justify-center pt-5 pl-5 pr-5' />
                         <div>
-                            <span className={`${darkMode && 'text-white'} block pt-2`}>
-                            This is free and does not give Gaia permission to access funds.
-                            <br/>
+                            <span className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
+                                This does not give Gaia permission to access funds.
+                                <br />
+                                <br />
+                                Cardano generates different addresses for different wallets.
+                                <br />
+                                Ensure you always use the same wallet for your Gaia profile.
+                                <br />
                             </span>
                         </div>
                         <div className='flex justify-center pt-10 pb-4'>
                             <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                         </div>
                     </div>
-
                 </Modal>
 
                 {/* Handles logout options */}
-                {/* !!
-                        Not configured for email 
-                */}
                 <div>
                     <Modal
                         isOpen={showWalletLogoutModal}
@@ -804,24 +903,29 @@ const LoginButton = () => {
                             <div className='pb-5 flex justify-center text-white'>
                                 Display ADA Handle?
                             </div>
-                            <div>{adaHandleName.map(key =>
-                                <div key={key} className='flex justify-center min-w-full pb-5'>
-                                    <div> {/** Could add className to hide handle if picked */}
-                                        <Button
-                                            label={'$' + key}
-                                            labelProps={'flex justify-center pl-5 pt-3'}
-                                            image={adaHandleLogo}
-                                            imageHeight={48}
-                                            imageWidth={48}
-                                            func={() => handleAdaHandleSelect(key)} />
+                            <div>
+                                {adaHandleName.map(key =>
+                                    <div key={key} className='flex justify-center min-w-full pb-5'>
+                                        <div> {/** Could add className to hide handle if picked */}
+                                            <Button
+                                                label={'$' + key}
+                                                labelProps={'flex justify-center pl-5 pt-3'}
+                                                image={adaHandleLogo}
+                                                imageHeight={48}
+                                                imageWidth={48}
+                                                func={() => handleAdaHandleSelect(key)} />
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-
+                                )}
                             </div>
                         </div>
                         <div className='flex justify-center pb-10 text-white'>
                             <p>{balanceInADA()}</p>
+                        </div>
+                        <div className={`flex justify-center pt-10 pb-4`}>
+                            <Link to={`/profiles/${loggedInProfile.id}`}>
+                                <Button label={'Profile'} />
+                            </Link>
                         </div>
                         <div className='flex flex-row space-x-10'>
                             <Button

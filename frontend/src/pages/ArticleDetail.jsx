@@ -15,6 +15,7 @@ import parser from 'html-react-parser'
  * TODO: Tip button on the bottom denominating ADA
  * TODO: Fix pub_date to be a 24 hour clock. (Needs to be done in Django)
  * TODO: Link to tags needs implementation
+ * TODO: Add author field
  */
 
 const ArticleDetail = () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useStateContext } from './context/ContextProvider';
-import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, Trending, UnresolvedPath, CreateArticleV2, EmailUserRegister, UserProfile, EmailLogin } from './pages'
+import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, Trending, UnresolvedPath, CreateArticleV2, UsernameUserRegister, UserProfile, UsernameLogin } from './pages'
 
 /**
 * App function with routing
@@ -24,8 +24,8 @@ function App() {
             <Route path='/articles/:id/' element={<ArticleDetail />} />
             <Route path='/create' element={<CreateArticleV2 />} />
             <Route path='/trending' element={<Trending />} />
-            <Route path='/register' element={<EmailUserRegister />} />
-            <Route path='/login' element={<EmailLogin />} />
+            <Route path='/register' element={<UsernameUserRegister />} />
+            <Route path='/login' element={<UsernameLogin />} />
             <Route path='/profiles/:id/' element={<UserProfile/>} />
 
             <Route path={'*'} element={<UnresolvedPath />} />

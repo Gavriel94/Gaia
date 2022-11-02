@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BsSun, BsMoon } from 'react-icons/bs'
-import Button from './Button'
 import { useStateContext } from '../context/ContextProvider'
 import { BiTrendingUp } from 'react-icons/bi'
-import LoginButton from './LoginButton'
-import SortingButton from './SortingButton'
 import { useNavigate } from 'react-router-dom'
 import RefreshArticles from './RefreshArticles'
-
+import { Button, LoginButton, SortingButton } from '../components'
+import { AiOutlineHome } from 'react-icons/ai'
 
 /**
  * Header component to be displayed on Home page
@@ -17,7 +15,7 @@ import RefreshArticles from './RefreshArticles'
  */
 
 const Header = ({ page }) => {
-    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, sessionToken } = useStateContext();
+    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, sessionToken, loggedInProfile, walletUser } = useStateContext();
     const [showSkip, setShowSkip] = useState(true)
     let history = useNavigate()
 
@@ -33,13 +31,13 @@ const Header = ({ page }) => {
             <div className='flex items-end flex-col'>
                 <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 opacity-100  sm:dark:bg-opacity-0 bg-white dark:bg-dark-grey'>
                     <div className='flex flex-row pr-10'>
-                    <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <RefreshArticles />
                         </div>
                         <div className={`${page === 'home' ? 'block pr-2' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <SortingButton />
                         </div>
-                        <div className={`py-3 px-2 xl:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`py-3 px-2 xl:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'}`}>
                             <Link to={'/trending'}>
                                 <Button
                                     title={'Trending'}
@@ -49,9 +47,20 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} pr-2 py-3`}>
+                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${sessionToken && !walletUser && 'hidden'} pr-2 py-3`}>
                             <LoginButton />
                         </div>
+                        <div className={`${sessionToken && !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' && 'hidden'}`}>
+                            <Link to={`/profiles/${loggedInProfile.id}`}>
+                                <Button label={'Profile'} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'26px'} imageWidth={'26px'} imageAlt={''}/>
+                            </Link>
+                            {/* If image/username then display blah blah blah */}
+                        </div>
+                        {/* <div className={`${page === 'user' ? 'block pr-2 py-3' : 'hidden'}`}>
+                            <Link to={'/home'}>
+                                <Button label={'Home'} labelProps={'text-sm pt-1 pl-2'} icon={<AiOutlineHome size={'26px'} />} />
+                            </Link>
+                        </div> */}
                         <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkip && 'hidden'}`}>
                             <Link to={'/home'}>
                                 <button

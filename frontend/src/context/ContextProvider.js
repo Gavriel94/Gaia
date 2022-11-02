@@ -42,8 +42,13 @@ export const ContextProvider = ({ children }) => {
     const [showErrorAlert, setShowErrorAlert] = useState(false)
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
     const [adaHandleSelected, setAdaHandleSelected] = useState('')
+
+    const [adaHandleDetected, setadaHandleDetected] = useState(false)
+    const [adaHandleName, setadaHandleName] = useState([])
+
     const [refreshing, setRefreshing] = useState(false)
     const [sessionToken, setSessionToken] = useState('')
+    const [walletUser, setWalletUser] = useState(false) //True if user uses wallet login
 
     /**
      * State variables for connecting a wallet
@@ -90,6 +95,15 @@ export const ContextProvider = ({ children }) => {
         coinsPerUtxoWord: "34482",
     })
 
+    const [loggedInProfile, setLoggedInProfile] = useState({
+        sessionToken: '',
+        id: '',
+        email: '',
+        username: '',
+        bio: '',
+        profile_image: ''
+    })
+
     useEffect(() => {
         if(darkMode) {
             document.body.classList.toggle('dark')
@@ -131,6 +145,10 @@ export const ContextProvider = ({ children }) => {
                 adaHandleSelected, setAdaHandleSelected,
                 refreshing, setRefreshing,
                 sessionToken, setSessionToken,
+                loggedInProfile, setLoggedInProfile,
+                walletUser, setWalletUser,
+                adaHandleDetected, setadaHandleDetected,
+                adaHandleName, setadaHandleName,
             }}
         >
             {children}

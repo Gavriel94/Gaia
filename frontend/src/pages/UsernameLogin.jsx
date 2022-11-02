@@ -5,8 +5,8 @@ import API from '../API'
 import { Navigate } from 'react-router-dom'
 import { useStateContext } from '../context/ContextProvider'
 
-const EmailLogin = () => {
-  const [email, setEmail] = useState('')
+const UsernameLogin = () => {
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [submit, setSubmit] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -18,8 +18,8 @@ const EmailLogin = () => {
 
   const { sessionToken, setSessionToken } = useStateContext()
 
-  const handleEmail = (e) => {
-    setEmail(e)
+  const handleUsername = (e) => {
+    setUsername(e)
   }
 
   const handlePassword = (e) => {
@@ -61,9 +61,9 @@ const EmailLogin = () => {
 
   async function handleSubmit() {
     let authUser = new FormData()
-    console.log(email)
+    console.log(username)
     console.log(password)
-    authUser.append('email', email)
+    authUser.append('username', username)
     authUser.append('password', password)
     try {
       var userID
@@ -112,10 +112,10 @@ const EmailLogin = () => {
                 <InputField
                   required={true}
                   type={'input'}
-                  placeholder={'Email'}
+                  placeholder={'Username'}
                   defaultValue={''}
-                  onChange={e => handleEmail(e.target.value)}
-                  autoComplete={'email'}
+                  onChange={e => handleUsername(e.target.value)}
+                  autoComplete={'username'}
                 />
               </div>
               <div className='mt-5'>
@@ -131,8 +131,8 @@ const EmailLogin = () => {
               <div className={`${password !== '' ? 'flex mt-3 justify-center' : 'hidden'}`}>
                 <Button icon={showPasswordIcon} func={() => handleShowPassword()} label={showPasswordString} labelProps={'text-base pl-2'} />
               </div>
-              {/* Temp. Refactor after proper email and password validation checks */}
-              <div className={`${email.length > 0 && password.length > 0 ? 'flex justify-center pt-10' : 'hidden'}`}>
+              {/* Temp. Refactor after proper username and password validation checks */}
+              <div className={`${username.length > 0 && password.length > 0 ? 'flex justify-center pt-10' : 'hidden'}`}>
                 <Button label={'Submit'} func={() => handleSubmit()} />
               </div>
             </form>
@@ -143,4 +143,4 @@ const EmailLogin = () => {
   )
 }
 
-export default EmailLogin
+export default UsernameLogin

@@ -14,7 +14,7 @@ import defaultProfileImage from '../assets/fpngs/DefaultAvatar.png'
  * TODO: Limit num of login attempts and link to the 'forgot password' functionality 
  */
 
-const EmailUserRegister = () => {
+const UsernameUserRegister = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -36,15 +36,20 @@ const EmailUserRegister = () => {
     const [allValid, setAllValid] = useState(false)
 
     const [moreOptions, setMoreOptions] = useState(false)
-    const [profileImage, setProfileImage] = useState(undefined)
+    const [profileImage, setProfileImage] = useState(defaultProfileImage)
     const [content, setContent] = useState('') //user bio
     const [username, setUsername] = useState('')
+    const [walletAddress, setWalletAddress] = useState('')
 
 
     const [newUserID, setNewUserID] = useState('')
     const [newProfileSuccess, setNewProfileSuccess] = useState(false)
 
-    const [newUserToken, setNewUserToken] = useState('')
+    const { sessionToken, setSessionToken } = useStateContext()
+
+    const handleUsername = (e) => {
+        setUsername(e)
+    }
 
     const handleEmail = (e) => {
         setEmail(e)
@@ -88,6 +93,13 @@ const EmailUserRegister = () => {
         }
     }
 
+    const handleNewToken = (e) => {
+        console.log(e)
+        setSessionToken(e)
+        console.log(e)
+        console.log(sessionToken)
+    }
+
     async function handleSubmit() {
         let newUser = new FormData()
         console.log(email)
@@ -98,15 +110,18 @@ const EmailUserRegister = () => {
         newUser.append('bio', content)
         newUser.append('username', username)
         try {
-            var id 
-            var userT = await API.post("/profile/user/create", newUser, {
+            var userID
+            var sessionToken = await API.post("/profile/user/create", newUser, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
-            }).then(response => console.log(response))
-            // }).then(response => userID = response.data.id)
-            setNewUserToken(userT)
-            setNewUserID(id)
+            }).then(response => {
+                sessionToken = response.data.token
+                console.log('in response', sessionToken)
+                userID = response.data.user.id
+                handleNewToken(response.data.token)
+            })
+            setNewUserID(userID)
             confirmSubmit()
         } catch (err) {
             console.log(err.response.data)
@@ -136,13 +151,22 @@ const EmailUserRegister = () => {
                                     <div className='flex justify-center'>
                                         <BsCardImage size={'26px'} />
                                     </div>
+                                    <div>Profile Picture</div>
                                 </div>
                                 <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
                             </div>
+                            <InputField
+                                required={true}
+                                type='input'
+                                placeholder='Username (required)'
+                                defaultValue={''}
+                                onChange={e => handleUsername(e.target.value)}
+                            />
                             <Editor setContent={setContent} />
                         </form>
-
-                        <Button label={'Submit'} func={() => handleSubmit()} />
+                        <div className='flex justify-center'>
+                            <Button label={'Submit'} func={() => handleSubmit()} />
+                        </div>
                     </>
                 )
             }
@@ -228,4 +252,4 @@ const EmailUserRegister = () => {
     )
 }
 
-export default EmailUserRegister
+export default UsernameUserRegister
