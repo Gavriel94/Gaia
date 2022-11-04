@@ -1,6 +1,5 @@
 import React from 'react'
-import Title from '../components/Title'
-import { Header, Sidebar, Button } from '../../components'
+import { Header, Sidebar, Button, Title } from '../../components'
 import { useNavigate } from 'react-router-dom'
 
 /**

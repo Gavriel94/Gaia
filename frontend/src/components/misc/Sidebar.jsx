@@ -6,8 +6,8 @@ import { BsPen } from 'react-icons/bs'
 import { MdOutlineCancel } from 'react-icons/md'
 import { Link, NavLink } from 'react-router-dom';
 import Button from './Button'
-import lightLogo from '../assets/fpngs/tildelogolight.png'
-import darkLogo from '../assets/fpngs/tildelogodark.png'
+import lightLogo from '../../assets/fpngs/tildelogolight.png'
+import darkLogo from '../../assets/fpngs/tildelogodark.png'
 import { useStateContext } from '../../context/ContextProvider'
 import { CgProfile } from 'react-icons/cg'
 

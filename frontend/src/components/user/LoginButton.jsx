@@ -4,12 +4,12 @@ import LoadingSpinner from '../misc/LoadingSpinner'
 
 import Modal from 'react-modal'
 import { MdOutlineCancel, MdOutlineMailOutline } from 'react-icons/md'
-import '../walletModal.css'
+import '../../walletModal.css'
 import { BsFillXCircleFill } from 'react-icons/bs'
-import adaHandleLogo from '../assets/adaHandleLogoRounded.png'
+import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
 import { BiLogInCircle, BiLogOutCircle } from 'react-icons/bi'
 import { CgProfile } from 'react-icons/cg'
-import cardanoLogo from '../assets/cardanoLogo.png'
+import cardanoLogo from '../../assets/cardanoLogo.png'
 import { Link } from 'react-router-dom'
 
 import {

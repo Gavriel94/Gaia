@@ -1,8 +1,21 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useStateContext } from './context/ContextProvider';
-import { Landing, Home, Market, About, ArticleGuide, ArticleDetail, Trending, UnresolvedPath, CreateArticleV2, UsernameUserRegister, UserProfile, UsernameLogin } from './pages'
-import EditProfile from './pages/EditProfile';
+import { 
+  Landing, 
+  Home, 
+  Market, 
+  About, 
+  ArticleGuide, 
+  ArticleDetail, 
+  Trending, 
+  UnresolvedPath, 
+  CreateArticleV2, 
+  UsernameUserRegister, 
+  UserProfile, 
+  UsernameLogin, 
+  EditProfile 
+} from './pages'
 
 /**
 * App function with routing

@@ -6,7 +6,6 @@ import { useStateContext } from '../../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
 import { BsCardImage } from 'react-icons/bs'
 import { MdOutlineCancel } from 'react-icons/md'
-import LoadingPage from '../components/LoadingPage'
 
 /**
  * Provides an interface for the user to write an article and submit it to the database
