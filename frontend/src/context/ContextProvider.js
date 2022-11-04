@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import API from '../API'
 
+/**
+ * State context provider allowing variables to be passed across components
+ */
+
 const StateContext = createContext();
 
 export const ContextProvider = ({ children }) => {
@@ -49,6 +53,7 @@ export const ContextProvider = ({ children }) => {
     const [refreshing, setRefreshing] = useState(false)
     const [sessionToken, setSessionToken] = useState('')
     const [walletUser, setWalletUser] = useState(false) //True if user uses wallet login
+    const [submitted, setSubmitted] = useState(false) //Used for displaying loading pages
 
     /**
      * State variables for connecting a wallet
