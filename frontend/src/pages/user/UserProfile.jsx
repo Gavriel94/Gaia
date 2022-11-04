@@ -16,7 +16,7 @@ import { AiOutlineEdit } from 'react-icons/ai'
 
 /**
  * 
- * TODO: EAdd a list of likes, posts etc
+ * TODO: Add a list of likes, posts etc
  */
 
 const UserProfile = () => {
