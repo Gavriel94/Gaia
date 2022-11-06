@@ -8,7 +8,7 @@ import parser from 'html-react-parser'
  * Mapped to data and displayed in the ArticleView component
  * 
  * @param {string} id - ID of the article
- * @param {string} title- Title of the article
+ * @param {string} title - Title of the article
  * @param {string} content - Article content
  * @param {string} tags - Article tags
  * @param {string} image - Preview image 

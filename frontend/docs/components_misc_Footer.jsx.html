@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/misc/Footer.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/misc/Footer.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { FiTwitter } from 'react-icons/fi';
+import { FaDiscord } from 'react-icons/fa';
+import { useStateContext } from '../../context/ContextProvider';
+import lightLogo from '../../assets/fpngs/tildelogolight.png'
+import darkLogo from '../../assets/fpngs/tildelogodark.png'
+
+/**
+ * Footer component to be displayed at the bottom of the page
+ * Contains links to external media such as Twitter and Discord
+ * Contains the project name and logo
+ * 
+ * @returns {JSX.Element} Footer component
+ */
+
+const Footer = () => {
+    const { darkMode } = useStateContext();
+
+    return (
+        &lt;div className='absolute bottom-0 justify-center w-full h-16 flex flex-row dark:bg-dark-grey pt-3'>
+            &lt;div className='px-3'>
+                &lt;NavLink to={'/coming'}>
+                    &lt;FiTwitter
+                        size={'30px'}
+                        color={darkMode === false ? 'black' : 'white'}
+                    />
+                &lt;/NavLink>
+            &lt;/div>
+            &lt;div className='px-3'>
+                &lt;NavLink to={'/coming'}>
+                    &lt;FaDiscord
+                        size={'30px'}
+                        color={darkMode === false ? 'black' : 'white'}
+                    />
+                &lt;/NavLink>
+            &lt;/div>
+            &lt;div className='px-3'>
+                &lt;p className='select-none font-semibold dark:text-light-white'>Project Gaia&lt;/p>
+            &lt;/div>
+            &lt;div className={darkMode === false ? '' : 'hidden'}>
+                &lt;img src={lightLogo} width='40px' alt='Icon' />
+            &lt;/div>
+            &lt;div className={darkMode === false ? 'hidden' : ''}>
+                &lt;img src={darkLogo} width='40px' alt='Icon' />
+            &lt;/div>
+        &lt;/div>
+    );
+};
+
+export default Footer;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticleView">ArticleView</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Fri Nov 04 2022 13:32:37 GMT+0000 (Greenwich Mean Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

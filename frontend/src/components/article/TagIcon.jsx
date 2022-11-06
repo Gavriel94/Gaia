@@ -6,8 +6,8 @@ import React from 'react'
  * 
  * @param {string} tag - Tag text
  * @param {index} index - Index of tag in the array of tags
- * @param {any} - Triggers a function, used to remove the tag from the array
- * @param {tagIcon} - Icon to be displayed in tag
+ * @param {any} func - Triggers a function, used to remove the tag from the array
+ * @param {tagIcon} tagIcon - Icon to be displayed in tag
  * 
  * @returns {JSX.Element} - Tag element
  */

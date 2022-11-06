@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/misc/Header.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/misc/Header.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { BsSun, BsMoon } from 'react-icons/bs'
+import { useStateContext } from '../../context/ContextProvider'
+import { BiTrendingUp } from 'react-icons/bi'
+import { useNavigate } from 'react-router-dom'
+import RefreshArticles from '../article/RefreshArticles'
+import { Button, LoginButton, SortingButton } from '..'
+import { AiOutlineHome } from 'react-icons/ai'
+
+/**
+ * Dynamic header component
+ * Content changes depending on the page the user is on
+ * 
+ * @param {string} page Dictates which components the header should display or hide 
+ * 
+ * @returns {JSX.Element} Header component 
+ */
+
+const Header = ({ page }) => {
+    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, sessionToken, loggedInProfile, walletUser } = useStateContext();
+    const [showSkip, setShowSkip] = useState(true)
+    let history = useNavigate()
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowSkip(false)
+        }, 18000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        &lt;div>
+            &lt;div className='flex items-end flex-col'>
+                &lt;div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 opacity-100  sm:dark:bg-opacity-0 bg-white dark:bg-dark-grey'>
+                    &lt;div className='flex flex-row pr-10'>
+                        &lt;div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' &amp;&amp; 'hidden'} ${page === 'login' &amp;&amp; 'hidden'}`}>
+                            &lt;RefreshArticles />
+                        &lt;/div>
+                        &lt;div className={`${page === 'home' ? 'block pr-2' : 'hidden'} ${page === 'landing' &amp;&amp; 'hidden'} ${page === 'login' &amp;&amp; 'hidden'}`}>
+                            &lt;SortingButton />
+                        &lt;/div>
+                        &lt;div className={`py-3 px-2 xl:hidden ${page === 'landing' &amp;&amp; 'hidden'} ${page === 'login' &amp;&amp; 'hidden'} ${page === 'user' &amp;&amp; 'hidden'}`}>
+                            &lt;Link to={'/trending'}>
+                                &lt;Button
+                                    title={'Trending'}
+                                    icon={&lt;BiTrendingUp size={'26px'} />}
+                                    label={'Trending'}
+                                    labelProps={'text-sm pt-1 pl-2'}
+                                />
+                            &lt;/Link>
+                        &lt;/div>
+                        &lt;div className={`${page === 'user' ? 'block pr-2 py-3' : page=== 'edit' ? 'block pr-2 py-3' : 'hidden'}`}>
+                            &lt;Link to={'/home'}>
+                                &lt;Button label={'Home'} labelProps={'text-sm pt-1 pl-2'} icon={&lt;AiOutlineHome size={'26px'} />} />
+                            &lt;/Link>
+                        &lt;/div>
+                        &lt;div className={`${page === 'landing' &amp;&amp; 'hidden'} ${page === 'login' &amp;&amp; 'hidden'} ${page === 'user' &amp;&amp; 'hidden'} ${sessionToken &amp;&amp; !walletUser &amp;&amp; 'hidden'} pr-2 py-3`}>
+                            &lt;LoginButton />
+                        &lt;/div>
+                        &lt;div className={`${sessionToken &amp;&amp; !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' &amp;&amp; 'hidden'}`}>
+                            &lt;Link to={`/profiles/${loggedInProfile.id}`}>
+                                &lt;Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''}/>
+                            &lt;/Link>
+                            {/* If image/username then display blah blah blah */}
+                        &lt;/div>
+                        &lt;div className={`${page !== 'landing' &amp;&amp; 'hidden'} py-3 ${!showSkip &amp;&amp; 'hidden'}`}>
+                            &lt;Link to={'/home'}>
+                                &lt;button
+                                    type='button'
+                                    className='rounded-full
+                                        bg-black text-light-white dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'>
+                                    &lt;div className='flex flex-row text-center justify-center'>
+                                        &lt;div>Skip&lt;/div>
+                                    &lt;/div>
+                                &lt;/button>
+                            &lt;/Link>
+                        &lt;/div>
+                        &lt;div className={`${page !== 'login' ? 'hidden' : 'block'} py-3 px-2`}>
+                            &lt;Button label={"Back"}
+                                func={() => history(-1)}
+                            />
+                        &lt;/div>
+
+                        &lt;div className={`${showLogoutAlert &amp;&amp; 'hidden'} ${showErrorAlert &amp;&amp; 'hidden'} ${page === 'landing' &amp;&amp; 'hidden'} ${page === 'login' &amp;&amp; 'hidden'} py-3`}>
+                            &lt;Button
+                                title={'mode-toggle'}
+                                func={() => {
+                                    setDarkMode(!darkMode);
+                                }}
+                                icon={darkMode === false ? &lt;BsMoon size={'26px'} /> : &lt;BsSun size={'26px'} />}
+                            />
+                        &lt;/div>
+
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        &lt;/div>
+    )
+}
+
+export default Header</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticleView">ArticleView</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Fri Nov 04 2022 13:32:37 GMT+0000 (Greenwich Mean Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

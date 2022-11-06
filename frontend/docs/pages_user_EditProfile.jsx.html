@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/user/EditProfile.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/user/EditProfile.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react'
+import API from '../../API'
+import { Header, Sidebar, Title, InputField, Button, Editor } from '../../components'
+import { useStateContext } from '../../context/ContextProvider'
+import { Navigate } from 'react-router-dom'
+import { BsCardImage } from 'react-icons/bs'
+import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
+
+/**
+ * Provides an interface for the user to add additional information to their profile
+ * 
+ * @returns {JSX.Element} - Page which allows user to add profile image and bio
+ */
+
+const EditProfile = () => {
+    const { sessionToken, 
+        loggedInProfile, 
+        setLoggedInProfile, 
+        darkMode, 
+        walletUser, 
+        adaHandleSelected, 
+        setAdaHandleSelected, 
+        setDisplayAdaHandle, 
+        adaHandleDetected, 
+        adaHandleName } = useStateContext()
+
+    const [newBio, setNewBio] = useState('')
+    const [newImage, setNewImage] = useState(undefined)
+    const [updateSuccess, setUpdateSuccess] = useState(false)
+
+    const handleBio = (e) => {
+        setNewBio(e)
+    }
+
+    const handleImageUpload = e => {
+        if (e.target.files[0].size > 800000) {
+            alert('Image must be less than 8MB')
+            return
+        }
+        setNewImage(e.target.files[0])
+    }
+
+    const handleAdaHandleSelect = (obj) => {
+        const index = adaHandleName.indexOf(obj)
+        const adaHandleSelected = adaHandleName[index]
+        setAdaHandleSelected('$' + adaHandleSelected)
+        setDisplayAdaHandle(true)
+    }
+
+    const handleSubmit = async () => {
+        let updatedProfile = new FormData()
+
+        if (newBio.length > 0) {
+            updatedProfile.append('bio', newBio)
+            console.log(newBio)
+        }
+
+        if (newImage !== undefined) {
+            updatedProfile.append('profile_image', newImage)
+            console.log(newImage)
+        }
+
+        for (const v of updatedProfile.values()) {
+            console.log(v)
+        }
+
+        try {
+            await API.patch(`/profile/user/${loggedInProfile.id}/update/`, updatedProfile, {
+                headers: {
+                    'Authorization': `Token ${sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(response => console.log(response))
+            setUpdateSuccess(true)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+
+    return (
+        &lt;>
+            {
+                updateSuccess &amp;&amp; (
+                    &lt;>
+                        &lt;Navigate to={`/profiles/${loggedInProfile.id}}`} replace={true} />
+                    &lt;/>
+                )
+            }
+            &lt;div className='fixed justify-center m-auto left-0 right-0'>
+                &lt;Header page={'edit'} />
+                &lt;Sidebar />
+            &lt;/div>
+            &lt;div className={`flex justify-center ${darkMode ? '' : ''}`}>
+                &lt;div className='pt-20 justify-center mx-autow-full'>
+                    &lt;div className='flex justify-center flex-row'>
+                        &lt;div>
+                            &lt;Title text={`Edit Profile`} size={'text-6xl'} />
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className='mt-20' />
+                    &lt;div className={`${newImage !== undefined ? 'flex justify-center m-5' : 'hidden'}`}>
+                        &lt;img src={newImage} alt={'New user profile'} height={'26px'} width={'26px'}/>
+                    &lt;/div>
+                    &lt;Title text={'Write about yourself'} size={'text-2xl'}/>
+                    &lt;Editor setContent={setNewBio} />
+                    &lt;div>
+                    &lt;div>
+                        &lt;div className='flex justify-center mt-10 mb-5'>
+                            &lt;div className='rounded-full focus:outline-none cursor-pointer
+              bg-light-orange hover:bg-light-white  
+              text-light-white dark:bg-dark-orange dark:text-white 
+                py-2 px-4 text-xl font-bold z-0 absolute content-center'>
+                                &lt;div className='flex justify-center cursor-pointer'>
+                                    &lt;BsCardImage size={'26px'} />
+                                    &lt;div className='pl-2 text-base cursor-pointer'>
+                                        Edit profile picture
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                            &lt;input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className={`${walletUser &amp;&amp; adaHandleDetected ? 'block' : 'hidden'}`}>
+                            &lt;div className='m-5 flex justify-center'>
+                                &lt;Title text={'Display ADA Handle?'} size={'text-2xl'}/>
+                            &lt;/div>
+                            &lt;div>
+                                {adaHandleName.map(key =>
+                                    &lt;div key={key} className='flex justify-center pb-5'>
+                                        &lt;div className='flex'> {/** Could add className to hide handle if picked */}
+                                            &lt;Button
+                                                label={'$' + key}
+                                                labelProps={'flex justify-center text-base pl-5 pt-3'}
+                                                image={adaHandleLogo}
+                                                imageHeight={48}
+                                                imageWidth={48}
+                                                func={() => handleAdaHandleSelect(key)} />
+                                        &lt;/div>
+                                    &lt;/div>
+                                )}
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className='mt-5 flex justify-center'>
+                        &lt;Button label={'Done'} func={handleSubmit} />
+                    &lt;/div>
+                &lt;/div>
+
+            &lt;/div>
+        &lt;/>
+    )
+}
+
+export default EditProfile</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticleView">ArticleView</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Fri Nov 04 2022 13:32:37 GMT+0000 (Greenwich Mean Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
