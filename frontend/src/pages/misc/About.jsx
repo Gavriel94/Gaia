@@ -16,8 +16,8 @@ const About = () => {
                 <div className='flex justify-center'>
                     <div className='pt-20'>
                         <Title text={'about'} size={'text-6xl'} />
-                        <div className='mt-20 overflow-auto '>
-                            content
+                        <div className='mt-20 overflow-auto dark:text-white'>
+                            Gaia is a new form of social publishing designed by and for the community.
                         </div>
                     </div>
                 </div>
