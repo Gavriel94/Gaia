@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Header, Title, InputField, Button, LoadingSpinner } from '../../components'
+import { Header, Title, InputField, Button, LoadingSpinner, Sidebar } from '../../components'
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import API from '../../API'
 import { Navigate } from 'react-router-dom'
@@ -22,7 +22,7 @@ const UsernameLogin = () => {
   const [userID, setUserID] = useState('')
   const [loginSuccess, setLoginSuccess] = useState(false)
 
-  const { sessionToken, setSessionToken } = useStateContext()
+  const { sessionToken, setSessionToken, setLoggedInProfile } = useStateContext()
 
   const handleUsername = (e) => {
     setUsername(e)
@@ -77,6 +77,7 @@ const UsernameLogin = () => {
         console.log(response.data.token)
         userID = response.data.user.id
         handleNewToken(response.data.token)
+        setLoggedInProfile(response.data.user)
       })
       console.log(userID)
       // setSessionToken(sessionToken)
@@ -90,7 +91,10 @@ const UsernameLogin = () => {
 
   return (
     <>
-      {
+        <div className='fixed justify-center m-auto left-0 right-0'>
+            <Sidebar />
+        </div>
+        {
         submit && (
           <>
             <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pt-40'>
