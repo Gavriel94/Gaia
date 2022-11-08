@@ -21,6 +21,15 @@ import parser from 'html-react-parser'
 const ArticleDetail = () => {
     const { darkMode } = useStateContext()
     const [article, setArticle] = useState('')
+    const [authorDetail, setAuthorDetail] = useState({
+        id: '',
+        email: '',
+        username: '',
+        bio: '',
+        profile_image: '',
+        display_name: '',
+    })
+    const [trimmedAddress, setTrimmedAddress] = useState('')
     const { id } = useParams()
     let history = useNavigate()
 
@@ -32,8 +41,21 @@ const ArticleDetail = () => {
                 })
                 .catch(console.error)
         }
+        const getAuthorDetail = () => {
+            API.get(`/profile/user/${article.author}`)
+                .then((res) => {
+                    setAuthorDetail(res.data)
+                    if(authorDetail.display_name.length > 20) {
+                        setTrimmedAddress(authorDetail.display_name.length.slice(0,20) + ' ...')
+                    } else {
+                        setTrimmedAddress(authorDetail.display_name)
+                    }
+                }).catch(console.err)
+        }
+
         articleDetail()
-    }, [])
+        getAuthorDetail()
+    }, [id, article.author, authorDetail.display_name])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -76,22 +98,24 @@ const ArticleDetail = () => {
                     <Sidebar />
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
-                    <div className='pt-20 justify-center mx-autow-full'>
+                    <div className='pt-20 justify-center'>
                         {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
-                        <div className='flex justify-center flex-row'>
+                        <div className='pr-2 sm:pr-0 pl-2 md:pl-10 flex justify-center'>
+                            <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
+                        </div>
+                        <div className='flex justify-center flex-row mx-auto'>
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
-                                <div>
-                                    Written by {article.author}
+                                {console.log(article.title)}
+                                <div className='block flex-wrap justify-center mt-5'>
+                                    <p>Written by <Link to={`/profiles/${authorDetail.id}`}> {trimmedAddress} </Link></p>
                                     {console.log(article)}
+                                    {console.log(authorDetail)}
                                 </div>
-                            </div>
-                            <div className='pr-2 sm:pr-0 pl-2 md:pl-10'>
-                                <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
                             </div>
                         </div>
                         <div className='mt-20' />
-                        <div className='justify-center content-center text-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
+                        <div className='justify-center content-center text-center text-truncate [w-100px] md:[600px] lg:[750px] xl:[850px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
