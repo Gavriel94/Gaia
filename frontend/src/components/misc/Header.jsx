@@ -32,8 +32,8 @@ const Header = ({ page }) => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 opacity-100  sm:dark:bg-opacity-0 bg-white dark:bg-dark-grey'>
-                    <div className='flex flex-row pr-10'>
+                <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0'>
+                    <div className={`flex flex-row justify-end mr-10 dark:bg-dark-grey bg-white ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100'} w-full`}>
                         <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <RefreshArticles />
                         </div>
@@ -62,7 +62,6 @@ const Header = ({ page }) => {
                             <Link to={`/profiles/${loggedInProfile.id}`}>
                                 <Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''}/>
                             </Link>
-                            {/* If image/username then display blah blah blah */}
                         </div>
                         <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkip && 'hidden'}`}>
                             <Link to={'/home'}>
