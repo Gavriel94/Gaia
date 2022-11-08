@@ -509,7 +509,6 @@ const LoginButton = () => {
     }
 
     const getUserProfile = (e) => {
-        console.log('prole', e)
         API.get("/profile/user", {
             headers: {
                 'Authorization': `Token ${e}`
