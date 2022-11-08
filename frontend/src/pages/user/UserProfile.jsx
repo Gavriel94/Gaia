@@ -21,9 +21,7 @@ import { useParams } from 'react-router-dom'
  */
 
 const UserProfile = () => {
-  const { darkMode } = useStateContext()
-  const { sessionToken, loggedInProfile, setLoggedInProfile, displayAdaHandle, adaHandleSelected, walletUser } = useStateContext()
-  const [displayName, setDisplayName] = useState('')
+  const { loggedInProfile } = useStateContext()
   const { id } = useParams()
   const [profileData, setProfileData] = useState({
     id: '',
@@ -52,29 +50,6 @@ const UserProfile = () => {
     profileDetail()
   }, [id])
 
-  // useEffect(() => {
-  //   const profileDetail = () => {
-  //     console.log(sessionToken)
-  //     API.get(`/profile/user`, {
-  //       headers: {
-  //         'Authorization': `Token ${sessionToken}`
-  //       }
-  //     }
-  //     ).then((res) => {
-  //       // setProfile(res.data)
-  //       setLoggedInProfile(res.data)
-  //       if (walletUser) {
-  //         trimAddress()
-  //       }
-  //     }).catch(console.err)
-  //   }
-
-  //   profileDetail()
-  // }, [])
-
-  const trimAddress = () => {
-    setDisplayName(profileData.username.slice(0, 20) + '...')
-  }
 
   return (
     <>
@@ -109,58 +84,6 @@ const UserProfile = () => {
     </>
 
   )
-
-  // return (
-  // <>
-  //   <div className='fixed justify-center m-auto left-0 right-0'>
-  //     <Header page={'user'} />
-  //     <Sidebar />
-  //   </div>
-  //   <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
-  //     <div className='pt-20 justify-center mx-autow-full'>
-  //       {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
-  //       <div className='flex justify-center flex-row'>
-  //         <div className={`${walletUser && 'hidden'} pt-5`}>
-  //           <Title text={`${displayName}`} size={'text-6xl'} />
-  //         </div>
-  //         <div className={`${!walletUser && 'hidden'} pt-5`}>
-  //           <Title text={`${displayAdaHandle && id === loggedInProfile.id ? adaHandleSelected : displayName}`} size={'text-6xl'} />
-  //           <div className={`${displayAdaHandle && id === loggedInProfile.id ? 'block' : 'hidden'}`}>
-  //             <Title text={displayName} size={'text-xl'}/>
-  //           </div>
-  //         </div>
-  //       </div>
-  //       <div className='pr-2 sm:pr-0 pl-2 md:pl-10 flex justify-center mt-20'>
-  //         <img src={`${profileData.profile_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
-  //       </div>
-  //       <div className='mt-20' />
-  //       <div className='flex justify-center content-center text-center self-center w-[400px] sm:w-[600px] xl:w-[1000px]'>
-  //         {parser(String(profileData.bio))}
-  //         {console.log(profileData)}
-  //       </div>
-  //     </div>
-  //   </div>
-  //   <div className='flex justify-center space-x-4 mt-10'>
-  //     <div className={`${profileData.id === '' ? 'hidden' : 'flex'}`}>
-  //     {/* If logged in profile ID is equal to router URL ID && sessionToken then show */}
-  //       <div className={`px-2 ${profileData.id === loggedInProfile.id ? 'block px-2' : 'hidden'}`}>
-  //         <Link to={'/profiles/edit'} replace={true}>
-  //           <Button icon={<AiOutlineEdit size={'26px'} />} label={'Edit profile'} labelProps={'text-sm pt-1 pl-2'} />
-  //         </Link>
-  //       </div>
-  //       <div className={`px-2 ${profileData.id === loggedInProfile.id ? 'block px-2' : 'hidden'}`}>
-  //         <LogoutButton />
-  //       </div>
-  //     </div>
-  //     <div className={`${profileData.id !== loggedInProfile.id ? 'block' : 'hidden'}`}>
-  //     <Button label={'Tip'}/>
-  //     </div>
-  //     <div className={`${profileData.id === '' ? 'block' : 'hidden'}`}>
-  //       <LoginButton />
-  //     </div>
-  //   </div>
-  // </>
-  // )
 }
 
 export default UserProfile
