@@ -60,6 +60,12 @@ const EditProfile = () => {
             console.log(newImage)
         }
 
+        if(adaHandleDetected) {
+            updatedProfile.append('display_name', adaHandleSelected)
+        } else {
+            updatedProfile.append('display_name', loggedInProfile.username)
+        }
+
         for (const v of updatedProfile.values()) {
             console.log(v)
         }
@@ -83,7 +89,7 @@ const EditProfile = () => {
             {
                 updateSuccess && (
                     <>
-                        <Navigate to={`/profiles/${loggedInProfile.id}}`} replace={true} />
+                        <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true} />
                     </>
                 )
             }
