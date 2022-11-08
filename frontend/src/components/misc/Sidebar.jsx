@@ -19,8 +19,8 @@ import { CgProfile } from 'react-icons/cg'
  */
 
 const Sidebar = () => {
-    const { setScreenSize, darkMode, sidebarOpen, setSidebarOpen, loggedInProfile, sessionToken } = useStateContext();
-    const [sidebarButton, setSidebarButton] = useState(<BsArrowRight size={'26px'} />) //arrow right as sidebar closed by default
+    const { darkMode, sidebarOpen, setSidebarOpen, loggedInProfile, sessionToken, sidebarButton, setSidebarButton } = useStateContext();
+
     const sidebarItems = [
         {
             link: 'home',
@@ -44,13 +44,6 @@ const Sidebar = () => {
         },
     ];
 
-    useEffect(() => {
-        const handleResize = () => setScreenSize(window.innerWidth);
-        window.addEventListener('resize', handleResize);
-
-        return () => window.removeEventListener('resize', handleResize);
-    }, [setScreenSize]);
-
     const handleOpenSidebar = () => {
         if (sidebarOpen) {
             setSidebarOpen(false)
@@ -63,9 +56,9 @@ const Sidebar = () => {
     }
 
     return (
-        <div className={`h-full w-72 fixed bg-opacity-100 hidden sm:block`}>
+        <div className={`h-full w-72 fixed bg-opacity-100 hidden md:block`}>
             <div
-                className={`absolute left-0 h-full border-r-1 border-light-orange dark:border-dark-orange 
+                className={`absolute left-0 h-full xl:border-r-1 border-light-orange dark:border-dark-orange 
                 ${sidebarOpen ? 'w-72 duration-500' : 'w-20 duration-500'}`
                 }
             >
@@ -92,7 +85,7 @@ const Sidebar = () => {
                                 to={`/${item.link}`}
                                 key={item.display}
                                 className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
-                                gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange px-7 cursor-default mt-2 overflow-auto'
+                                gap-x-16 py-2 hover:bg-light-orange xl:dark:hover:bg-dark-orange px-7 cursor-pointer mt-2 overflow-auto'
                             >
                                 <span className={`${!sidebarOpen && 'duration-500'} ease-in-out duration-500 origin-left font-semibold text-xl`}>
                                     {item.icon}
