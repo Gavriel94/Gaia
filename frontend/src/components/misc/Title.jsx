@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 /**
  * Simple title component to enable consistent headers throughout the app
@@ -9,15 +9,26 @@ import React from 'react'
  * @returns {JSX.Element} - Title component
  */
 
-const Title = ({ text, size }) => {
-
+const Title = ({ text, size, lengthLimit }) => {
+    const [dynamicSize, setDynamicSize] = useState(size)
     function capitalize(word) {
         return word?.charAt(0).toUpperCase() + word?.slice(1)
     }
 
+    useEffect(() => {
+        console.log('csd')
+        if(lengthLimit && text.length > 20) {
+            setDynamicSize('text-4xl')
+        }
+        if(lengthLimit && text.length > 40) {
+            setDynamicSize('text-2xl')
+        }
+    }, [lengthLimit, text])
+
+
 
     return (
-        <div className={`${size} font-bold 
+        <div className={`${dynamicSize} font-bold 
         text-black dark:text-light-white
         hover:text-light-orange
         dark:hover:text-dark-orange
