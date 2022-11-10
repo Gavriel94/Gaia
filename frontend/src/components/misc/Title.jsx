@@ -11,14 +11,19 @@ import React, { useEffect, useState } from 'react'
 
 const Title = ({ text, size, lengthLimit }) => {
     const [dynamicSize, setDynamicSize] = useState(size)
+    const [dynamicText, setDynamicText] = useState(text)
     function capitalize(word) {
         return word?.charAt(0).toUpperCase() + word?.slice(1)
     }
 
+
+
     useEffect(() => {
-        console.log('csd')
+        setDynamicText(text)
         if(lengthLimit && text.length > 20) {
+            let v = text.slice(0,20) + '...'
             setDynamicSize('text-4xl')
+            setDynamicText(text.slice(0,20) + '...')
         }
         if(lengthLimit && text.length > 40) {
             setDynamicSize('text-2xl')
@@ -33,7 +38,7 @@ const Title = ({ text, size, lengthLimit }) => {
         hover:text-light-orange
         dark:hover:text-dark-orange
         transition-colors duration-500 select-none text-center`}>
-            {capitalize(text)}
+            {capitalize(dynamicText)}
         </div>
     )
 }
