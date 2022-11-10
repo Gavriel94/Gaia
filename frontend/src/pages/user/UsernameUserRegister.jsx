@@ -77,10 +77,7 @@ const UsernameUserRegister = () => {
     }
 
     const handleNewToken = (e) => {
-        console.log(e)
         setSessionToken(e)
-        console.log(e)
-        console.log(sessionToken)
     }
 
     async function handleSubmit() {
