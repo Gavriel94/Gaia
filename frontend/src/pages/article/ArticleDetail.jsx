@@ -21,41 +21,20 @@ import parser from 'html-react-parser'
 const ArticleDetail = () => {
     const { darkMode } = useStateContext()
     const [article, setArticle] = useState('')
-    const [authorDetail, setAuthorDetail] = useState({
-        id: '',
-        email: '',
-        username: '',
-        bio: '',
-        profile_image: '',
-        display_name: '',
-    })
-    const [trimmedAddress, setTrimmedAddress] = useState('')
     const { id } = useParams()
     let history = useNavigate()
 
     useEffect(() => {
-        const articleDetail = () => {
+
+        const articleDetail = async () => {
             API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
                 })
                 .catch(console.error)
         }
-        const getAuthorDetail = () => {
-            API.get(`/profile/user/${article.author}`)
-                .then((res) => {
-                    setAuthorDetail(res.data)
-                    if(authorDetail.display_name.length > 20) {
-                        setTrimmedAddress(authorDetail.display_name.length.slice(0,20) + ' ...')
-                    } else {
-                        setTrimmedAddress(authorDetail.display_name)
-                    }
-                }).catch(console.err)
-        }
-
         articleDetail()
-        getAuthorDetail()
-    }, [id, article.author, authorDetail.display_name])
+    }, [id])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -106,11 +85,8 @@ const ArticleDetail = () => {
                         <div className='flex justify-center flex-row mx-auto'>
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
-                                {console.log(article.title)}
-                                <div className='block flex-wrap justify-center mt-5'>
-                                    <p>Written by <Link to={`/profiles/${authorDetail.id}`}> {trimmedAddress} </Link></p>
-                                    {console.log(article)}
-                                    {console.log(authorDetail)}
+                                <div className='flex text-center justify-center mt-5'>
+                                    <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_display_name.slice(0,20) + '...'} </Link></p>
                                 </div>
                             </div>
                         </div>
