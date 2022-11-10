@@ -85,7 +85,7 @@ const Sidebar = () => {
                                 to={`/${item.link}`}
                                 key={item.display}
                                 className='items-center text-black hover:text-light-white dark:text-light-white flex capitalize rounded-full
-                                gap-x-16 py-2 hover:bg-light-orange xl:dark:hover:bg-dark-orange px-7 cursor-pointer mt-2 overflow-auto'
+                                gap-x-16 py-2 hover:bg-light-orange dark:hover:bg-dark-orange xl:dark:hover:bg-dark-orange px-7 cursor-pointer mt-2 overflow-auto'
                             >
                                 <span className={`${!sidebarOpen && 'duration-500'} ease-in-out duration-500 origin-left font-semibold text-xl`}>
                                     {item.icon}
