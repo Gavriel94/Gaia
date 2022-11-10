@@ -95,44 +95,33 @@ const CreateArticleV2 = () => {
     setPreviewImage(e.target.files[0])
   }
 
-  async function handleSubmit() {
+  const handleSubmit = async () => {
     let newArticle = new FormData()
     newArticle.append('title', title)
     newArticle.append('content', content)
     newArticle.append('tags', tags)
     newArticle.append('preview_image', previewImage)
     newArticle.append('author', loggedInProfile.id)
-    if(adaHandleDetected) {
-      newArticle.append('author_display_name', adaHandleSelected)
-    }
-    else { 
-      newArticle.append('author_display_name', loggedInProfile.username)
-    }
-    console.log(newArticle)
-    console.log(sessionToken)
-    console.log(loggedInProfile)
-    for (const v of newArticle.values()) {
-      console.log(v)
-    }
+    newArticle.append('author_display_name', loggedInProfile.display_name)
+
     try {
       setSubmit(true)
-      var id = await API.post("articles/article/create/", newArticle, {
+      var articleID = await API.post("articles/article/create/", newArticle, {
         headers: {
-          // 'Authorization': `Token ${sessionToken}`,
           'Content-Type': 'multipart/form-data',
         },
-      }
-      ).then(response => id = response.data.id)
-      setID(id)
-      setSubmit(false)
-      setIDSet(true)
-    } catch (err) {
+      }).then(res => articleID = res.data.id)
+    } catch(err) {
       console.log(err)
-      if (err.message.includes('401')) {
-        alert('you must login')
-      }
+      setSubmit(false)
+      console.log('loggedInProfile', loggedInProfile)
+      console.log('articleID', articleID)
     }
-  }
+
+    setSubmit(false)
+    setID(articleID)
+    setIDSet(true)
+  } 
 
   return (
     <>
@@ -154,7 +143,6 @@ const CreateArticleV2 = () => {
       {
         IDSet && (
           <>
-            {console.log(sessionToken)}
             <Navigate to={`/articles/${ID}/`} replace={true} />
           </>
         )
@@ -192,7 +180,7 @@ const CreateArticleV2 = () => {
           <div className={`${!sessionToken ? 'hidden' : 'block'}`}>
             <div className='flex justify-center'>
               <div className='pt-20'>
-              <Title text={title} size={'text-6xl'} />
+                <Title text={title} size={'text-6xl'} />
                 <div className='flex justify-center mt-20'>
                   <div className='rounded-full focus:outline-none
               bg-light-orange hover:bg-light-white  
@@ -245,7 +233,7 @@ const CreateArticleV2 = () => {
                   />
                   <div className='flex justify-center pt-5'>
                     {tags.map((tag, index) =>
-                      <div className='px-2'>
+                      <div key={tag} className='px-2'>
                         <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />} />
                       </div>)}
                   </div>
