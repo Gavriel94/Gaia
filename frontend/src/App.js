@@ -14,7 +14,8 @@ import {
   UsernameUserRegister, 
   UserProfile, 
   UsernameLogin, 
-  EditProfile 
+  EditProfile,
+  Login
 } from './pages'
 
 /**
@@ -39,7 +40,7 @@ function App() {
             <Route path='/create' element={<CreateArticleV2 />} />
             <Route path='/trending' element={<Trending />} />
             <Route path='/register' element={<UsernameUserRegister />} />
-            <Route path='/login' element={<UsernameLogin />} />
+            <Route path='/login' element={<Login />} />
             <Route path='/profiles/:id/' element={<UserProfile/>} />
             <Route path='/profiles/edit' element={<EditProfile/>} />
 
