@@ -21,6 +21,8 @@ const ArticleView = () => {
                     content={article.content}
                     tags={article.tags}
                     image={article.preview_image}
+                    imageHeight={'150x'}
+                    imageWidth={'150px'}
                 />
             </div>
         )

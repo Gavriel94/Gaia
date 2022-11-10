@@ -12,6 +12,8 @@ import parser from 'html-react-parser'
  * @param {string} content - Article content
  * @param {string} tags - Article tags
  * @param {string} image - Preview image 
+ * @param {string} imageHeight - Adjust height of image
+ * @param {string} imageWidth - Adjust width of image
  * 
  * @returns {JSX.Element} Preview of an article
  */
@@ -20,7 +22,7 @@ import parser from 'html-react-parser'
  * TODO: Map buttons to tags 
  */
 
-const MiniArticle = ({ id, title, content, tags, image }) => {
+const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth }) => {
 
     /**
      * Trims the content if it is too long for the preview
@@ -43,7 +45,7 @@ const MiniArticle = ({ id, title, content, tags, image }) => {
                                 <Title text={title} size={'text-3xl'} />
                             </div>
                             <div className="justify-end pl-20 hidden sm:block">
-                                <img src={`${image}`} alt='Preview' height={'150'} width={'150'} className='rounded-lg' />
+                                <img src={`${image}`} alt='Preview' height={imageHeight} width={imageWidth} className='rounded-lg' />
                             </div>
                             <div className="justify-end pl-5 sm:hidden grid-cols-1">
                                 <img src={`${image}`} alt='Preview' height={'150'} width={'150'} className='rounded-lg' />
