@@ -107,7 +107,8 @@ export const ContextProvider = ({ children }) => {
         email: '',
         username: '',
         bio: '',
-        profile_image: ''
+        profile_image: '',
+        display_name: '',
     })
 
     useEffect(() => {
