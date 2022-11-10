@@ -16,7 +16,6 @@ const LandingPageVideo = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowButton(true)
-      console.log(showButton)
     }, 18000);
     return () => clearTimeout(timer);
   }, [showButton]);
