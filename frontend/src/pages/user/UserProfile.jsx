@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import API from '../../API'
 import parser from 'html-react-parser'
-import { Header, Sidebar, Title, Button, LogoutButton, LoginButton } from '../../components'
+import { Header, Sidebar, Title, Button, LogoutButton, LoginButton, MiniArticle } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 import { Link } from 'react-router-dom'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -18,7 +18,9 @@ import { useParams } from 'react-router-dom'
 /**
  * 
  * TODO: Add a list of likes, posts etc
+ * TODO: Recreate a MiniArticle component for UserProfile page
  */
+
 
 const UserProfile = () => {
   const { loggedInProfile } = useStateContext()
@@ -29,17 +31,16 @@ const UserProfile = () => {
     username: '',
     bio: '',
     profile_image: '',
-    display_name: ''
+    display_name: '',
+    authored: [],
   })
 
   useEffect(() => {
     const profileDetail = () => {
       API.get(`/profile/user/${id}/`)
         .then((res) => {
-          console.log(res)
-          console.log(res.data.display_name)
           setProfileData(res.data)
-          console.log('2nd', profileData.display_name)
+          console.log(res.data)
           // if (res.data.displayName.length > 20) {
           //   setDisplayName(res.data.display_name.slice(0, 20) + '...')
           // } else {
@@ -50,7 +51,6 @@ const UserProfile = () => {
     profileDetail()
   }, [id])
 
-
   return (
     <>
       <div className='fixed justify-center m-auto left-0 right-0'>
@@ -58,14 +58,29 @@ const UserProfile = () => {
         <Sidebar />
       </div>
       <div className='pt-20 flex justify-center dark:text-white'>
-        {/* If you're not the logged in profile */}
-          <Title text={profileData.display_name} size='text-6xl' />
+        <Title text={profileData.display_name === null || profileData.display_name.length < 1 ? profileData.username : profileData.display_name} size={'text-6xl'} lengthLimit={true} />
       </div>
       <div className='mt-10 flex justify-center'>
         <img src={profileData.profile_image} className='rounded-lg' alt='' height='200px' width='200px' />
       </div>
-      <div className='flex justify-center mt-10 text-center dark:text-white'>
+      <div className={`${profileData.bio === null ? 'hidden' : 'flex justify-center mt-10 text-center dark:text-white'}`}>
         {parser(String(profileData.bio))}
+      </div>
+      <div className={`${profileData.authored.length > 0 ? 'block dark:text-white mt-10' : 'hidden'}`}>
+      <Title text={'Articles written'} size={'text-2xl'}/>
+        {profileData.authored.map((item) => (
+
+          <div className='flex justify-center' key={item.id}>
+            <MiniArticle
+              id={item.id}
+              title={item.title}
+              image={item.preview_image}
+              content={''}
+              imageHeight={'80'}
+              imageWidth={'80'}
+              />
+          </div>
+        ))}
       </div>
       <div className={`${id === loggedInProfile.id ? 'flex justify-center mt-10' : 'hidden'}`}>
         {/* If logged in profile ID is equal to router URL ID && sessionToken then show */}
