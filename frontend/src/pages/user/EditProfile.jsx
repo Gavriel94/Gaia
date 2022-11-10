@@ -5,6 +5,7 @@ import { useStateContext } from '../../context/ContextProvider'
 import { Navigate } from 'react-router-dom'
 import { BsCardImage } from 'react-icons/bs'
 import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
+import { TbLayoutAlignRight } from 'react-icons/tb'
 
 /**
  * Provides an interface for the user to add additional information to their profile
@@ -13,23 +14,28 @@ import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
  */
 
 const EditProfile = () => {
-    const { sessionToken, 
-        loggedInProfile, 
-        setLoggedInProfile, 
-        darkMode, 
-        walletUser, 
-        adaHandleSelected, 
-        setAdaHandleSelected, 
-        setDisplayAdaHandle, 
-        adaHandleDetected, 
+    const { sessionToken,
+        loggedInProfile,
+        setLoggedInProfile,
+        darkMode,
+        walletUser,
+        adaHandleSelected,
+        setAdaHandleSelected,
+        setDisplayAdaHandle,
+        adaHandleDetected,
         adaHandleName } = useStateContext()
 
+    const [newDisplayName, setNewDisplayName] = useState('')
     const [newBio, setNewBio] = useState('')
     const [newImage, setNewImage] = useState(undefined)
     const [updateSuccess, setUpdateSuccess] = useState(false)
 
     const handleBio = (e) => {
         setNewBio(e)
+    }
+
+    const handleDisplayName = (e) => {
+        setNewDisplayName(e)
     }
 
     const handleImageUpload = e => {
@@ -44,6 +50,7 @@ const EditProfile = () => {
         const index = adaHandleName.indexOf(obj)
         const adaHandleSelected = adaHandleName[index]
         setAdaHandleSelected('$' + adaHandleSelected)
+        setNewDisplayName('$' + adaHandleSelected)
         setDisplayAdaHandle(true)
     }
 
@@ -52,19 +59,16 @@ const EditProfile = () => {
 
         if (newBio.length > 0) {
             updatedProfile.append('bio', newBio)
-            console.log(newBio)
         }
 
         if (newImage !== undefined) {
             updatedProfile.append('profile_image', newImage)
-            console.log(newImage)
         }
 
-        if(adaHandleDetected) {
-            updatedProfile.append('display_name', adaHandleSelected)
-        } else {
-            updatedProfile.append('display_name', loggedInProfile.username)
+        if (newDisplayName !== loggedInProfile.username) {
+            updatedProfile.append('display_name', newDisplayName)
         }
+
 
         for (const v of updatedProfile.values()) {
             console.log(v)
@@ -101,35 +105,40 @@ const EditProfile = () => {
                 <div className='pt-20 justify-center mx-autow-full'>
                     <div className='flex justify-center flex-row'>
                         <div>
-                            <Title text={`Edit Profile`} size={'text-6xl'} />
+                            <Title text={newDisplayName} size={'text-6xl'} />
                         </div>
                     </div>
                     <div className='mt-20' />
-                    <div className={`${newImage !== undefined ? 'flex justify-center m-5' : 'hidden'}`}>
+                    {/* <div className={`${newImage !== undefined ? 'flex justify-center m-5' : 'hidden'}`}>
                         <img src={newImage} alt={'New user profile'} height={'26px'} width={'26px'}/>
-                    </div>
-                    <Title text={'Write about yourself'} size={'text-2xl'}/>
+                    </div> */}
+                    <InputField
+                        required={false} type={'input'}
+                        placeholder={'Add a personalised name'} defaultValue={''}
+                        onChange={e => handleDisplayName(e.target.value)}
+                    />
+                    <Title text={'Write about yourself'} size={'text-2xl'} />
                     <Editor setContent={setNewBio} />
                     <div>
-                    <div>
-                        <div className='flex justify-center mt-10 mb-5'>
-                            <div className='rounded-full focus:outline-none cursor-pointer
+                        <div>
+                            <div className='flex justify-center mt-10 mb-5'>
+                                <div className='rounded-full focus:outline-none cursor-pointer
               bg-light-orange hover:bg-light-white  
               text-light-white dark:bg-dark-orange dark:text-white 
                 py-2 px-4 text-xl font-bold z-0 absolute content-center'>
-                                <div className='flex justify-center cursor-pointer'>
-                                    <BsCardImage size={'26px'} />
-                                    <div className='pl-2 text-base cursor-pointer'>
-                                        Edit profile picture
+                                    <div className='flex justify-center cursor-pointer'>
+                                        <BsCardImage size={'26px'} />
+                                        <div className='pl-2 text-base cursor-pointer'>
+                                            Edit profile picture
+                                        </div>
                                     </div>
                                 </div>
+                                <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
                             </div>
-                            <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
                         </div>
-                    </div>
-                    <div className={`${walletUser && adaHandleDetected ? 'block' : 'hidden'}`}>
+                        <div className={`${walletUser && adaHandleDetected ? 'block' : 'hidden'}`}>
                             <div className='m-5 flex justify-center'>
-                                <Title text={'Display ADA Handle?'} size={'text-2xl'}/>
+                                <Title text={'Display ADA Handle?'} size={'text-2xl'} />
                             </div>
                             <div>
                                 {adaHandleName.map(key =>
