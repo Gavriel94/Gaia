@@ -514,17 +514,30 @@ const LoginButton = () => {
                 'Authorization': `Token ${e}`
             },
         }).then((res) => {
+            console.log('res', res)
             setLoggedInProfile(res.data)
+            console.log('res.data', res.data)
+            // if(res.data.display_name.charAt(0) === '$') {
+            //     console.log('handle found as display name')
+            //     let handle = res.data.display_name.slice(1, res.data.display_name.length)
+            //     for(let i = 0; i < adaHandleName.length; i++) {
+            //         console.log(adaHandleName[i])
+            //         console.log(handle)
+            //         if(adaHandleName[i] === handle) {
+            //             setAdaHandleSelected('$' + adaHandleName[i])
+            //             setDisplayAdaHandle(true)
+            //         }
+            //     }
+            // }
+            console.log(loggedInProfile)
+            console.log(res.data)
         }).catch(console.err)
     }
 
     const authenticate = async () => {
         //Tries to login, if it fails, create a new account
         let walletUser = new FormData()
-        console.log(connectedWallet.changeAddress)
-        console.log(addressAsID)
         const ca = await getChangeAddress()
-        console.log(ca)
         walletUser.append('username', ca)
         walletUser.append('password', 'password') // 'password' is safe as wallet login required before GET request?
         try {
@@ -548,7 +561,7 @@ const LoginButton = () => {
         } catch (err) {
             if (err.response.status === 404) {
                 try {
-                    walletUser.append('email', 'none2@gaia.com') // Use RNG for email generation
+                    // walletUser.append('email', 'none4@gaia.com') // Use RNG for email generation
                     sessionToken = await API.post("profile/user/create", walletUser, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -634,6 +647,9 @@ const LoginButton = () => {
     }
 
     const shortenAddress = () => {
+        if(loggedInProfile?.display_name?.length > 3) {
+            return String(loggedInProfile.display_name).slice(0,8) + '...'
+        }
         return String(connectedWallet.changeAddress).slice(0, 8) + '...'
     }
 
@@ -739,7 +755,10 @@ const LoginButton = () => {
                                     </div>
                                 </button>
                             </div>
-                            <div className='block justify-center pt-5'>
+
+                            {/*! Email option removed for now */}
+
+                            {/* <div className='block justify-center pt-5'>
                                 <Link to={'/register'}>
                                     <button
                                         type='button'
@@ -752,7 +771,7 @@ const LoginButton = () => {
                                         </div>
                                     </button>
                                 </Link>
-                            </div>
+                            </div> */}
 
                             <div className='flex justify-center pt-5 pl-5 pr-5'>
                                 <div className='flex justify-center pt-10 pb-4'>
