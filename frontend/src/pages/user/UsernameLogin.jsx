@@ -51,14 +51,10 @@ const UsernameLogin = () => {
   const handleNewToken = (e) => {
     console.log(e)
     setSessionToken(e)
-    console.log(e)
-    console.log(sessionToken)
   }
 
   async function handleSubmit() {
     let authUser = new FormData()
-    console.log(username)
-    console.log(password)
     authUser.append('username', username)
     authUser.append('password', password)
     try {
@@ -71,15 +67,10 @@ const UsernameLogin = () => {
         // }).then(response => console.log(response))
       }).then(response => {
         sessionToken = response.data.token
-        console.log('in response', sessionToken)
-        console.log(response)
-        console.log(response.data)
-        console.log(response.data.token)
         userID = response.data.user.id
         handleNewToken(response.data.token)
         setLoggedInProfile(response.data.user)
       })
-      console.log(userID)
       // setSessionToken(sessionToken)
       setUserID(userID)
       setSubmit(false)
