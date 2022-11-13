@@ -5,11 +5,13 @@ import { FiInfo } from 'react-icons/fi'
 import { BsPen } from 'react-icons/bs'
 import { MdOutlineCancel } from 'react-icons/md'
 import { Link, NavLink } from 'react-router-dom';
-import Button from './Button'
+import Button from '../misc/Button'
 import lightLogo from '../../assets/fpngs/tildelogolight.png'
 import darkLogo from '../../assets/fpngs/tildelogodark.png'
 import { useStateContext } from '../../context/ContextProvider'
 import { CgProfile } from 'react-icons/cg'
+
+//! Deprecated 13/11/2022
 
 /**
  * Sidebar component which allows for easy app navigation
@@ -28,14 +30,14 @@ const Sidebar = () => {
             icon: <AiOutlineHome size={'26px'} />,
         },
         {
-            link: `${sessionToken ? `profiles/${loggedInProfile.id}` : 'login'}`,
-            display: 'profile',
-            icon: <CgProfile size={'26px'}/>,
-        },
-        {
             link: 'create',
             display: 'write',
             icon: <BsPen size={'26px'} />,
+        },
+        {
+            link: `${sessionToken ? `profiles/${loggedInProfile.id}` : 'login'}`,
+            display: 'profile',
+            icon: <CgProfile size={'26px'}/>,
         },
         {
             link: 'about',
