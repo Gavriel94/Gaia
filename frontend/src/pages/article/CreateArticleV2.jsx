@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Header, Sidebar, Title, InputField, Button, Editor, LoadingSpinner, TagIcon, LoginButton } from '../../components'
+import { Header, SidebarV2, Title, InputField, Button, Editor, LoadingSpinner, TagIcon, LoginButton } from '../../components'
 import API from '../../API'
 import { useStateContext } from '../../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
@@ -165,7 +165,7 @@ const CreateArticleV2 = () => {
         <div className={`${submit ? 'hidden' : 'block'}`}>
           <div className='fixed justify-center m-auto left-0 right-0 '>
             <Header />
-            <Sidebar />
+            <SidebarV2 />
           </div>
           <div>
             <div className={`${!sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>

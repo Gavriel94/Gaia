@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Title, Sidebar, Header, Button, TagIcon } from "../../components";
+import { Title, SidebarV2, Header, Button, TagIcon } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArticleLoading } from "../../components";
@@ -74,7 +74,7 @@ const ArticleDetail = () => {
             <>
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <Header />
-                    <Sidebar />
+                    <SidebarV2 />
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20 justify-center'>

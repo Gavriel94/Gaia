@@ -1,5 +1,5 @@
 import React from 'react'
-import { Header, Sidebar, Title } from '../../components'
+import { Header, SidebarV2, Title } from '../../components'
 
 /**
  * Page which allows users to see trending topics if they are not using a screen large enough to see the TrendBar
@@ -12,7 +12,7 @@ const Trending = () => {
     <>
         <div className='fixed justify-center m-auto left-0 right-0 '>
             <Header />
-            <Sidebar />
+            <SidebarV2 />
         </div>
         <div className='flex justify-center'>
             <div className='pt-20'>

@@ -41,8 +41,6 @@ export const ContextProvider = ({ children }) => {
     const [articleList, setArticleList] = useState([])
     const [articleLoading, setArticleLoading] = useState(true)
     const [sortBy, setSortBy] = useState('new')
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarButton, setSidebarButton] = useState(<BsArrowRight size={'26px'} />) //arrow right as sidebar closed by default
     const [showLogoutAlert, setshowLogoutAlert] = useState(false)
     const [showErrorAlert, setShowErrorAlert] = useState(false)
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
@@ -142,7 +140,6 @@ export const ContextProvider = ({ children }) => {
                 articleList, setArticleList,
                 articleLoading, setArticleLoading,
                 sortBy, setSortBy,
-                sidebarOpen, setSidebarOpen,
                 connectedWallet, setConnectedWallet,
                 protocolParams, setProtocolParams,
                 showLogoutAlert, setshowLogoutAlert,
@@ -155,7 +152,6 @@ export const ContextProvider = ({ children }) => {
                 walletUser, setWalletUser,
                 adaHandleDetected, setadaHandleDetected,
                 adaHandleName, setadaHandleName,
-                sidebarButton, setSidebarButton,
             }}
         >
             {children}

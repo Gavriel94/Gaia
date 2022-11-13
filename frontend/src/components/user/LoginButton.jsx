@@ -72,7 +72,6 @@ let Buffer = require('buffer/').Buffer
 
 /**
  * TODO: Hardcode which wallets are allowed (typhoncip30, eternl & nami) instead of polling the browser
- * TODO: RNG emails for now
  */
 
 const LoginButton = () => {

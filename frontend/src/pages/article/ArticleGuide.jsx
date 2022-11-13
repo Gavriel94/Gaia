@@ -1,5 +1,5 @@
 import React from 'react'
-import { Header, Sidebar, Button, Title } from '../../components'
+import { Header, SidebarV2, Button, Title } from '../../components'
 import { useNavigate } from 'react-router-dom'
 
 /**
@@ -13,7 +13,7 @@ const ArticleGuide = () => {
         <>
             <div className='fixed justify-center m-auto left-0 right-0 '>
                 <Header />
-                <Sidebar />
+                <SidebarV2 />
             </div>
             <div className='flex justify-center'>
                 <div className='pt-20'>

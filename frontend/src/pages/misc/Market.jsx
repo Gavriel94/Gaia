@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sidebar, Header, Title } from '../../components'
+import { SidebarV2, Header, Title } from '../../components'
 
 /**
  * Page for implementing a market API such as CoinMarketCap
@@ -12,7 +12,7 @@ const Market = () => {
         <>
             <div className='fixed justify-center m-auto left-0 right-0 '>
                 <Header />
-                <Sidebar />
+                <SidebarV2 />
             </div>
             <div className='flex justify-center'>
                 <div className='pt-20'>

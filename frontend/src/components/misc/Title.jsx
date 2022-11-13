@@ -22,11 +22,11 @@ const Title = ({ text, size, lengthLimit }) => {
         setDynamicText(text)
         if(lengthLimit && text.length > 20) {
             let v = text.slice(0,20) + '...'
-            setDynamicSize('text-4xl')
+            setDynamicSize('text-6xl')
             setDynamicText(text.slice(0,20) + '...')
         }
         if(lengthLimit && text.length > 40) {
-            setDynamicSize('text-2xl')
+            setDynamicSize('text-4xl')
         }
     }, [lengthLimit, text])
 

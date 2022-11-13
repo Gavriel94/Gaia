@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Header, Title, InputField, Button, LoadingSpinner, Sidebar } from '../../components'
+import { Header, Title, InputField, Button, LoadingSpinner, SidebarV2 } from '../../components'
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai'
 import API from '../../API'
 import { Navigate } from 'react-router-dom'
@@ -83,7 +83,7 @@ const UsernameLogin = () => {
   return (
     <>
         <div className='fixed justify-center m-auto left-0 right-0'>
-            <Sidebar />
+            <SidebarV2 />
         </div>
         {
         submit && (

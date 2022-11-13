@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import API from '../../API'
-import { Header, Sidebar, Title, InputField, Button, Editor } from '../../components'
+import { Header, SidebarV2, Title, InputField, Button, Editor } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 import { Navigate } from 'react-router-dom'
 import { BsCardImage } from 'react-icons/bs'
@@ -99,7 +99,7 @@ const EditProfile = () => {
             }
             <div className='fixed justify-center m-auto left-0 right-0'>
                 <Header page={'edit'} />
-                <Sidebar />
+                <SidebarV2 />
             </div>
             <div className={`flex justify-center ${darkMode ? '' : ''}`}>
                 <div className='pt-20 justify-center mx-autow-full'>

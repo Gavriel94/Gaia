@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TrendBar, Sidebar, Header, Title, ArticleLoading, ArticleView, TopLoader, RefreshPosts } from '../../components'
+import { TrendBar, SidebarV2, Header, Title, ArticleLoading, ArticleView, TopLoader, RefreshPosts } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 
 /**
@@ -63,7 +63,7 @@ const Home = () => {
                 <div className='justify-center m-auto left-0 right-0 h-full w-full'>
                     <TrendBar />
                     <Header page={'home'} />
-                    <Sidebar />
+                    <SidebarV2 />
                     {
                         topLoaderVisible
                         &&

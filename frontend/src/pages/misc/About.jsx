@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sidebar, Header, Title, Footer } from '../../components'
+import { SidebarV2, Header, Title, Footer } from '../../components'
 
 /**
  * Page to contain information about the project and information about creating wallets
@@ -11,7 +11,7 @@ const About = () => {
             <>
                 <div className='fixed justify-center m-auto left-0 right-0 '>
                     <Header />
-                    <Sidebar />
+                    <SidebarV2 />
                 </div>
                 <div className='flex justify-center'>
                     <div className='pt-20'>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { LoginButton, Title, Header, Sidebar } from '../../components'
+import { LoginButton, Title, Header, SidebarV2 } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 
 const Login = () => {
@@ -10,7 +10,7 @@ const Login = () => {
         <>
             <div>
                 <Header />
-                <Sidebar />
+                <SidebarV2 />
             </div>
             <div className='flex justify-center mt-20'>
                 <Title text={'Login'} size={'text-6xl'} />
