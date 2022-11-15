@@ -516,18 +516,18 @@ const LoginButton = () => {
             console.log('res', res)
             setLoggedInProfile(res.data)
             console.log('res.data', res.data)
-            // if(res.data.display_name.charAt(0) === '$') {
-            //     console.log('handle found as display name')
-            //     let handle = res.data.display_name.slice(1, res.data.display_name.length)
-            //     for(let i = 0; i < adaHandleName.length; i++) {
-            //         console.log(adaHandleName[i])
-            //         console.log(handle)
-            //         if(adaHandleName[i] === handle) {
-            //             setAdaHandleSelected('$' + adaHandleName[i])
-            //             setDisplayAdaHandle(true)
-            //         }
-            //     }
-            // }
+            if(res.data.profile_name.charAt(0) === '$') {
+                console.log('handle found as display name')
+                let handle = res.data.profile_name.slice(1, res.data.display_name.length)
+                for(let i = 0; i < adaHandleName.length; i++) {
+                    console.log(adaHandleName[i])
+                    console.log(handle)
+                    if(adaHandleName[i] === handle) {
+                        setAdaHandleSelected('$' + adaHandleName[i])
+                        setDisplayAdaHandle(true)
+                    }
+                }
+            }
             console.log(loggedInProfile)
             console.log(res.data)
         }).catch(console.err)
@@ -538,7 +538,7 @@ const LoginButton = () => {
         let walletUser = new FormData()
         const ca = await getChangeAddress()
         walletUser.append('username', ca)
-        walletUser.append('password', 'password') // 'password' is safe as wallet login required before GET request?
+        walletUser.append('password', 'password') // 'password' is safe as wallet login required before GET request
         try {
             var userID
             var sessionToken = await API.post("/profile/login", walletUser, {
