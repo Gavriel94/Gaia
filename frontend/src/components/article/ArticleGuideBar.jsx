@@ -17,7 +17,6 @@ import { Link } from 'react-router-dom'
  */
 
 const ArticleGuideBar = ({ title, content, tags, previewImage }) => {
-
   return (
     <div>
       <div className={`flex invisible xl:visible items-end px-10 flex-col h-full`}>
@@ -55,10 +54,10 @@ const ArticleGuideBar = ({ title, content, tags, previewImage }) => {
               <span className='select-none'>Content</span>
             </div>
             <div className='flex justify-center space-x-2'>
-            <div className={`${tags.length <1 ? 'block' : 'hidden'}`}>
+            <div className={`${tags.length <=1 ? 'block' : 'hidden'}`}>
                 <RiQuillPenLine size={'26px'} />
               </div>
-              <div className={`${tags.length >= 1 ? 'block' : 'hidden'}`}>
+              <div className={`${tags.length > 1 ? 'block' : 'hidden'}`}>
                 <BsCheck2Circle size={'26px'}/>
               </div>
               <span className='select-none'>Tags</span>
