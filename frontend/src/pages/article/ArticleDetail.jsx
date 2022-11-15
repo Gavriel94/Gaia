@@ -86,7 +86,7 @@ const ArticleDetail = () => {
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
                                 <div className='flex text-center justify-center mt-5'>
-                                    <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_display_name.slice(0,20) + '...'} </Link></p>
+                                    <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0,20) + '...'} </Link></p>
                                 </div>
                             </div>
                         </div>
