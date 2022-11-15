@@ -58,7 +58,7 @@ const LogoutButton = () => {
             username: '',
             bio: '',
             profile_image: '',
-            display_name: '',
+            profile_name: '',
         })
         if(walletUser) {
             clearWallet()
