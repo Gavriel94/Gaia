@@ -55,12 +55,15 @@ const UserProfile = () => {
   return (
     <>
       <div className='fixed justify-center m-auto left-0 right-0'>
-        <Header page={'user'} />
         <SidebarV2 />
         <ProfileArticleBar header={'Articles Written'} articles={profileData.authored}/>
+        <Header page={'user'} />
       </div>
-      <div className='pt-20 flex justify-center dark:text-white'>
-        <Title text={profileData.display_name === null || profileData.display_name.length < 1 ? profileData.username : profileData.display_name} size={'text-6xl'} lengthLimit={true} />
+      <div className={`${profileData.profile_name === null ? 'block' : 'hidden'} pt-20 flex justify-center dark:text-white`}>
+        <Title text={profileData.username} lengthLimit={true}/>
+      </div>
+      <div className={`${profileData.profile_name === null ? 'hidden' : 'block'} pt-20 flex justify-center dark:text-white`}>
+        <Title text={profileData.profile_name} size={'text-3xl'}/>
       </div>
 
 

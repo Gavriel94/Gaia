@@ -65,13 +65,14 @@ const EditProfile = () => {
             updatedProfile.append('profile_image', newImage)
         }
 
-        if (newDisplayName !== loggedInProfile.username) {
-            updatedProfile.append('display_name', newDisplayName)
+        if (newDisplayName !== null) {
+            updatedProfile.append('profile_name', newDisplayName)
+            setLoggedInProfile.profile_name(newDisplayName)
         }
 
 
         for (const v of updatedProfile.values()) {
-            console.log(v)
+            console.log('values', v)
         }
 
         try {
@@ -123,9 +124,10 @@ const EditProfile = () => {
                         <div>
                             <div className='flex justify-center mt-10 mb-5'>
                                 <div className='rounded-full focus:outline-none cursor-pointer
-              bg-light-orange hover:bg-light-white  
-              text-light-white dark:bg-dark-orange dark:text-white 
-                py-2 px-4 text-xl font-bold z-0 absolute content-center'>
+                                    bg-light-orange hover:bg-light-white  
+                                    text-light-white dark:bg-dark-orange dark:text-white 
+                                    py-2 px-4 text-xl font-bold z-0 absolute content-center'
+                                >
                                     <div className='flex justify-center cursor-pointer'>
                                         <BsCardImage size={'26px'} />
                                         <div className='pl-2 text-base cursor-pointer'>
@@ -157,7 +159,7 @@ const EditProfile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='mt-5 flex justify-center'>
+                    <div className='mt-5 mb-20 flex justify-center'>
                         <Button label={'Done'} func={handleSubmit} />
                     </div>
                 </div>
