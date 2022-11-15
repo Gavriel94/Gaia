@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Header, SidebarV2, Title, InputField, Button, Editor, LoadingSpinner, TagIcon, LoginButton } from '../../components'
+import { Header, SidebarV2, Title, InputField, Button, Editor, LoadingSpinner, TagIcon, LoginButton, ArticleGuideBar } from '../../components'
 import API from '../../API'
 import { useStateContext } from '../../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
@@ -102,7 +102,11 @@ const CreateArticleV2 = () => {
     newArticle.append('tags', tags)
     newArticle.append('preview_image', previewImage)
     newArticle.append('author', loggedInProfile.id)
-    newArticle.append('author_display_name', loggedInProfile.display_name)
+    if(loggedInProfile.profile_name !== null) {
+      newArticle.append('author_profile_name', loggedInProfile.profile_name)
+    } else {
+      newArticle.append('author_profile_name', loggedInProfile.username)
+    }
 
     try {
       setSubmit(true)
@@ -111,7 +115,7 @@ const CreateArticleV2 = () => {
           'Content-Type': 'multipart/form-data',
         },
       }).then(res => articleID = res.data.id)
-    } catch(err) {
+    } catch (err) {
       console.log(err)
       setSubmit(false)
       console.log('loggedInProfile', loggedInProfile)
@@ -121,7 +125,7 @@ const CreateArticleV2 = () => {
     setSubmit(false)
     setID(articleID)
     setIDSet(true)
-  } 
+  }
 
   return (
     <>
@@ -164,8 +168,12 @@ const CreateArticleV2 = () => {
       {
         <div className={`${submit ? 'hidden' : 'block'}`}>
           <div className='fixed justify-center m-auto left-0 right-0 '>
-            <Header />
+
             <SidebarV2 />
+            <div className={`${sessionToken ? 'block' : 'hidden'}`}>
+              <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
+            </div>
+            <Header />
           </div>
           <div>
             <div className={`${!sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
