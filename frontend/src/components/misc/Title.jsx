@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
  * 
  * @param {string} text - text to be displayed as the title
  * @param {string} size - size of the text displayed. Must be a complete Tailwind value e.g 'text-2xl'
+ * @param {bool} lengthLimit - will slice and resize text if it's too long
  * 
  * @returns {JSX.Element} - Title component
  */
@@ -20,12 +21,11 @@ const Title = ({ text, size, lengthLimit }) => {
 
     useEffect(() => {
         setDynamicText(text)
-        if(lengthLimit && text.length > 20) {
-            let v = text.slice(0,20) + '...'
+        if (lengthLimit && text.length > 20) {
             setDynamicSize('text-6xl')
-            setDynamicText(text.slice(0,20) + '...')
+            setDynamicText(text.slice(0, 20) + '...')
         }
-        if(lengthLimit && text.length > 40) {
+        if (lengthLimit && text.length > 40) {
             setDynamicSize('text-4xl')
         }
     }, [lengthLimit, text])
