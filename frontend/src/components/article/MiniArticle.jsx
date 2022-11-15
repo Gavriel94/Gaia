@@ -38,7 +38,7 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth 
     return (
         <>
             <div>
-                <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 md:w-[500px] lg:w-[700px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
+                <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
                         <div className='grid grid-cols-2 grid-rows-2 justify-end content-end'>
                             <div className=''>
