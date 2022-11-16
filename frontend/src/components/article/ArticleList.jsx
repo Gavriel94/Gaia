@@ -9,7 +9,7 @@ import MiniArticle from './MiniArticle'
  * @returns {JSX.Element} - List of MiniArticle components
  */
 
-const ArticleView = () => {
+const ArticleList = () => {
     const { articleList, sortBy } = useStateContext()
 
     const oldestFirst = articleList.map(function iterateArticles(article) {
@@ -35,4 +35,4 @@ const ArticleView = () => {
     )
 }
 
-export default ArticleView
+export default ArticleList

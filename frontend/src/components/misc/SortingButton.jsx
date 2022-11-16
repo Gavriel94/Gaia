@@ -6,7 +6,7 @@ import Button from './Button'
 
 /**
  * 
- * @returns {JSX.Element} - Changes order of MiniArticles in ArticleView component
+ * @returns {JSX.Element} - Changes order of MiniArticles in ArticleList component
  */
 
 const SortingButton = () => {

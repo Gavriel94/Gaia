@@ -67,13 +67,17 @@ const EditProfile = () => {
 
         if (newDisplayName !== null) {
             updatedProfile.append('profile_name', newDisplayName)
-            setLoggedInProfile.profile_name(newDisplayName)
+            setLoggedInProfile({
+                profile_name: newDisplayName,
+            })
         }
 
 
         for (const v of updatedProfile.values()) {
             console.log('values', v)
         }
+
+        console.log('loggedInProfile', loggedInProfile)
 
         try {
             await API.patch(`/profile/user/${loggedInProfile.id}/update/`, updatedProfile, {

@@ -21,22 +21,23 @@ const ProfileArticleBar = ({ header, articles }) => {
                     </div>
                     <div className='pt-4 grid grid-cols-1 gap-y-4'>
                         {articles.map((article) => (
-                            <Link to={`/articles/${article.id}`} style={{ textDecoration: 'none' }}>
-                                <ProfileArticle
-                                    id={article.id}
-                                    title={article.title}
-                                    image={article.preview_image}
-                                    imageHeight={80}
-                                    imageWidth={80}
-                                />
-                            </Link>
+                                <Link to={`/articles/${article.id}`} style={{ textDecoration: 'none' }} key={article.id}>
+                                    <ProfileArticle
+                                        id={article.id}
+                                        title={article.title}
+                                        image={article.preview_image}
+                                        imageHeight={80}
+                                        imageWidth={80}
+                                    />
+                                </Link>
                         ))}
-                        <div className='flex justify-center space-x-2'>
-                            <Button icon={<BsPen size={'26px'} />} />
-                            <Button icon={<BiLike size={'26px'}/>}/>
-                            <Button icon={<BiDislike size={'26px'}/>}/>
-                        </div>
                     </div>
+                    <div className='flex justify-center space-x-2'>
+                        <Button icon={<BsPen size={'26px'} />} />
+                        <Button icon={<BiLike size={'26px'} />} />
+                        <Button icon={<BiDislike size={'26px'} />} />
+                    </div>
+
                 </div>
             </div>
         </div>

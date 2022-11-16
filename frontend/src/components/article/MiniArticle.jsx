@@ -5,7 +5,7 @@ import parser from 'html-react-parser'
 
 /**
  * Cards containing article title, preview image and beginning of content
- * Mapped to data and displayed in the ArticleView component
+ * Mapped to data and displayed in the ArticleList component
  * 
  * @param {string} id - ID of the article
  * @param {string} title - Title of the article

@@ -6,7 +6,7 @@ import { VscRefresh } from 'react-icons/vsc'
 import LoadingSpinner from '../misc/LoadingSpinner';
 
 /**
- * Button which refreshes the ArticleView component on the Homepage
+ * Button which refreshes the ArticleList component on the Homepage
  * Displays the LoadingSpinner component while refreshing
  * 
  * @returns {JSX.Element} - Button to refresh articles on Homepage

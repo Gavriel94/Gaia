@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, TagIcon } from "../../components";
+import { Title, SidebarV2, Header, Button, TagIcon, ProfileArticleBar } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
 import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
+import AuthorBar from "../../components/article/AuthorBar";
 
 /**
  * Displays a single Article in a full page view
@@ -20,6 +21,7 @@ import parser from 'html-react-parser'
 const ArticleDetail = () => {
     const { darkMode } = useStateContext()
     const [article, setArticle] = useState('')
+    const [authorDetails, setAuthorDetails] = useState(undefined)
     const [notLoaded, setNotLoaded] = useState(false)
     const { id } = useParams()
     let history = useNavigate()
@@ -27,7 +29,7 @@ const ArticleDetail = () => {
     useEffect(() => {
 
         const articleDetail = async () => {
-            API.get(`/articles/article/${id}/`)
+            await API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
                 })
@@ -36,8 +38,19 @@ const ArticleDetail = () => {
                     setNotLoaded(true)
                 })
         }
+
+        const authorDetail = async () => {
+            await API.get(`/profile/user/${article.author}`)
+            .then((res) => {
+                setAuthorDetails(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        }
         articleDetail()
-    }, [id])
+        authorDetail()
+    }, [id, article.author])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -83,6 +96,11 @@ const ArticleDetail = () => {
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <Header />
                     <SidebarV2 />
+                    {console.log(article)}
+                    {console.log(authorDetails)}
+                    <div className="hidden xl:block">
+                    <AuthorBar/>
+                    </div>
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20 justify-center'>
@@ -93,7 +111,7 @@ const ArticleDetail = () => {
                         <div className='flex justify-center flex-row mx-auto'>
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
-                                <div className='flex text-center justify-center mt-5'>
+                                <div className='flex text-center justify-center mt-5 sm:hidden'>
                                     <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0, 20) + '...'} </Link></p>
                                 </div>
                             </div>
