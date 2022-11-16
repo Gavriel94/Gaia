@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Title, SidebarV2, Header, Button, TagIcon } from "../../components";
 import API from '../../API'
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
 import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
@@ -15,12 +15,12 @@ import parser from 'html-react-parser'
  * TODO: Tip button on the bottom denominating ADA
  * TODO: Fix pub_date to be a 24 hour clock. (Needs to be done in Django)
  * TODO: Link to tags needs implementation
- * TODO: Add author field
  */
 
 const ArticleDetail = () => {
     const { darkMode } = useStateContext()
     const [article, setArticle] = useState('')
+    const [notLoaded, setNotLoaded] = useState(false)
     const { id } = useParams()
     let history = useNavigate()
 
@@ -31,7 +31,10 @@ const ArticleDetail = () => {
                 .then((res) => {
                     setArticle(res.data)
                 })
-                .catch(console.error)
+                .catch(err => {
+                    console.log(err.response.status)
+                    setNotLoaded(true)
+                })
         }
         articleDetail()
     }, [id])
@@ -66,6 +69,11 @@ const ArticleDetail = () => {
         return (
             <>
                 <ArticleLoading pageTitle={'Loading'} />
+                {
+                    notLoaded && (
+                        <Navigate to={'not-found'} replace={true} />
+                    )
+                }
             </>
         )
     }
@@ -86,7 +94,7 @@ const ArticleDetail = () => {
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
                                 <div className='flex text-center justify-center mt-5'>
-                                    <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0,20) + '...'} </Link></p>
+                                    <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0, 20) + '...'} </Link></p>
                                 </div>
                             </div>
                         </div>
