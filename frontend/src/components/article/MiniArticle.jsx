@@ -45,10 +45,10 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth 
                                 <Title text={title} size={'text-3xl'} />
                             </div>
                             <div className="justify-end pl-20 hidden sm:block">
-                                <img src={`${image}`} alt='Preview' height={imageHeight} width={imageWidth} className='rounded-lg' />
+                                <img src={image} alt='Preview' height={imageHeight} width={imageWidth} className='rounded-lg' />
                             </div>
                             <div className="justify-end pl-5 sm:hidden grid-cols-1">
-                                <img src={`${image}`} alt='Preview' height={'150'} width={'150'} className='rounded-lg' />
+                                <img src={image} alt='Preview' height={'150'} width={'150'} className='rounded-lg' />
                             </div>
                             <div className='col-span-2 text-center dark:text-white text-black mt-10'>
                                 {contentPreview()}
