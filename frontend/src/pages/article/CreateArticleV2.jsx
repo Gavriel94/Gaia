@@ -13,6 +13,10 @@ import { MdOutlineCancel } from 'react-icons/md'
  * @returns {JSX.Element} - Input fields for article creation
  */
 
+/**
+ * TODO: Create a checkbox for users to have to comply with ToS
+ */
+
 const CreateArticleV2 = () => {
 
   const { darkMode, loggedInProfile, sessionToken, submitted, adaHandleDetected, adaHandleSelected } = useStateContext()
@@ -206,15 +210,15 @@ const CreateArticleV2 = () => {
       {
         <div className={`${submit ? 'hidden' : 'block'}`}>
           <div className='fixed justify-center m-auto left-0 right-0 '>
-
+          {console.log('lip', loggedInProfile)}
             <SidebarV2 />
-            <div className={`${sessionToken ? 'block' : 'hidden'}`}>
+            <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
               <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
             </div>
             <Header />
           </div>
           <div>
-            <div className={`${!sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
+            <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
               <div className='mt-20'>
                 You must login to post an Article
                 <div className='flex justify-center mt-20'>
@@ -223,7 +227,7 @@ const CreateArticleV2 = () => {
               </div>
             </div>
           </div>
-          <div className={`${!sessionToken ? 'hidden' : 'block'}`}>
+          <div className={`${!loggedInProfile?.sessionToken ? 'hidden' : 'block'}`}>
             <div className='flex justify-center'>
               <div className='pt-20'>
                 <Title text={title} size={'text-6xl'} />
