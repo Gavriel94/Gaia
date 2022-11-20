@@ -21,11 +21,11 @@ const Title = ({ text, size, lengthLimit }) => {
 
     useEffect(() => {
         setDynamicText(text)
-        if (lengthLimit && text.length > 20) {
+        if (lengthLimit && text?.length > 20) {
             setDynamicSize('text-6xl')
-            setDynamicText(text.slice(0, 20) + '...')
+            setDynamicText(text?.slice(0, 20) + '...')
         }
-        if (lengthLimit && text.length > 40) {
+        if (lengthLimit && text?.length > 40) {
             setDynamicSize('text-4xl')
         }
     }, [lengthLimit, text])
