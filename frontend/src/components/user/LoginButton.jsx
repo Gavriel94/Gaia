@@ -85,7 +85,6 @@ const LoginButton = () => {
         showErrorAlert, setShowErrorAlert,
         displayAdaHandle, setDisplayAdaHandle,
         adaHandleSelected, setAdaHandleSelected,
-        sessionToken, setSessionToken,
         walletUser, setWalletUser,
         loggedInProfile, setLoggedInProfile,
         adaHandleDetected, setadaHandleDetected,
@@ -97,13 +96,12 @@ const LoginButton = () => {
     const [walletLoginButton, setwalletLoginButton] = useState(<BiLogInCircle size={'26px'} />)
     const [loading, setLoading] = useState(false)
     const [walletIcons] = useState([])
-    const [logoutSuccessful, setLogoutSuccessful] = useState(false)
     // const [adaHandleDetected, setadaHandleDetected] = useState(false)
     // const [adaHandleName, setadaHandleName] = useState([])
     const [showLoginOptionModal, setShowLoginOptionModal] = useState(false)
-    const [loginOption, setLoginOption] = useState('')
     const [addressAsID, setAddressAsID] = useState('')
     const [userID, setUserID] = useState('')
+    const [sessionToken, setSessionToken] = useState('')
     /**
      *  This is used to verify the ada handle and ensures it is legitamite 
      */
@@ -514,11 +512,20 @@ const LoginButton = () => {
             },
         }).then((res) => {
             console.log('res', res)
-            setLoggedInProfile(res.data)
+            setLoggedInProfile({
+                sessionToken: e,
+                id: res.data.id,
+                username: res.data.username,
+                bio: res.data.bio,
+                profile_image: res.data.profile_image,
+                profile_name: res.data.profile_name,
+                authored: res.data.authored,
+            })
+            // setLoggedInProfile(res.data)
             console.log('res.data', res.data)
             if(res.data.profile_name.charAt(0) === '$') {
                 console.log('handle found as display name')
-                let handle = res.data.profile_name.slice(1, res.data.display_name.length)
+                let handle = res.data?.profile_name?.slice(1, res.data?.display_name?.length)
                 for(let i = 0; i < adaHandleName.length; i++) {
                     console.log(adaHandleName[i])
                     console.log(handle)
