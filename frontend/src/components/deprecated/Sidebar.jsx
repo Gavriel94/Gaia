@@ -21,7 +21,7 @@ import { CgProfile } from 'react-icons/cg'
  */
 
 const Sidebar = () => {
-    const { darkMode, sidebarOpen, setSidebarOpen, loggedInProfile, sessionToken, sidebarButton, setSidebarButton } = useStateContext();
+    const { darkMode, sidebarOpen, setSidebarOpen, loggedInProfile, sidebarButton, setSidebarButton } = useStateContext();
 
     const sidebarItems = [
         {
@@ -35,7 +35,7 @@ const Sidebar = () => {
             icon: <BsPen size={'26px'} />,
         },
         {
-            link: `${sessionToken ? `profiles/${loggedInProfile.id}` : 'login'}`,
+            link: `${loggedInProfile.sessionToken ? `profiles/${loggedInProfile.id}` : 'login'}`,
             display: 'profile',
             icon: <CgProfile size={'26px'}/>,
         },
