@@ -6,6 +6,7 @@ import { ArticleLoading } from "../../components";
 import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
 import AuthorBar from "../../components/article/AuthorBar";
+import { BiLike, BiDislike } from 'react-icons/bi'
 
 /**
  * Displays a single Article in a full page view
@@ -19,15 +20,22 @@ import AuthorBar from "../../components/article/AuthorBar";
  */
 
 const ArticleDetail = () => {
-    const { darkMode } = useStateContext()
+    const { darkMode, loggedInProfile } = useStateContext()
     const [article, setArticle] = useState('')
-    const [authorDetails, setAuthorDetails] = useState(undefined)
     const [notLoaded, setNotLoaded] = useState(false)
     const { id } = useParams()
     let history = useNavigate()
 
-    useEffect(() => {
+    /**
+     * An array of three elements
+     * idx 0 - total likes
+     * idx 1 - total dislikes
+     * idx 3 - likes / likes + dislikes
+     */
+    const [articleSentiment, setArticleSentiment] = useState([])
+    const [noSentiment, setNoSentiment] = useState('')
 
+    useEffect(() => {
         const articleDetail = async () => {
             await API.get(`/articles/article/${id}/`)
                 .then((res) => {
@@ -39,18 +47,22 @@ const ArticleDetail = () => {
                 })
         }
 
-        const authorDetail = async () => {
-            await API.get(`/profile/user/${article.author}`)
-            .then((res) => {
-                setAuthorDetails(res.data)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        const articleSentiment = async () => {
+            await API.get(`/articles/sentiment/${id}/`)
+                .then((res) => {
+                    console.log(res)
+                    if (res.data === 'No reactions') {
+                        setNoSentiment(res.data)
+                    } else {
+                        setArticleSentiment(res.data)
+                    }
+                }).catch(err => {
+                    console.log(err)
+                })
         }
         articleDetail()
-        authorDetail()
-    }, [id, article.author])
+        articleSentiment()
+    }, [id])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -74,8 +86,30 @@ const ArticleDetail = () => {
                     <Link>
                         {tag}
                     </Link>
-                </div>)
+                </div>
+            )
         )
+    }
+
+    const handleReaction = async (reaction) => {
+        try {
+            let likeArticle = new FormData()
+            likeArticle.append('user_id', loggedInProfile.id)
+            likeArticle.append('article_id', article.id)
+            likeArticle.append('sentiment', reaction)
+            console.log(loggedInProfile.id)
+            await API.post(`/articles/reaction/${article.id}/`, likeArticle, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => console.log(res))
+        } catch (err) {
+            console.log(err)
+            if (err.response.status === 401) {
+                alert('You must be logged in')
+            }
+        }
     }
 
     if (article === '') {
@@ -94,24 +128,23 @@ const ArticleDetail = () => {
         return (
             <>
                 <div className='fixed justify-center m-auto left-0 right-0'>
+                    <div className="hidden xl:block">
+                        <AuthorBar authorID={article.author} />
+                    </div>
                     <Header />
                     <SidebarV2 />
                     {console.log(article)}
-                    {console.log(authorDetails)}
-                    <div className="hidden xl:block">
-                    <AuthorBar/>
-                    </div>
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20 justify-center'>
                         {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
                         <div className='pr-2 sm:pr-0 pl-2 md:pl-10 flex justify-center'>
-                            <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'200px'} width={'200px'} />
+                            <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'300px'} width={'300px'} />
                         </div>
                         <div className='flex justify-center flex-row mx-auto'>
                             <div className='pt-5'>
                                 <Title text={`${article.title}`} size={'text-6xl'} />
-                                <div className='flex text-center justify-center mt-5 sm:hidden'>
+                                <div className='flex text-center justify-center mt-5 xl:hidden'>
                                     <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0, 20) + '...'} </Link></p>
                                 </div>
                             </div>
@@ -127,12 +160,29 @@ const ArticleDetail = () => {
                         <div className='flex justify-center mt-10'>
                             {formatDate(article.pub_date)}
                         </div>
-                        <div className='mt-10 flex flex-row justify-center'>
-                            <div className='px-2'>
-                                {article.likes} likes
+                        <div className='mt-10 flex justify-center space-x-5'>
+                            <div>
+                                <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
+
+
                             </div>
                             <div>
-                                {article.dislikes} dislikes
+                                <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
+
+                            </div>
+                        </div>
+                        <div className={`${noSentiment === '' ? 'hidden' : 'flex justify-center text-center mt-5'}`}>
+                            <p>No reactions</p>
+                        </div>
+                        <div className={`${noSentiment === '' ? 'grid grid-cols-1 justify-center text-center' : 'hidden' }`}>
+                            <div className='mt-2'>
+                                {articleSentiment[2]}% of readers liked this
+                            </div>
+                            <div className='mt-5'>
+                                likes {articleSentiment[0]}
+                            </div>
+                            <div className='mt-5'>
+                                dislikes {articleSentiment[1]}
                             </div>
                         </div>
                         <div className='flex justify-center pt-5 pb-20 sm:pb-10'>
