@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import API from '../API'
-import { BsArrowRight } from 'react-icons/bs'
 
 /**
  * State context provider allowing variables to be passed across components
@@ -50,7 +49,6 @@ export const ContextProvider = ({ children }) => {
     const [adaHandleName, setadaHandleName] = useState([])
 
     const [refreshing, setRefreshing] = useState(false)
-    const [sessionToken, setSessionToken] = useState('')
     const [walletUser, setWalletUser] = useState(false) //True if user uses wallet login
     const [submitted, setSubmitted] = useState(false) //Used for displaying loading pages
 
@@ -102,11 +100,11 @@ export const ContextProvider = ({ children }) => {
     const [loggedInProfile, setLoggedInProfile] = useState({
         sessionToken: '',
         id: '',
-        email: '',
         username: '',
         bio: '',
         profile_image: '',
         profile_name: '',
+        authored: [],
     })
 
     useEffect(() => {
@@ -147,7 +145,6 @@ export const ContextProvider = ({ children }) => {
                 displayAdaHandle, setDisplayAdaHandle,
                 adaHandleSelected, setAdaHandleSelected,
                 refreshing, setRefreshing,
-                sessionToken, setSessionToken,
                 loggedInProfile, setLoggedInProfile,
                 walletUser, setWalletUser,
                 adaHandleDetected, setadaHandleDetected,
