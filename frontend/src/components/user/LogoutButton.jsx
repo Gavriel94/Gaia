@@ -13,7 +13,7 @@ import { LoadingSpinner } from '..'
  */
 
 const LogoutButton = () => {
-    const { setSessionToken, loggedInProfile, setLoggedInProfile, walletUser, setConnectedWallet, setadaHandleDetected, setadaHandleName, setDisplayAdaHandle, setAdaHandleSelected, setWalletUser } = useStateContext()
+    const { loggedInProfile, setLoggedInProfile, walletUser, setConnectedWallet, setadaHandleDetected, setadaHandleName, setDisplayAdaHandle, setAdaHandleSelected, setWalletUser } = useStateContext()
     const [loggedOut, setLoggedOut] = useState(false)
     const [buttonIcon, setButtonIcon] = useState(<BiLogInCircle size={'26px'}/>)
 
@@ -50,7 +50,6 @@ const LogoutButton = () => {
 
     const handleLogout = () => {
         setButtonIcon(<LoadingSpinner size={'26px'} />)
-        setSessionToken(null)
         setLoggedInProfile({
             sessionToken: '',
             id: '',
