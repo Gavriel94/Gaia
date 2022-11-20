@@ -14,7 +14,7 @@ import { TbLayoutAlignRight } from 'react-icons/tb'
  */
 
 const EditProfile = () => {
-    const { sessionToken,
+    const { 
         loggedInProfile,
         setLoggedInProfile,
         darkMode,
@@ -23,7 +23,8 @@ const EditProfile = () => {
         setAdaHandleSelected,
         setDisplayAdaHandle,
         adaHandleDetected,
-        adaHandleName } = useStateContext()
+        adaHandleName,
+     } = useStateContext()
 
     const [newDisplayName, setNewDisplayName] = useState('')
     const [newBio, setNewBio] = useState('')
@@ -67,10 +68,16 @@ const EditProfile = () => {
 
         if (newDisplayName !== null) {
             updatedProfile.append('profile_name', newDisplayName)
-            setLoggedInProfile({
-                profile_name: newDisplayName,
-            })
         }
+        setLoggedInProfile({
+            sessionToken: loggedInProfile.sessionToken,
+            id: loggedInProfile.id,
+            username: loggedInProfile.username,
+            bio: loggedInProfile.bio,
+            profile_image: loggedInProfile.profile_image,
+            profile_name: newDisplayName,
+            authored: loggedInProfile.authored
+        })
 
 
         for (const v of updatedProfile.values()) {
@@ -82,7 +89,7 @@ const EditProfile = () => {
         try {
             await API.patch(`/profile/user/${loggedInProfile.id}/update/`, updatedProfile, {
                 headers: {
-                    'Authorization': `Token ${sessionToken}`,
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
                     'Content-Type': 'multipart/form-data',
                 },
             }).then(response => console.log(response))
@@ -105,6 +112,7 @@ const EditProfile = () => {
             <div className='fixed justify-center m-auto left-0 right-0'>
                 <Header page={'edit'} />
                 <SidebarV2 />
+                {console.log(loggedInProfile)}
             </div>
             <div className={`flex justify-center ${darkMode ? '' : ''}`}>
                 <div className='pt-20 justify-center mx-autow-full'>
