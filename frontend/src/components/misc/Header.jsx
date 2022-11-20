@@ -18,7 +18,7 @@ import { AiOutlineHome } from 'react-icons/ai'
  */
 
 const Header = ({ page }) => {
-    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, sessionToken, loggedInProfile, walletUser } = useStateContext();
+    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, loggedInProfile, walletUser } = useStateContext();
     const [showSkip, setShowSkip] = useState(true)
     let history = useNavigate()
 
@@ -55,10 +55,10 @@ const Header = ({ page }) => {
                                 <Button label={'Home'} labelProps={'text-sm pt-1 pl-2'} icon={<AiOutlineHome size={'26px'} />} />
                             </Link>
                         </div>
-                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'} ${sessionToken && !walletUser && 'hidden'} pr-2 py-3`}>
+                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'} ${loggedInProfile.sessionToken && !walletUser && 'hidden'} pr-2 py-3`}>
                             <LoginButton />
                         </div>
-                        <div className={`${sessionToken && !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' && 'hidden'}`}>
+                        <div className={`${loggedInProfile.sessionToken && !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' && 'hidden'}`}>
                             <Link to={`/profiles/${loggedInProfile.id}`}>
                                 <Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''}/>
                             </Link>
