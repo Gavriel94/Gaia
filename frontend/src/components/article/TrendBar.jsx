@@ -16,18 +16,18 @@ const TrendBar = () => {
     const [mostPopular, setMostPopular] = useState([])
 
     useEffect(() => {
-        const getPopular = async () => {
-            await API.get('/articles/popular')
+        const getTrending = async () => {
+            await API.get('/articles/trending/')
                 .then((res) => {
-                    console.log(res.data)
                     setMostPopular(res.data)
+                    console.log(res.data)
                 })
                 .catch(err => {
                     console.log(err)
                 })
         }
 
-        getPopular()
+        getTrending()
     }, [])
 
     return (
@@ -43,7 +43,6 @@ const TrendBar = () => {
                     <div className='pt-4 grid grid-cols-1 gap-y-4'>
                         {mostPopular.map((article) => (
                             <div className='pt-4 grid grid-cols-1 gap-y-4' key={article.id}>
-                                {console.log(article.id)}
                                 <Link to={`/articles/${article.id}`} style={{textDecoration: 'none'}}>
                                     <TrendCard
                                         id={article.id}
