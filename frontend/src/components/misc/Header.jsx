@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import RefreshArticles from '../article/RefreshArticles'
 import { Button, LoginButton, SortingButton } from '..'
 import { AiOutlineHome } from 'react-icons/ai'
+import API from '../../API'
 
 /**
  * Dynamic header component
@@ -32,12 +33,12 @@ const Header = ({ page }) => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0'>
+                <div className='bg-white dark:bg-dark-grey flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0'>
                     <div className={`flex flex-row justify-end mr-10 ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100'} w-full`}>
                         <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <RefreshArticles />
                         </div>
-                        <div className={`${page === 'home' ? 'block pr-2' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`${page === 'home' ? 'block pr-2 mt-3' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <SortingButton />
                         </div>
                         <div className={`py-3 px-2 xl:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'}`}>
@@ -50,7 +51,7 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page === 'user' ? 'block pr-2 py-3' : page=== 'edit' ? 'block pr-2 py-3' : 'hidden'}`}>
+                        <div className={`${page === 'user' ? 'block pr-2 py-3' : page === 'edit' ? 'block pr-2 py-3' : 'hidden'}`}>
                             <Link to={'/home'}>
                                 <Button label={'Home'} labelProps={'text-sm pt-1 pl-2'} icon={<AiOutlineHome size={'26px'} />} />
                             </Link>
