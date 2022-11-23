@@ -37,9 +37,11 @@ export const ContextProvider = ({ children }) => {
      */
     const [darkMode, setDarkMode] = useState(getInitialTheme())
     const [article, setArticle] = useState(null)
-    const [articleList, setArticleList] = useState([])
+    const [articleList, setArticleList] = useState({
+        articles: [],
+        sortBy: 'new',
+    })
     const [articleLoading, setArticleLoading] = useState(true)
-    const [sortBy, setSortBy] = useState('new')
     const [showLogoutAlert, setshowLogoutAlert] = useState(false)
     const [showErrorAlert, setShowErrorAlert] = useState(false)
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
@@ -123,7 +125,10 @@ export const ContextProvider = ({ children }) => {
         const refreshArticles = () => {
             API.get('/articles/all/')
                 .then((res) => {
-                    setArticleList(res.data)
+                    setArticleList({
+                        articles: res.data.reverse(),
+                        sortBy: 'newest',
+                    })
                 })
                 .catch(console.error)
         }
@@ -137,7 +142,6 @@ export const ContextProvider = ({ children }) => {
                 article, setArticle,
                 articleList, setArticleList,
                 articleLoading, setArticleLoading,
-                sortBy, setSortBy,
                 connectedWallet, setConnectedWallet,
                 protocolParams, setProtocolParams,
                 showLogoutAlert, setshowLogoutAlert,
