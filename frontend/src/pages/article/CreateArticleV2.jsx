@@ -124,7 +124,6 @@ const CreateArticleV2 = () => {
   }
 
   const handleSubmit = async () => {
-    console.log(content)
     let newArticle = new FormData()
     newArticle.append('title', title)
     if (content === '<p></p>') {
@@ -210,7 +209,6 @@ const CreateArticleV2 = () => {
       {
         <div className={`${submit ? 'hidden' : 'block'}`}>
           <div className='fixed justify-center m-auto left-0 right-0 '>
-          {console.log('lip', loggedInProfile)}
             <SidebarV2 />
             <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
               <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
