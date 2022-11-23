@@ -10,9 +10,10 @@ import MiniArticle from './MiniArticle'
  */
 
 const ArticleList = () => {
-    const { articleList, sortBy } = useStateContext()
 
-    const oldestFirst = articleList.map(function iterateArticles(article) {
+    const { articleList } = useStateContext()
+
+    const articles = articleList.articles.map(function iterateArticles(article) {
         return (
             <div key={article.id} className='flex justify-center'>
                 <MiniArticle
@@ -21,7 +22,7 @@ const ArticleList = () => {
                     content={article.content}
                     tags={article.tags}
                     image={article.preview_image}
-                    imageHeight={'150x'}
+                    imageHeight={'150px'}
                     imageWidth={'150px'}
                 />
             </div>
@@ -29,9 +30,11 @@ const ArticleList = () => {
     })
 
     return (
-        <div className='overflow-auto'>
-            {sortBy === 'new' ? oldestFirst.reverse() : oldestFirst}
-        </div>
+        <>
+            <div className='overflow-auto'>
+                {articles}
+            </div>
+        </>
     )
 }
 
