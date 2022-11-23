@@ -34,6 +34,7 @@ const ArticleDetail = () => {
      */
     const [articleSentiment, setArticleSentiment] = useState([])
     const [noSentiment, setNoSentiment] = useState('')
+    const [buttonClick, setButtonClick] = useState(false)
 
     useEffect(() => {
         const articleDetail = async () => {
@@ -62,7 +63,7 @@ const ArticleDetail = () => {
         }
         articleDetail()
         articleSentiment()
-    }, [id])
+    }, [id, buttonClick])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -103,7 +104,10 @@ const ArticleDetail = () => {
                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
                     'Content-Type': 'multipart/form-data',
                 },
-            }).then(res => console.log(res))
+            }).then(res => {
+                console.log(res)
+                setButtonClick(!buttonClick)
+            })
         } catch (err) {
             console.log(err)
             if (err.response.status === 401) {
@@ -171,10 +175,10 @@ const ArticleDetail = () => {
 
                             </div>
                         </div>
-                        <div className={`${noSentiment === '' ? 'hidden' : 'flex justify-center text-center mt-5'}`}>
+                        {/* <div className={`${noSentiment === '' ? 'hidden' : 'flex justify-center text-center mt-5'}`}>
                             <p>No reactions</p>
-                        </div>
-                        <div className={`${noSentiment === '' ? 'grid grid-cols-1 justify-center text-center' : 'hidden' }`}>
+                        </div> */}
+                        <div className='grid grid-cols-1 justify-center text-center'>
                             <div className='mt-2'>
                                 {articleSentiment[2]}% of readers liked this
                             </div>
