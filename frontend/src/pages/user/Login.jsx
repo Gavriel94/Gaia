@@ -29,10 +29,10 @@ const Login = () => {
                 <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true}/>
             )
         }
-            <div>
-                <Header />
+        <Header />
+
                 <SidebarV2 />
-            </div>
+
             <div className='flex justify-center mt-20'>
                 <Title text={'Login'} size={'text-6xl'} />
             </div>
