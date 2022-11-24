@@ -10,6 +10,7 @@ const About = () => {
         <>
             <>
                 <div className='fixed justify-center m-auto left-0 right-0 '>
+                    <Footer />
                     <Header />
                     <SidebarV2 />
                 </div>
@@ -24,7 +25,6 @@ const About = () => {
             </>
 
             <div className='flex pt-14' />
-            <Footer />
         </>
     )
 }
