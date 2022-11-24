@@ -520,6 +520,7 @@ const LoginButton = () => {
                 profile_image: res.data.profile_image,
                 profile_name: res.data.profile_name,
                 authored: res.data.authored,
+                reacted: res.data.reacted,
             })
             // setLoggedInProfile(res.data)
             console.log('res.data', res.data)
