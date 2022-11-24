@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import RefreshArticles from '../article/RefreshArticles'
 import { Button, LoginButton, SortingButton } from '..'
 import { AiOutlineHome } from 'react-icons/ai'
+import { IoArrowBack } from 'react-icons/io5'
 import API from '../../API'
 
 /**
@@ -33,8 +34,8 @@ const Header = ({ page }) => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className='bg-white dark:bg-dark-grey flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0'>
-                    <div className={`flex flex-row justify-end mr-10 ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100'} w-full`}>
+                <div className='flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0'>
+                    <div className={`flex flex-row justify-end pr-10 w-full bg-white dark:bg-dark-grey ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100'}`}>
                         <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
                             <RefreshArticles />
                         </div>
@@ -51,17 +52,17 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page === 'user' ? 'block pr-2 py-3' : page === 'edit' ? 'block pr-2 py-3' : 'hidden'}`}>
-                            <Link to={'/home'}>
-                                <Button label={'Home'} labelProps={'text-sm pt-1 pl-2'} icon={<AiOutlineHome size={'26px'} />} />
-                            </Link>
+                        <div className={`${page === 'user' ? 'block pr-2 py-3' : page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'block pr-2 py-3' : 'hidden'}`}>
+                            {/* <Link to={'/home'}> */}
+                                <Button label={'Back'} labelProps={'text-sm pt-1 pl-2'} icon={<IoArrowBack size={'26px'} />} func={() => history(-1)} />
+                            {/* </Link> */}
                         </div>
                         <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'} ${loggedInProfile.sessionToken && !walletUser && 'hidden'} pr-2 py-3`}>
                             <LoginButton />
                         </div>
                         <div className={`${loggedInProfile.sessionToken && !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' && 'hidden'}`}>
                             <Link to={`/profiles/${loggedInProfile.id}`}>
-                                <Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''}/>
+                                <Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''} />
                             </Link>
                         </div>
                         <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkip && 'hidden'}`}>
@@ -76,11 +77,11 @@ const Header = ({ page }) => {
                                 </button>
                             </Link>
                         </div>
-                        <div className={`${page !== 'login' ? 'hidden' : 'block'} py-3 px-2`}>
+                        {/* <div className={`${page !== 'login' ? 'hidden' : 'block'} py-3 px-2`}>
                             <Button label={"Back"}
                                 func={() => history(-1)}
                             />
-                        </div>
+                        </div> */}
 
                         <div className={`${showLogoutAlert && 'hidden'} ${showErrorAlert && 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} py-3`}>
                             <Button
