@@ -27,8 +27,12 @@ const RefreshArticles = () => {
         setRefreshing(true)
         await sleep(2000);
         API.get('/articles/all/')
+
         .then((res) => {
-            setArticleList(res.data)
+          setArticleList({
+            articles: res.data.reverse(),
+            sortBy: 'newest',
+        })
         })
         .catch(console.error)
         setRefreshing(false)
