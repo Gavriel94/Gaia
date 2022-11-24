@@ -27,7 +27,6 @@ const RefreshArticles = () => {
         setRefreshing(true)
         await sleep(2000);
         API.get('/articles/all/')
-
         .then((res) => {
           setArticleList({
             articles: res.data.reverse(),
