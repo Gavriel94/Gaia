@@ -207,13 +207,14 @@ const CreateArticleV2 = () => {
         )
       }
       {
+        <>
+        <Header />
+        <SidebarV2 />
         <div className={`${submit ? 'hidden' : 'block'}`}>
           <div className='fixed justify-center m-auto left-0 right-0 '>
-            <SidebarV2 />
             <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
               <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
             </div>
-            <Header />
           </div>
           <div>
             <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
@@ -322,6 +323,7 @@ const CreateArticleV2 = () => {
             </div>
           </div>
         </div>
+        </>
       }
     </>
   )
