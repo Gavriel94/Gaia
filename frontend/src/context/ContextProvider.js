@@ -107,6 +107,7 @@ export const ContextProvider = ({ children }) => {
         profile_image: '',
         profile_name: '',
         authored: [],
+        reacted: [],
     })
 
     useEffect(() => {
