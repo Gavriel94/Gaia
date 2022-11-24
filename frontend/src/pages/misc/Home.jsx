@@ -50,7 +50,7 @@ const Home = () => {
     if (articleList.length === 0) {
         return (
             <>
-                <div className='mt-20'/>
+                <div className='mt-20' />
                 <Title text={'home'} size={'text-6xl'} />
                 <ArticleLoading pageTitle={'Home'} />
                 {/* {serverTimeout()} */}
@@ -60,10 +60,10 @@ const Home = () => {
     else {
         return (
             <>
+                <TrendBar />
+                <Header page={'home'} />
+                <SidebarV2 />
                 <div className='justify-center m-auto left-0 right-0 h-full w-full'>
-                    <TrendBar />
-                    <Header page={'home'} />
-                    <SidebarV2 />
                     {
                         topLoaderVisible
                         &&
