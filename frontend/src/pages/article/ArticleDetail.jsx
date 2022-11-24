@@ -35,6 +35,7 @@ const ArticleDetail = () => {
     const [articleSentiment, setArticleSentiment] = useState([])
     const [noSentiment, setNoSentiment] = useState('')
     const [buttonClick, setButtonClick] = useState(false)
+    const [gradient, setGradient] = useState('')
 
     useEffect(() => {
         const articleDetail = async () => {
@@ -52,10 +53,13 @@ const ArticleDetail = () => {
             await API.get(`/articles/sentiment/${id}/`)
                 .then((res) => {
                     console.log(res)
-                    if (res.data === 'No reactions') {
-                        setNoSentiment(res.data)
+                    setArticleSentiment(res.data)
+                    if (res.data[2] === 100) {
+                        setGradient('from-light-green to-light-green')
+                    } else if (res.data[2] === 0) {
+                        setGradient('from-light-red to-light-red')
                     } else {
-                        setArticleSentiment(res.data)
+                        setGradient('from-light-red to-light-green')
                     }
                 }).catch(err => {
                     console.log(err)
@@ -113,6 +117,17 @@ const ArticleDetail = () => {
             if (err.response.status === 401) {
                 alert('You must be logged in')
             }
+            if (String(err.response.data.non_field_errors[0]).includes('must make a unique set')) {
+                await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
+                    headers: {
+                        'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then((res => {
+                    console.log(res)
+                    setButtonClick(!buttonClick)
+                }))
+            }
         }
     }
 
@@ -135,7 +150,7 @@ const ArticleDetail = () => {
                     <div className="hidden xl:block">
                         <AuthorBar authorID={article.author} />
                     </div>
-                    <Header />
+                    <Header page={'articleDetail'}/>
                     <SidebarV2 />
                     {console.log(article)}
                 </div>
@@ -167,32 +182,31 @@ const ArticleDetail = () => {
                         <div className='mt-10 flex justify-center space-x-5'>
                             <div>
                                 <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
-
-
                             </div>
                             <div>
                                 <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
 
                             </div>
                         </div>
-                        {/* <div className={`${noSentiment === '' ? 'hidden' : 'flex justify-center text-center mt-5'}`}>
-                            <p>No reactions</p>
-                        </div> */}
-                        <div className='grid grid-cols-1 justify-center text-center'>
-                            <div className='mt-2'>
-                                {articleSentiment[2]}% of readers liked this
+                        <div className='flex justify-center mt-5'>
+                            <div className='grid grid-cols-3'>
+
+                                <div className='text-center flex justify-end pr-5 select-none'>
+                                    {articleSentiment[1]}
+                                    <div className="px-2">
+                                        <BiDislike size={'26px'} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className={`bg-gradient-to-r ${gradient} rounded-lg px-5 select-none text-center`}>{articleSentiment[2]}% of readers liked this</div>
+                                </div>
+                                <div className='text-center flex justify-start pl-5 select-none'>
+                                    {articleSentiment[0]} 
+                                    <div className="px-2">
+                                        <BiLike size={'26px'} />
+                                    </div>
+                                </div>
                             </div>
-                            <div className='mt-5'>
-                                likes {articleSentiment[0]}
-                            </div>
-                            <div className='mt-5'>
-                                dislikes {articleSentiment[1]}
-                            </div>
-                        </div>
-                        <div className='flex justify-center pt-5 pb-20 sm:pb-10'>
-                            <Button label={"Home"}
-                                func={() => history(-1)}
-                            />
                         </div>
                     </div>
                 </div>
