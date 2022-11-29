@@ -68,7 +68,7 @@ const CreateArticleV2 = () => {
       setTagTooShort(false)
     }
 
-    if (trimmedInput.length > 9) {
+    if (trimmedInput.length > 14) {
       setTagTooLong(true)
       return
     } else {
@@ -164,18 +164,21 @@ const CreateArticleV2 = () => {
     } catch (err) {
       console.log(err.response.data)
       for (let v in err.response.data) {
-        console.log(v)
         if (v === 'preview_image') {
           setImageError(true)
+          console.log('Image error')
         }
         if (v === 'title') {
           setTitleError(true)
+          console.log('Title error')
         }
         if (v === 'content') {
           setContentError(true)
+          console.log('Content error')
         }
         if (v === 'tags') {
           setTagsError(true)
+          console.log('Tags error')
         }
       }
       setSubmit(false)
@@ -296,7 +299,7 @@ const CreateArticleV2 = () => {
                   </div>
                   <div className='flex justify-center dark:text-white pt-5'>
                     <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
-                      Tags must be between 3-10 characters
+                      Tags must be between 3-15 characters
                     </div>
                     <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
                       Add at least 2 tags
