@@ -15,7 +15,8 @@ import {
   UserProfile, 
   UsernameLogin, 
   EditProfile,
-  Login
+  Login,
+  TagNavigation
 } from './pages'
 
 /**
@@ -43,6 +44,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/profiles/:id/' element={<UserProfile/>} />
             <Route path='/profiles/edit' element={<EditProfile/>} />
+            <Route path='/articles/tags/:tag/' element={<TagNavigation/>}/>
 
             <Route path={'*'} element={<UnresolvedPath />} />
           </Routes>
