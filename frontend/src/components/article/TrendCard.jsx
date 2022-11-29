@@ -26,7 +26,7 @@ const TrendCard = ({ image, imageAlt, title, tags }) => {
             border-black text-light-white
             bg-light-orange dark:bg-dark-orange
             hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover'>
-                    <div className='justify-center grid grid-cols-3'>
+                    <div className='justify-center grid grid-cols-3 space-x-2'>
                         <img className='rounded-t-lg'
                             src={image}
                             alt={imageAlt}
