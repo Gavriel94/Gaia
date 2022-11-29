@@ -27,13 +27,12 @@ const ArticleDetail = () => {
     let history = useNavigate()
 
     /**
-     * An array of three elements
+     * articleSentiment is an array of three elements
      * idx 0 - total likes
      * idx 1 - total dislikes
-     * idx 3 - likes / likes + dislikes
+     * idx 2 - (likes / likes + dislikes) * 100
      */
     const [articleSentiment, setArticleSentiment] = useState([])
-    const [noSentiment, setNoSentiment] = useState('')
     const [buttonClick, setButtonClick] = useState(false)
     const [gradient, setGradient] = useState('')
 
@@ -78,22 +77,6 @@ const ArticleDetail = () => {
         const seconds = e?.substring(17, 19)
 
         return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
-    }
-
-    const formatTags = (e) => {
-        var tagList = []
-        const tagString = e?.split(',')
-        tagString?.forEach(tag => tagList.push(tag))
-
-        return (
-            tagList.map((tag) =>
-                <div key={tag} className='px-2'>
-                    <Link>
-                        {tag}
-                    </Link>
-                </div>
-            )
-        )
     }
 
     const handleReaction = async (reaction) => {
@@ -150,7 +133,7 @@ const ArticleDetail = () => {
                     <div className="hidden xl:block">
                         <AuthorBar authorID={article.author} />
                     </div>
-                    <Header page={'articleDetail'}/>
+                    <Header page={'articleDetail'} />
                     <SidebarV2 />
                     {console.log(article)}
                 </div>
@@ -173,8 +156,13 @@ const ArticleDetail = () => {
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
-                            tags: {formatTags(article.tags)}
-                            {/* tags: {article.tags} */}
+                            {article.article_tags.map((tag) =>
+                                <div key={tag.tag} className='px-2'>
+                                    <Link to={`/articles/tags/${tag.tag}`}>
+                                        {tag.tag}
+                                    </Link>
+                                </div>)
+                            }
                         </div>
                         <div className='flex justify-center mt-10'>
                             {formatDate(article.pub_date)}
@@ -188,6 +176,10 @@ const ArticleDetail = () => {
 
                             </div>
                         </div>
+
+                        {/* Make this part its own component */}
+                        {/* Do a colour dictionary? Go up in 10s with colour intensity */}
+                        {/* Use different experiment with shades and/or opacity */}
                         <div className='flex justify-center mt-5'>
                             <div className='grid grid-cols-3'>
 
@@ -201,7 +193,7 @@ const ArticleDetail = () => {
                                     <div className={`bg-gradient-to-r ${gradient} rounded-lg px-5 select-none text-center`}>{articleSentiment[2]}% of readers liked this</div>
                                 </div>
                                 <div className='text-center flex justify-start pl-5 select-none'>
-                                    {articleSentiment[0]} 
+                                    {articleSentiment[0]}
                                     <div className="px-2">
                                         <BiLike size={'26px'} />
                                     </div>
