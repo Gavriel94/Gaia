@@ -20,7 +20,6 @@ const TrendBar = () => {
             await API.get('/articles/trending/')
                 .then((res) => {
                     setMostPopular(res.data)
-                    console.log(res.data)
                 })
                 .catch(err => {
                     console.log(err)
@@ -48,6 +47,7 @@ const TrendBar = () => {
                                         id={article.id}
                                         title={article.title}
                                         tags={article.tags}
+                                        image={article.preview_image}
                                     />
                                 </Link>
                             </div>
