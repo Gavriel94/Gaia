@@ -72,6 +72,8 @@ let Buffer = require('buffer/').Buffer
 
 /**
  * TODO: Hardcode which wallets are allowed (typhoncip30, eternl & nami) instead of polling the browser
+ * TODO: Require wallet signature for like and dislike
+ * TODO: Enable ADA tipping feature 
  */
 
 const LoginButton = () => {
@@ -499,12 +501,6 @@ const LoginButton = () => {
         }
     }
 
-    const randomNumberGenerator = () => {
-        var num = Uint16Array(10)
-        Crypto.getRandomValue(num)
-        return num
-    }
-
     const getUserProfile = (e) => {
         API.get("/profile/user", {
             headers: {
@@ -568,7 +564,6 @@ const LoginButton = () => {
         } catch (err) {
             if (err.response.status === 404) {
                 try {
-                    // walletUser.append('email', 'none4@gaia.com') // Use RNG for email generation
                     sessionToken = await API.post("profile/user/create", walletUser, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -604,7 +599,7 @@ const LoginButton = () => {
                 .fee_algo(LinearFee.new(BigNum.from_str(protocolParams.linearFee.minFeeA), BigNum.from_str(this.protocolParams.linearFee.minFeeB)))
                 .pool_deposit(BigNum.from_str(protocolParams.poolDeposit))
                 .key_deposit(BigNum.from_str(protocolParams.keyDeposit))
-                .coins_per_utxo_word(BigNum.from_str(protocolParams.coinsPerUtxoWord))
+                .coins_per_utxo_byte(BigNum.from_str(protocolParams.coinsPerUtxoWord))
                 .max_value_size(protocolParams.maxValSize)
                 .max_tx_size(protocolParams.maxTxSize)
                 .prefer_pure_change(true)
