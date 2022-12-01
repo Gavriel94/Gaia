@@ -1,66 +1,27 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Button from '../misc/Button'
 import LoadingSpinner from '../misc/LoadingSpinner'
 
 import Modal from 'react-modal'
-import { MdOutlineCancel, MdOutlineMailOutline } from 'react-icons/md'
+import { MdOutlineCancel } from 'react-icons/md'
 import '../../walletModal.css'
-import { BsFillXCircleFill } from 'react-icons/bs'
 import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
-import { BiLogInCircle, BiLogOutCircle } from 'react-icons/bi'
-import { CgProfile } from 'react-icons/cg'
+import { BiLogInCircle } from 'react-icons/bi'
 import cardanoLogo from '../../assets/cardanoLogo.png'
 import { Link } from 'react-router-dom'
 
 import {
     Address,
-    BaseAddress,
-    MultiAsset,
-    Assets,
-    ScriptHash,
-    Costmdls,
-    Language,
-    CostModel,
-    AssetName,
     TransactionUnspentOutput,
     TransactionUnspentOutputs,
     TransactionOutput,
     Value,
     TransactionBuilder,
     TransactionBuilderConfigBuilder,
-    TransactionOutputBuilder,
     LinearFee,
     BigNum,
-    BigInt,
-    TransactionHash,
-    TransactionInputs,
-    TransactionInput,
     TransactionWitnessSet,
     Transaction,
-    PlutusData,
-    PlutusScripts,
-    PlutusScript,
-    PlutusList,
-    Redeemers,
-    Redeemer,
-    RedeemerTag,
-    Ed25519KeyHashes,
-    ConstrPlutusData,
-    ExUnits,
-    Int,
-    NetworkInfo,
-    EnterpriseAddress,
-    TransactionOutputs,
-    hash_transaction,
-    hash_script_data,
-    hash_plutus_data,
-    ScriptDataHash,
-    Ed25519KeyHash,
-    NativeScript,
-    StakeCredential,
-    TransactionBuilderConfig,
-    Vkeywitnesses,
-    PrivateKey
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
@@ -81,19 +42,17 @@ const LoginButton = () => {
     const {
         connectedWallet,
         setConnectedWallet,
-        protocolParams,
         darkMode,
-        showLogoutAlert, setshowLogoutAlert,
-        showErrorAlert, setShowErrorAlert,
+        showLogoutAlert,
+        showErrorAlert,
         displayAdaHandle, setDisplayAdaHandle,
         adaHandleSelected, setAdaHandleSelected,
         walletUser, setWalletUser,
         loggedInProfile, setLoggedInProfile,
-        adaHandleDetected, setadaHandleDetected,
-        adaHandleName, setadaHandleName,
+        setadaHandleDetected,
+        adaHandleName,
     } = useStateContext()
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
-    const [showWalletLogoutModal, setShowWalletLogoutModal] = useState(false)
     const [wallets] = useState([])
     const [walletLoginButton, setwalletLoginButton] = useState(<BiLogInCircle size={'26px'} />)
     const [loading, setLoading] = useState(false)
@@ -105,7 +64,7 @@ const LoginButton = () => {
     const [userID, setUserID] = useState('')
     const [sessionToken, setSessionToken] = useState('')
     /**
-     *  This is used to verify the ada handle and ensures it is legitamite 
+     *  This is used to verify any ADA Handle found in a users wallet is legitamite 
      */
     const adaHandlePolicyID = 'f0ff48bbb7bbe9d59a40f1ce90e9e9d0ff5002ec48f232b49ca0fb9a';
 
@@ -168,29 +127,6 @@ const LoginButton = () => {
         walletIcon = walletIcons[index]
         closeWalletSelectModal()
         refreshData()
-    }
-
-    /**
-     * Generate address from Plutus cborhex
-     */
-    const generateScriptAddress = () => {
-        // const script = PlutusScript.from_bytes(Buffer.from(plutusScriptCborHex, "hex"))
-        const blake2bhash = "67f33146617a5e61936081db3b2117cbf59bd2123748f58ac9678656";
-        const scripthash = ScriptHash.from_bytes(Buffer.from(blake2bhash, "hex"));
-        const cred = StakeCredential.from_scripthash(scripthash);
-        const networkId = NetworkInfo.testnet().network_id();
-        const baseAddr = EnterpriseAddress.new(networkId, cred);
-        const addr = baseAddr.to_address();
-        const addrBech32 = addr.to_bech32();
-        const ScriptAddress = Address.from_bech32("addr_test1wpnlxv2xv9a9ucvnvzqakwepzl9ltx7jzgm53av2e9ncv4sysemm8");
-
-        // // hash of address generated from script
-        // console.log(Buffer.from(addr.to_bytes(), "utf8").toString("hex"))
-        // // hash of address generated from cardano-cli
-        // console.log(Buffer.from(ScriptAddress.to_bytes(), "utf8").toString("hex"))
-
-        // console.log(ScriptAddress.to_bech32())
-        // console.log(addrBech32)
     }
 
     /**
@@ -343,36 +279,6 @@ const LoginButton = () => {
             console.log(err)
         }
     }
-
-    /**
-     * Collateral is used for Plutus Scripts
-     * Used for paying fees if script execution fails after validation
-     * If used it suggests the smart contract has been written incorrectly
-     */
-    const getCollateral = async () => {
-        let colUtxos = []
-
-        try {
-            let col = []
-
-            const userWallet = whichWalletSelected
-            if (userWallet === 'nami') {
-                col = await walletAPI.experimental.getCollateral()
-            } else {
-                col = await walletAPI.getCollateral()
-            }
-
-            for (const c of col) {
-                const tx = TransactionUnspentOutput.from_bytes(Buffer.from(c, "hex"))
-                colUtxos.push(tx)
-            }
-            collatUtxos = colUtxos
-            return collatUtxos
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     /**
      * Gets the balance of the users wallet in Lovelace
      * Does not include tokens
@@ -401,34 +307,6 @@ const LoginButton = () => {
             changeAddress = changeAdd
             return changeAddress
             console.log(changeAddress)
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    /**
-     * Returns the address rewards from staking are paid into
-     */
-    const getRewardAddresses = async () => {
-        try {
-            const raw = walletAPI.getRewardAddresses()
-            const rawFirst = raw[0]
-            const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-            rewardAddress = address
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    /**
-     * Gets used addresses
-     */
-    const getUsedAddresses = async () => {
-        try {
-            const raw = await walletAPI.getUsedAddresses()
-            const rawFirst = raw[0]
-            const address = Address.from_bytes(Buffer.from(rawFirst, "hex")).to_bech32()
-            usedAddress = address
         } catch (err) {
             console.log(err)
         }
@@ -480,11 +358,8 @@ const LoginButton = () => {
                         wallets: wallets,
                         networkId: nID,
                         Utxos: u,
-                        collatUtxos: undefined,
                         balance: b,
                         changeAddress: ca,
-                        rewardAddress: undefined,
-                        usedAddress: undefined,
                         walletAPI: walletAPI,
                     })
                     authenticate()
@@ -499,12 +374,6 @@ const LoginButton = () => {
         } catch (err) {
             console.log(err)
         }
-    }
-
-    const randomNumberGenerator = () => {
-        var num = Uint16Array(10)
-        Crypto.getRandomValue(num)
-        return num
     }
 
     const getUserProfile = (e) => {
@@ -524,7 +393,6 @@ const LoginButton = () => {
                 authored: res.data.authored,
                 reacted: res.data.reacted,
             })
-            // setLoggedInProfile(res.data)
             console.log('res.data', res.data)
             if (res.data.profile_name.charAt(0) === '$') {
                 console.log('handle found as display name')
@@ -570,7 +438,6 @@ const LoginButton = () => {
         } catch (err) {
             if (err.response.status === 404) {
                 try {
-                    // walletUser.append('email', 'none4@gaia.com') // Use RNG for email generation
                     sessionToken = await API.post("profile/user/create", walletUser, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -597,24 +464,6 @@ const LoginButton = () => {
         }
     }
 
-    /**
-     * Every transaction requires the transaction builder and setting of protocol parameters
-     */
-    const initTransactionBuilder = async () => {
-        const builder = TransactionBuilder.new(
-            TransactionBuilderConfigBuilder.new()
-                .fee_algo(LinearFee.new(BigNum.from_str(protocolParams.linearFee.minFeeA), BigNum.from_str(this.protocolParams.linearFee.minFeeB)))
-                .pool_deposit(BigNum.from_str(protocolParams.poolDeposit))
-                .key_deposit(BigNum.from_str(protocolParams.keyDeposit))
-                .coins_per_utxo_word(BigNum.from_str(protocolParams.coinsPerUtxoWord))
-                .max_value_size(protocolParams.maxValSize)
-                .max_tx_size(protocolParams.maxTxSize)
-                .prefer_pure_change(true)
-                .build()
-        );
-        return builder
-    }
-
 
     const buildADATransaction = async () => {
         // instantiate the tx builder with the Cardano protocol parameters - these may change later on
@@ -632,36 +481,24 @@ const LoginButton = () => {
             .build();
         const txBuilder = TransactionBuilder.new(txBuilderCfg);
 
-        // add a keyhash input - for ADA held in a Shelley-era normal address (Base, Enterprise, Pointer)
-        const prvKey = PrivateKey.from_bech32("ed25519e_sk16rl5fqqf4mg27syjzjrq8h3vq44jnnv52mvyzdttldszjj7a64xtmjwgjtfy25lu0xmv40306lj9pcqpa6slry9eh3mtlqvfjz93vuq0grl80");
-        txBuilder.add_key_input(
-            prvKey.to_public().hash(),
-            TransactionInput.new(
-                TransactionHash.from_bytes(
-                    Buffer.from("8561258e210352fba2ac0488afed67b3427a27ccf1d41ec030c98a8199bc22ec", "hex")
-                ), // tx hash
-                0, // index
-            ),
-            Value.new(BigNum.from_str('3000000'))
-        )
+        const eternlAdd = "addr1q9g7qescnzfxqx9f9urf9wklvhet59w0tt4ah8w975efmn4hh605vefvm67gfcj9vdserqmmdmemfpcs6cd92yt86nmsc97ajh"
 
         // base address
-        const shelleyOutputAddress = Address.from_bech32("addr_test1qpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5ewvxwdrt70qlcpeeagscasafhffqsxy36t90ldv06wqrk2qum8x5w");
+        const shelleyOutputAddress = Address.from_bech32(eternlAdd);
         // pointer address
-        const shelleyChangeAddress = Address.from_bech32("addr_test1gz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzerspqgpsqe70et");
+        const shelleyChangeAddress = Address.from_bech32(connectedWallet.changeAddress);
 
         // add output to the tx
         txBuilder.add_output(
             TransactionOutput.new(
                 shelleyOutputAddress,
-                Value.new(BigNum.from_str('1000000'))
+                Value.new(BigNum.from_str('2000000'))
             ),
         );
 
         // Find the available UTXOs in the wallet and
         // us them as Inputs
         const txUnspentOutputs = await getTxUnspentOutputs();
-        console.log(txUnspentOutputs)
         txBuilder.add_inputs_from(txUnspentOutputs, 1)
 
         // calculate the min fee required and send any change to an address
@@ -679,7 +516,8 @@ const LoginButton = () => {
             TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
         )
 
-        let txVkeyWitnesses = await walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
+        console.log(walletAPI)
+        let txVkeyWitnesses = await connectedWallet.walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
 
         console.log(txVkeyWitnesses)
 
@@ -693,28 +531,11 @@ const LoginButton = () => {
         );
 
 
-        const submittedTxHash = await this.API.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
+        const submittedTxHash = await connectedWallet.walletAPI.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
         console.log(submittedTxHash)
-        this.setState({ submittedTxHash });
+    //    setState({ submittedTxHash });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     /**
      * Builds an object of UTxOs from the user wallet
      */
