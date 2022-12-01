@@ -58,7 +58,9 @@ import {
     Ed25519KeyHash,
     NativeScript,
     StakeCredential,
-    TransactionBuilderConfig
+    TransactionBuilderConfig,
+    Vkeywitnesses,
+    PrivateKey
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
@@ -524,13 +526,13 @@ const LoginButton = () => {
             })
             // setLoggedInProfile(res.data)
             console.log('res.data', res.data)
-            if(res.data.profile_name.charAt(0) === '$') {
+            if (res.data.profile_name.charAt(0) === '$') {
                 console.log('handle found as display name')
                 let handle = res.data?.profile_name?.slice(1, res.data?.display_name?.length)
-                for(let i = 0; i < adaHandleName.length; i++) {
+                for (let i = 0; i < adaHandleName.length; i++) {
                     console.log(adaHandleName[i])
                     console.log(handle)
-                    if(adaHandleName[i] === handle) {
+                    if (adaHandleName[i] === handle) {
                         setAdaHandleSelected('$' + adaHandleName[i])
                         setDisplayAdaHandle(true)
                     }
@@ -613,12 +615,113 @@ const LoginButton = () => {
         return builder
     }
 
+
+    const buildADATransaction = async () => {
+        // instantiate the tx builder with the Cardano protocol parameters - these may change later on
+        const linearFee = LinearFee.new(
+            BigNum.from_str('44'),
+            BigNum.from_str('155381')
+        );
+        const txBuilderCfg = TransactionBuilderConfigBuilder.new()
+            .fee_algo(linearFee)
+            .pool_deposit(BigNum.from_str('500000000'))
+            .key_deposit(BigNum.from_str('2000000'))
+            .max_value_size(4000)
+            .max_tx_size(8000)
+            .coins_per_utxo_word(BigNum.from_str('34482'))
+            .build();
+        const txBuilder = TransactionBuilder.new(txBuilderCfg);
+
+        // add a keyhash input - for ADA held in a Shelley-era normal address (Base, Enterprise, Pointer)
+        const prvKey = PrivateKey.from_bech32("ed25519e_sk16rl5fqqf4mg27syjzjrq8h3vq44jnnv52mvyzdttldszjj7a64xtmjwgjtfy25lu0xmv40306lj9pcqpa6slry9eh3mtlqvfjz93vuq0grl80");
+        txBuilder.add_key_input(
+            prvKey.to_public().hash(),
+            TransactionInput.new(
+                TransactionHash.from_bytes(
+                    Buffer.from("8561258e210352fba2ac0488afed67b3427a27ccf1d41ec030c98a8199bc22ec", "hex")
+                ), // tx hash
+                0, // index
+            ),
+            Value.new(BigNum.from_str('3000000'))
+        )
+
+        // base address
+        const shelleyOutputAddress = Address.from_bech32("addr_test1qpu5vlrf4xkxv2qpwngf6cjhtw542ayty80v8dyr49rf5ewvxwdrt70qlcpeeagscasafhffqsxy36t90ldv06wqrk2qum8x5w");
+        // pointer address
+        const shelleyChangeAddress = Address.from_bech32("addr_test1gz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzerspqgpsqe70et");
+
+        // add output to the tx
+        txBuilder.add_output(
+            TransactionOutput.new(
+                shelleyOutputAddress,
+                Value.new(BigNum.from_str('1000000'))
+            ),
+        );
+
+        // Find the available UTXOs in the wallet and
+        // us them as Inputs
+        const txUnspentOutputs = await getTxUnspentOutputs();
+        console.log(txUnspentOutputs)
+        txBuilder.add_inputs_from(txUnspentOutputs, 1)
+
+        // calculate the min fee required and send any change to an address
+        txBuilder.add_change_if_needed(shelleyChangeAddress)
+
+        // once the transaction is ready, we build it to get the tx body without witnesses
+        const txBody = txBuilder.build();
+
+
+        // Tx witness
+        const transactionWitnessSet = TransactionWitnessSet.new();
+
+        const tx = Transaction.new(
+            txBody,
+            TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
+        )
+
+        let txVkeyWitnesses = await walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
+
+        console.log(txVkeyWitnesses)
+
+        txVkeyWitnesses = TransactionWitnessSet.from_bytes(Buffer.from(txVkeyWitnesses, "hex"));
+
+        transactionWitnessSet.set_vkeys(txVkeyWitnesses.vkeys());
+
+        const signedTx = Transaction.new(
+            tx.body(),
+            transactionWitnessSet
+        );
+
+
+        const submittedTxHash = await this.API.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
+        console.log(submittedTxHash)
+        this.setState({ submittedTxHash });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Builds an object of UTxOs from the user wallet
      */
     const getTxUnspentOutputs = async () => {
         let outputs = TransactionUnspentOutputs.new()
-        for (const utxo of Utxos) {
+        console.log(connectedWallet.Utxos)
+        for (const utxo of connectedWallet.Utxos) {
             outputs.add(utxo.TransactionUnspentOutput)
         }
         return outputs
@@ -654,8 +757,8 @@ const LoginButton = () => {
     }
 
     const shortenAddress = () => {
-        if(loggedInProfile?.display_name?.length > 3) {
-            return String(loggedInProfile.display_name).slice(0,8) + '...'
+        if (loggedInProfile?.display_name?.length > 3) {
+            return String(loggedInProfile.display_name).slice(0, 8) + '...'
         }
         return String(connectedWallet.changeAddress).slice(0, 8) + '...'
     }
@@ -727,6 +830,9 @@ const LoginButton = () => {
                         />
                     </Link>
                 </div>
+            </div>
+            <div className='mt-5'>
+                <Button label={'Test Transaction'} func={() => buildADATransaction()} />
             </div>
 
             {/* 
