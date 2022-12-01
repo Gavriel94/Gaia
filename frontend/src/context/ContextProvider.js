@@ -69,36 +69,15 @@ export const ContextProvider = ({ children }) => {
         wallets: [],
         networkId: undefined,
         Utxos: undefined,
-        collatUtxos: undefined,
         balance: undefined,
         changeAddress: undefined,
-        rewardAddress: undefined,
-        usedAddress: undefined,
         txBody: undefined,
         txBodyCborHex_unsigned: '',
         txBodyCborHex_signed: '',
         submittedTxHash: '',
         walletAPI: undefined
     })
-
-    /**
-     * Static protocol parameters set by Input Output Global (creators of Cardano)
-     */
-    const [protocolParams, setProtocolParams] = useState({
-        linearFee: {
-            minFeeA: "44",
-            minFeeB: "155381",
-        },
-        minUtxo: "34482",
-        poolDeposit: "500000000",
-        keyDeposit: "2000000",
-        maxValSize: 5000,
-        maxTxSize: 16384,
-        priceMem: 0.0577,
-        priceStep: 0.0000721,
-        coinsPerUtxoWord: "34482",
-    })
-
+    
     const [loggedInProfile, setLoggedInProfile] = useState({
         sessionToken: '',
         id: '',
@@ -144,7 +123,6 @@ export const ContextProvider = ({ children }) => {
                 articleList, setArticleList,
                 articleLoading, setArticleLoading,
                 connectedWallet, setConnectedWallet,
-                protocolParams, setProtocolParams,
                 showLogoutAlert, setshowLogoutAlert,
                 showErrorAlert, setShowErrorAlert,
                 displayAdaHandle, setDisplayAdaHandle,
