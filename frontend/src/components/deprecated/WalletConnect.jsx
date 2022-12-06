@@ -77,7 +77,7 @@ export default class WalletConnect extends React.Component {
             Utxos: undefined,
             CollatUtxos: undefined,
             balance: undefined,
-            changeAddress: undefined,
+            walletAddress: undefined,
             rewardAddress: undefined,
             usedAddress: undefined,
 
