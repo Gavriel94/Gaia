@@ -7,3 +7,4 @@ frontend/src/pages/CreateArticle.jsx
 frontend/src/assets/DocsAndDrawings
 frontend/src/components/WalletConnect.jsx
 frontend/.env
+frontend/docs
