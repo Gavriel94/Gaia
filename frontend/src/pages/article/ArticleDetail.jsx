@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, TagIcon, ProfileArticleBar } from "../../components";
+import { Title, SidebarV2, Header, Button, TagIcon, ProfileArticleBar, SentimentIndicator } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
@@ -10,13 +10,6 @@ import { BiLike, BiDislike } from 'react-icons/bi'
 
 /**
  * Displays a single Article in a full page view
- */
-
-/**
- * TODO: Sidebar with details about the author, (wallet address or handle, picture if they have one, otherwise default)
- * TODO: Tip button on the bottom denominating ADA
- * TODO: Fix pub_date to be a 24 hour clock. (Needs to be done in Django)
- * TODO: Link to tags needs implementation
  */
 
 const ArticleDetail = () => {
@@ -43,15 +36,17 @@ const ArticleDetail = () => {
                     setArticle(res.data)
                 })
                 .catch(err => {
-                    console.log(err.response.status)
                     setNotLoaded(true)
                 })
         }
 
+        articleDetail()
+    }, [id])
+
+    useEffect(() => {
         const articleSentiment = async () => {
             await API.get(`/articles/sentiment/${id}/`)
                 .then((res) => {
-                    console.log(res)
                     setArticleSentiment(res.data)
                     if (res.data[2] === 100) {
                         setGradient('from-light-green to-light-green')
@@ -64,7 +59,6 @@ const ArticleDetail = () => {
                     console.log(err)
                 })
         }
-        articleDetail()
         articleSentiment()
     }, [id, buttonClick])
 
@@ -92,7 +86,6 @@ const ArticleDetail = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             }).then(res => {
-                console.log(res)
                 setButtonClick(!buttonClick)
             })
         } catch (err) {
@@ -107,7 +100,6 @@ const ArticleDetail = () => {
                         'Content-Type': 'multipart/form-data',
                     },
                 }).then((res => {
-                    console.log(res)
                     setButtonClick(!buttonClick)
                 }))
             }
@@ -135,7 +127,6 @@ const ArticleDetail = () => {
                     </div>
                     <Header page={'articleDetail'} />
                     <SidebarV2 />
-                    {console.log(article)}
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20 justify-center'>
@@ -177,28 +168,13 @@ const ArticleDetail = () => {
                             </div>
                         </div>
 
-                        {/* Make this part its own component */}
-                        {/* Do a colour dictionary? Go up in 10s with colour intensity */}
-                        {/* Use different experiment with shades and/or opacity */}
-                        <div className='flex justify-center mt-5'>
-                            <div className='grid grid-cols-3'>
-
-                                <div className='text-center flex justify-end pr-5 select-none'>
-                                    {articleSentiment[1]}
-                                    <div className="px-2">
-                                        <BiDislike size={'26px'} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className={`bg-gradient-to-r ${gradient} rounded-lg px-5 select-none text-center`}>{articleSentiment[2]}% of readers liked this</div>
-                                </div>
-                                <div className='text-center flex justify-start pl-5 select-none'>
-                                    {articleSentiment[0]}
-                                    <div className="px-2">
-                                        <BiLike size={'26px'} />
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <SentimentIndicator 
+                                dislikes={articleSentiment[1]}
+                                likes={articleSentiment[0]}
+                                likePercent={articleSentiment[2]}
+                                gradient={gradient}
+                            />
                         </div>
                     </div>
                 </div>
