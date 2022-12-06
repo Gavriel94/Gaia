@@ -13,19 +13,10 @@ import { Link } from 'react-router-dom'
 import {
     Address,
     TransactionUnspentOutput,
-    TransactionUnspentOutputs,
-    TransactionOutput,
     Value,
-    TransactionBuilder,
-    TransactionBuilderConfigBuilder,
-    LinearFee,
-    BigNum,
-    TransactionWitnessSet,
-    Transaction,
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
-import LogoutButton from './LogoutButton'
 let Buffer = require('buffer/').Buffer
 
 /**
@@ -63,11 +54,11 @@ const LoginButton = () => {
     const [addressAsID, setAddressAsID] = useState('')
     const [userID, setUserID] = useState('')
     const [sessionToken, setSessionToken] = useState('')
+
     /**
      *  This is used to verify any ADA Handle found in a users wallet is legitamite 
      */
     const adaHandlePolicyID = 'f0ff48bbb7bbe9d59a40f1ce90e9e9d0ff5002ec48f232b49ca0fb9a';
-
 
     var whichWalletSelected = ''
     var walletFound = undefined
@@ -77,17 +68,9 @@ const LoginButton = () => {
     var walletAPIVersion = undefined
     var networkId = undefined
     var Utxos = undefined
-    var collatUtxos = undefined
     var balance = undefined
     var changeAddress = undefined
-    var rewardAddress = undefined
-    var usedAddress = undefined
-    var txBody = undefined
-    var txBodyCborHex_unsigned = ''
-    var txBodyCborHex_signed = ''
-    var submittedTxHash = ''
     var walletAPI = undefined
-
 
     /**
      * Checks the browser for wallet plugins and adds them to state
@@ -118,10 +101,6 @@ const LoginButton = () => {
      * @param obj 
      */
     const handleWalletSelect = (obj) => {
-        console.log('inside handleWalletSelect')
-        console.log('obj passed in', obj)
-        // pick the wallet from the wallets[] and use obj to compare values
-        // use this to set whichWalletSelected, as an element from the array wallets
         const index = wallets.indexOf(obj)
         whichWalletSelected = wallets[index]
         walletIcon = walletIcons[index]
@@ -163,7 +142,6 @@ const LoginButton = () => {
      */
     const enableWallet = async () => {
         const key = whichWalletSelected
-        console.log('enable wallet', key)
         try {
             walletAPI = await window.cardano[key].enable()
         } catch (err) {
@@ -232,19 +210,16 @@ const LoginButton = () => {
                 let multiAssetStr = "";
 
                 if (multiasset) {
-                    const keys = multiasset.keys() // policy Ids of thee multiasset
+                    const keys = multiasset.keys() // policyID of NFTs in wallet
                     const N = keys.len();
-                    // console.log(`${N} Multiassets in the UTXO`)
 
 
                     for (let i = 0; i < N; i++) {
                         const policyId = keys.get(i);
                         const policyIdHex = Buffer.from(policyId.to_bytes(), "utf8").toString("hex");
-                        // console.log(`policyId: ${policyIdHex}`)  //policyID
                         const assets = multiasset.get(policyId)
                         const assetNames = assets.keys();
                         const K = assetNames.len()
-                        // console.log(`${K} Assets in the Multiasset`)
 
                         for (let j = 0; j < K; j++) {
                             const assetName = assetNames.get(j);
@@ -252,13 +227,11 @@ const LoginButton = () => {
                             const assetNameHex = Buffer.from(assetName.name(), "utf8").toString("hex")
                             const multiassetAmt = multiasset.get_asset(policyId, assetName)
                             if (policyIdHex === adaHandlePolicyID) {
+                                //ADA Handle found
                                 adaHandleName.push(assetNameString)
                                 setadaHandleDetected(true)
                             }
                             multiAssetStr += `+ ${multiassetAmt.to_str()} + ${policyIdHex}.${assetNameHex} (${assetNameString})`
-                            // console.log(assetNameString)
-                            // console.log(`Asset Name: ${assetNameHex}`)
-                            // console.log(multiassetAmt)
                         }
                     }
                 }
@@ -306,7 +279,6 @@ const LoginButton = () => {
             const changeAdd = Address.from_bytes(Buffer.from(raw, "hex")).to_bech32()
             changeAddress = changeAdd
             return changeAddress
-            console.log(changeAddress)
         } catch (err) {
             console.log(err)
         }
@@ -324,8 +296,6 @@ const LoginButton = () => {
      * Refresh data from the users wallet
      */
     const refreshData = async () => {
-        // generateScriptAddress()
-        // console.log(generateScriptAddress())
         try {
             const f = checkIfWalletFound()
             console.log('wallet found', f)
@@ -340,14 +310,10 @@ const LoginButton = () => {
                     const nID = await getNetworkId()
                     const u = await getUtxos()
                     console.log(adaHandleName)
-                    // const c = await getCollateral() // throws error
                     const b = await getBalance()
                     console.log(walletAPI)
                     const ca = await getChangeAddress()
                     handleUserID(ca)
-                    // await getAssets()
-                    // await getRewardAddresses()
-                    // await getUsedAddresses()
                     setConnectedWallet({
                         whichWalletSelected: whichWalletSelected,
                         walletFound: f,
@@ -382,7 +348,6 @@ const LoginButton = () => {
                 'Authorization': `Token ${e}`
             },
         }).then((res) => {
-            console.log('res', res)
             setLoggedInProfile({
                 sessionToken: e,
                 id: res.data.id,
@@ -393,21 +358,15 @@ const LoginButton = () => {
                 authored: res.data.authored,
                 reacted: res.data.reacted,
             })
-            console.log('res.data', res.data)
             if (res.data.profile_name.charAt(0) === '$') {
-                console.log('handle found as display name')
                 let handle = res.data?.profile_name?.slice(1, res.data?.display_name?.length)
                 for (let i = 0; i < adaHandleName.length; i++) {
-                    console.log(adaHandleName[i])
-                    console.log(handle)
                     if (adaHandleName[i] === handle) {
                         setAdaHandleSelected('$' + adaHandleName[i])
                         setDisplayAdaHandle(true)
                     }
                 }
             }
-            console.log(loggedInProfile)
-            console.log(res.data)
         }).catch(console.err)
     }
 
@@ -424,9 +383,7 @@ const LoginButton = () => {
                     'Content-Type': 'multipart/form-data'
                 },
             }).then(response => {
-                console.log(response)
                 sessionToken = response.data.token
-                console.log('in login', sessionToken)
                 userID = response.data.user.id
                 handleNewToken(response.data.token)
                 getUserProfile(response.data.token)
@@ -464,94 +421,6 @@ const LoginButton = () => {
         }
     }
 
-
-    const buildADATransaction = async () => {
-        // instantiate the tx builder with the Cardano protocol parameters - these may change later on
-        const linearFee = LinearFee.new(
-            BigNum.from_str('44'),
-            BigNum.from_str('155381')
-        );
-        const txBuilderCfg = TransactionBuilderConfigBuilder.new()
-            .fee_algo(linearFee)
-            .pool_deposit(BigNum.from_str('500000000'))
-            .key_deposit(BigNum.from_str('2000000'))
-            .max_value_size(4000)
-            .max_tx_size(8000)
-            .coins_per_utxo_word(BigNum.from_str('34482'))
-            .build();
-        const txBuilder = TransactionBuilder.new(txBuilderCfg);
-
-        const eternlAdd = "addr1q9g7qescnzfxqx9f9urf9wklvhet59w0tt4ah8w975efmn4hh605vefvm67gfcj9vdserqmmdmemfpcs6cd92yt86nmsc97ajh"
-
-        // base address
-        const shelleyOutputAddress = Address.from_bech32(eternlAdd);
-        // pointer address
-        const shelleyChangeAddress = Address.from_bech32(connectedWallet.changeAddress);
-
-        // add output to the tx
-        txBuilder.add_output(
-            TransactionOutput.new(
-                shelleyOutputAddress,
-                Value.new(BigNum.from_str('2000000'))
-            ),
-        );
-
-        // Find the available UTXOs in the wallet and
-        // us them as Inputs
-        const txUnspentOutputs = await getTxUnspentOutputs();
-        txBuilder.add_inputs_from(txUnspentOutputs, 1)
-
-        // calculate the min fee required and send any change to an address
-        txBuilder.add_change_if_needed(shelleyChangeAddress)
-
-        // once the transaction is ready, we build it to get the tx body without witnesses
-        const txBody = txBuilder.build();
-
-
-        // Tx witness
-        const transactionWitnessSet = TransactionWitnessSet.new();
-
-        const tx = Transaction.new(
-            txBody,
-            TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
-        )
-
-        console.log(walletAPI)
-        let txVkeyWitnesses = await connectedWallet.walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
-
-        console.log(txVkeyWitnesses)
-
-        txVkeyWitnesses = TransactionWitnessSet.from_bytes(Buffer.from(txVkeyWitnesses, "hex"));
-
-        transactionWitnessSet.set_vkeys(txVkeyWitnesses.vkeys());
-
-        const signedTx = Transaction.new(
-            tx.body(),
-            transactionWitnessSet
-        );
-
-
-        const submittedTxHash = await connectedWallet.walletAPI.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
-        console.log(submittedTxHash)
-    //    setState({ submittedTxHash });
-    }
-    
-    /**
-     * Builds an object of UTxOs from the user wallet
-     */
-    const getTxUnspentOutputs = async () => {
-        let outputs = TransactionUnspentOutputs.new()
-        console.log(connectedWallet.Utxos)
-        for (const utxo of connectedWallet.Utxos) {
-            outputs.add(utxo.TransactionUnspentOutput)
-        }
-        return outputs
-    }
-
-    /**                                              
-     * !---------------------------------------------- *
-     */
-
     const openWalletSelectModal = () => {
         setShowLoginOptionModal(false)
         pollWallets()
@@ -566,15 +435,6 @@ const LoginButton = () => {
     const closeWalletSelectModal = () => {
         setshowWalletSelectModal(false)
         document.body.style.overflow = 'unset';
-    }
-
-    const balanceInADA = () => {
-        const b = 'Balance: ' + Math.round(connectedWallet.balance / 1000000) + ' ₳'
-        return b
-    }
-
-    const longAddress = () => {
-        return connectedWallet.changeAddress
     }
 
     const shortenAddress = () => {
@@ -599,16 +459,6 @@ const LoginButton = () => {
 
     return (
         <div className='hidden sm:block'> {/* login hidden on mobile (temp) */}
-            {
-                showLogoutAlert && (
-                    <div className='opacity-100 animate-bounce flex justify-center pl-5
-                     mt-5 bg-light-orange dark:bg-dark-orange border-black border-1 text-light-white rounded-lg'>
-                        <div className='p-2 flex justify-center'>
-                            <p>Logged out successfully.</p>
-                        </div>
-                    </div>
-                )
-            }
             {
                 showErrorAlert && (
                     <div className='opacity-100 animate-bounce flex justify-center
@@ -652,9 +502,6 @@ const LoginButton = () => {
                     </Link>
                 </div>
             </div>
-            <div className='mt-5'>
-                <Button label={'Test Transaction'} func={() => buildADATransaction()} />
-            </div>
 
             {/* 
                 This modal handles the login options prompting for email or Cardano wallet
@@ -689,23 +536,6 @@ const LoginButton = () => {
                                     </div>
                                 </button>
                             </div>
-
-                            {/*! Email option removed for now */}
-
-                            {/* <div className='block justify-center pt-5'>
-                                <Link to={'/register'}>
-                                    <button
-                                        type='button'
-                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-60 rounded-full duration-150 ease-in-out p-3'>
-                                        <div className='flex flex-row justify-center'>
-                                            <MdOutlineMailOutline size={'52px'} color={'white'} />
-                                            <p className={`pt-3 ${darkMode ? 'text-white' : 'text-black'}`}>
-                                                Email
-                                            </p>
-                                        </div>
-                                    </button>
-                                </Link>
-                            </div> */}
 
                             <div className='flex justify-center pt-5 pl-5 pr-5'>
                                 <div className='flex justify-center pt-10 pb-4'>
