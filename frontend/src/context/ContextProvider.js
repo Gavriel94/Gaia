@@ -99,7 +99,6 @@ export const ContextProvider = ({ children }) => {
 
     /**
      * Does an initial fetch of articles and save to state context
-     * Only runs once
      */
     useEffect(() => {
         const refreshArticles = () => {
