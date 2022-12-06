@@ -16,21 +16,23 @@ const SortingButton = () => {
     const [sortingIcon, setSortingIcon] = useState(<TbSunrise size={'26px'} />) //initial sun icon because new is default sort
     const [open, setOpen] = useState(false)
 
+    /**
+     * This function minimises API calls by only making an API call if the current articleList is sorted by popularity
+     * 
+     * @param {String} orderBy - desired order
+     * @returns 
+     */
     const refreshNew = (orderBy) => {
         if (orderBy === 'newest' && articleList.sortBy === 'newest') {
-            console.log('no API call')
-            console.log(articleList.sortBy)
             setOpen(!open)
             return
         } else if (orderBy === 'oldest' && articleList.sortBy === 'newest') {
-            console.log('no API call')
             setArticleList({
                 articles: articleList.articles.reverse(),
                 sortBy: 'oldest'
             })
             setOpen(!open)
             setSortingIcon(<GiNightSleep size={'26px'} />)
-            console.log(articleList.sortBy)
             return
         } 
         else if(orderBy === 'newest' && articleList.sortBy === 'oldest') {
@@ -42,14 +44,11 @@ const SortingButton = () => {
             setSortingIcon(<TbSunrise size={'26px'} />)
         }
         else if (orderBy === 'oldest' && articleList.sortBy === 'oldest') {
-            console.log('no API call')
-            console.log(articleList.sortBy)
             setOpen(!open)
             return
         } 
         
         else if (orderBy === 'newest') {
-            console.log('API call')
             API.get('/articles/all/')
                 .then((res) => {
                     setArticleList({
@@ -79,6 +78,12 @@ const SortingButton = () => {
         }
     }
 
+        /**
+     * This function minimises API calls by only making an API call if the current articleList is sorted by publishing date
+     * 
+     * @param {String} orderBy - desired order
+     * @returns 
+     */
     const refreshPopular = (orderBy) => {
         if (orderBy === 'mostPopular' && articleList.sortBy === 'most popular') {
             console.log('no API call')
