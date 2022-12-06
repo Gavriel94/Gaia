@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import API from '../../API'
 import parser from 'html-react-parser'
-import { Header, SidebarV2, Title, Button, LogoutButton, ProfileArticleBar, ArticleLoading, ProfileArticle } from '../../components'
+import { Header, SidebarV2, Title, Button, LogoutButton, ArticleLoading, ProfileArticle } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 import { Link, Navigate } from 'react-router-dom'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -17,19 +17,11 @@ import { BsPen } from 'react-icons/bs'
  * 
  */
 
-/**
- * 
- * TODO: Add a list of likes, posts etc
- * TODO: Recreate a MiniArticle component for UserProfile page
- */
-
-
 const UserProfile = () => {
   const { loggedInProfile } = useStateContext()
   const { id } = useParams()
   const [profileData, setProfileData] = useState({
     id: '',
-    email: '',
     username: '',
     bio: '',
     profile_image: '',
@@ -46,7 +38,6 @@ const UserProfile = () => {
         .then((res) => {
           setProfileData(res.data)
           setShowArticles(res.data.authored)
-          console.log(res.data)
         }).catch(err => {
           console.log(err.response)
           setNotLoaded(true)
@@ -127,7 +118,6 @@ const UserProfile = () => {
                 </div>
             </div>
         </div>
-          {/* <ProfileArticleBar header={'Articles Written'} articles={showArticles} /> */}
           <Header page={'user'} />
           <SidebarV2 />
         </div>
@@ -135,7 +125,7 @@ const UserProfile = () => {
           <Title text={profileData.username} lengthLimit={true} />
         </div>
         <div className={`${profileData.profile_name === null ? 'hidden' : 'block'} pt-20 flex justify-center dark:text-white`}>
-          <Title text={profileData.profile_name} size={'text-3xl'} />
+          <Title text={profileData.profile_name} size={'text-3xl'} lengthLimit={true} />
         </div>
 
         <div className='grid grid-cols-1'>
@@ -148,7 +138,7 @@ const UserProfile = () => {
           </div>
         </div>
         <div className={`${id === loggedInProfile.id ? 'flex justify-center mt-10' : 'hidden'}`}>
-          {/* If logged in profile ID is equal to router URL ID && sessionToken then show */}
+          {/* If logged in profile ID is equal to router URL ID && sessionToken then show edit button */}
           <div className={`px-2 ${profileData.id === loggedInProfile.id ? 'block px-2' : 'hidden'}`}>
             <Link to={'/profiles/edit'} replace={true}>
               <Button icon={<AiOutlineEdit size={'26px'} />} label={'Edit profile'} labelProps={'text-sm pt-1 pl-2'} />
