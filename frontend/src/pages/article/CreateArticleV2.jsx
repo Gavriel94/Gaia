@@ -15,11 +15,12 @@ import { MdOutlineCancel } from 'react-icons/md'
 
 /**
  * TODO: Create a checkbox for users to have to comply with ToS
+ * TODO: Resize all images to be the same
  */
 
 const CreateArticleV2 = () => {
 
-  const { darkMode, loggedInProfile, sessionToken, submitted, adaHandleDetected, adaHandleSelected } = useStateContext()
+  const { darkMode, loggedInProfile, submitted } = useStateContext()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
@@ -111,13 +112,21 @@ const CreateArticleV2 = () => {
     setTags(prevState => prevState.filter((tag, i) => i !== index))
   }
 
-  const handleImageUpload = e => {
+  const handleImageUpload = async e => {
     if (e.target.files[0].size > 800000) {
       alert('Image must be less than 8MB')
       return
     }
-    setPreviewImage(e.target.files[0])
-    setShowPreview(URL.createObjectURL(e.target.files[0]))
+
+    let img = e.target.files[0]
+    if (!img.type.match(/image.*/)) {
+      alert('File is not an image')
+      return
+    }
+
+
+    setPreviewImage(img)
+    setShowPreview(URL.createObjectURL(img))
     if (imageError) {
       setImageError(false)
     }
@@ -130,12 +139,12 @@ const CreateArticleV2 = () => {
       setContent('')
       setContentError(true)
       return
-    } 
+    }
     newArticle.append('content', content)
     newArticle.append('tags', tags)
     newArticle.append('preview_image', previewImage)
     newArticle.append('author', loggedInProfile.id)
-    if (loggedInProfile.profile_name !== null) {
+    if (loggedInProfile.profile_name !== '') {
       newArticle.append('author_profile_name', loggedInProfile.profile_name)
     } else {
       newArticle.append('author_profile_name', loggedInProfile.username)
@@ -211,121 +220,121 @@ const CreateArticleV2 = () => {
       }
       {
         <>
-        <Header />
-        <SidebarV2 />
-        <div className={`${submit ? 'hidden' : 'block'}`}>
-          <div className='fixed justify-center m-auto left-0 right-0 '>
-            <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
-              <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
+          <Header />
+          <SidebarV2 />
+          <div className={`${submit ? 'hidden' : 'block'}`}>
+            <div className='fixed justify-center m-auto left-0 right-0 '>
+              <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
+                <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
+              </div>
             </div>
-          </div>
-          <div>
-            <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
-              <div className='mt-20'>
-                You must login to post an Article
-                <div className='flex justify-center mt-20'>
-                  <LoginButton />
+            <div>
+              <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
+                <div className='mt-20'>
+                  You must login to post an Article
+                  <div className='flex justify-center mt-20'>
+                    <LoginButton />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className={`${!loggedInProfile?.sessionToken ? 'hidden' : 'block'}`}>
-            <div className='flex justify-center'>
-              <div className='pt-20'>
-                <Title text={title} size={'text-6xl'} />
-                <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
-                  <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
-                </div>
-                <div className='flex justify-center mt-20'>
-                  <div className={`rounded-full focus:outline-none hover:bg-light-white  
+            <div className={`${!loggedInProfile?.sessionToken ? 'hidden' : 'block'}`}>
+              <div className='flex justify-center'>
+                <div className='pt-20'>
+                  <Title text={title} size={'text-6xl'} />
+                  <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
+                    <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
+                  </div>
+                  <div className='flex justify-center mt-20'>
+                    <div className={`rounded-full focus:outline-none hover:bg-light-white  
                     ${imageError ? 'bg-light-red' : 'bg-light-orange dark:bg-dark-orange'}
                   text-light-white dark:text-white 
                      w-[100px] py-2 px-4 text-xl font-bold cursor-pointer z-0 absolute content-center`}>
-                    <div className='flex justify-center'>
-                      <BsCardImage size={'26px'} />
+                      <div className='flex justify-center'>
+                        <BsCardImage size={'26px'} />
+                      </div>
                     </div>
+                    <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
                   </div>
-                  <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
-                </div>
-                <div className={`${previewImage === undefined ? 'block mt-2 xl:hidden' : 'hidden'}`}>
-                  <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                    <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
-                  </p>
-                </div>
-                <div className='py-5'>
-                  <InputField
-                    required={true}
-                    type='input'
-                    placeholder='Title'
-                    defaultValue={''}
-                    borderColor={`${titleError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
-                    onChange={e => handleTitle(e.target.value)}
-                  />
-                  <div className={`${title === '' ? 'block mt-2 xl:hidden' : 'hidden'}`}>
+                  <div className={`${previewImage === undefined ? 'block mt-2 xl:hidden' : 'hidden'}`}>
                     <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                      <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter a title</span>
+                      <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please upload a cover image</span>
                     </p>
                   </div>
-                  <div className='py-5' />
-                  <Editor
-                    setContent={setContent}
-                    borderColor={`${contentError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
-                  />
-                  {/* Editor leaves empty <p> tags if content was added then deleted */}
-                  <div className={`${content === '' ? 'block mt-2 xl:hidden' : content === '<p></p>' ? 'xl:hidden block mt-2' : 'hidden'}`}>
-                    <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                      <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter content</span>
-                    </p>
-                  </div>
-                  <div className='py-5' />
-                  <InputField
-                    id='tag field'
-                    required={true}
-                    type='input'
-                    placeholder='Tags'
-                    value={tagInput}
-                    borderColor={`${tagsError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
-                    onChange={(e) => {
-                      const { value } = e.target
-                      setTagInput(value)
-                    }}
-                    onKeyDown={(e) => writeTag(e)}
-                  />
-                  <div className='flex justify-center pt-5'>
-                    {tags.map((tag, index) =>
-                      <div key={tag} className='px-2'>
-                        <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />} />
-                      </div>)}
-                  </div>
-                  <div className='flex justify-center dark:text-white pt-5'>
-                    <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
-                      Tags must be between 3-15 characters
+                  <div className='py-5'>
+                    <InputField
+                      required={true}
+                      type='input'
+                      placeholder='Title'
+                      defaultValue={''}
+                      borderColor={`${titleError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                      onChange={e => handleTitle(e.target.value)}
+                    />
+                    <div className={`${title === '' ? 'block mt-2 xl:hidden' : 'hidden'}`}>
+                      <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                        <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter a title</span>
+                      </p>
                     </div>
-                    <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
-                      Add at least 2 tags
+                    <div className='py-5' />
+                    <Editor
+                      setContent={setContent}
+                      borderColor={`${contentError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                    />
+                    {/* Editor leaves empty <p> tags if content was added then deleted */}
+                    <div className={`${content === '' ? 'block mt-2 xl:hidden' : content === '<p></p>' ? 'xl:hidden block mt-2' : 'hidden'}`}>
+                      <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                        <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter content</span>
+                      </p>
                     </div>
-                    <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
-                      Too many tags!
+                    <div className='py-5' />
+                    <InputField
+                      id='tag field'
+                      required={true}
+                      type='input'
+                      placeholder='Tags'
+                      value={tagInput}
+                      borderColor={`${tagsError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                      onChange={(e) => {
+                        const { value } = e.target
+                        setTagInput(value)
+                      }}
+                      onKeyDown={(e) => writeTag(e)}
+                    />
+                    <div className='flex justify-center pt-5'>
+                      {tags.map((tag, index) =>
+                        <div key={tag} className='px-2'>
+                          <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />} />
+                        </div>)}
                     </div>
+                    <div className='flex justify-center dark:text-white pt-5'>
+                      <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
+                        Tags must be between 3-15 characters
+                      </div>
+                      <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
+                        Add at least 2 tags
+                      </div>
+                      <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
+                        Too many tags!
+                      </div>
 
-                  </div>
-                  <div className={`${tags.length === 0 ? 'block mt-2 xl:hidden' : 'hidden'}`}>
-                    <p className={`${darkMode && 'text-white'} flex justify-center`}>
-                      <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Add up to 5 tags. Seperate them with a comma.</span>
-                    </p>
-                  </div>
-                  <div className='py-5' />
-                  <div className='flex justify-center'>
-                    <Button label={'Submit'} func={handleSubmit} />
-                  </div>
-                  <div className='flex justify-center pb-20 sm:pb-10 xl:hidden'>
-                    <p className='text-center mt-2 text-black dark:text-white select-none'>Articles must comply with the terms of service. Find out more in the <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
+                    </div>
+                    <div className={`${tags.length === 0 ? 'block mt-2 xl:hidden' : 'hidden'}`}>
+                      <p className={`${darkMode && 'text-white'} flex justify-center`}>
+                        <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Add up to 5 tags. Seperate them with a comma.</span>
+                      </p>
+                    </div>
+                    <div className='py-5' />
+                    <div className='flex justify-center'>
+                      <Button label={'Submit'} func={handleSubmit} />
+                    </div>
+                    <div className='flex justify-center pb-20 sm:pb-10 xl:hidden'>
+                      <p className='text-center mt-2 text-black dark:text-white select-none'>Articles must comply with the terms of service. Find out more in the <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </>
       }
     </>
