@@ -2,6 +2,7 @@ import React from "react";
 import Title from "../misc/Title";
 import { Link } from 'react-router-dom'
 import parser from 'html-react-parser'
+import SentimentIndicator from "./SentimentIndicator";
 
 /**
  * Cards containing article title, preview image and beginning of content
@@ -18,11 +19,7 @@ import parser from 'html-react-parser'
  * @returns {JSX.Element} Preview of an article
  */
 
-/**
- * TODO: Map buttons to tags 
- */
-
-const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth }) => {
+const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth, sentiment }) => {
 
     /**
      * Trims the content if it is too long for the preview
@@ -35,23 +32,44 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth 
         return parser(content)
     }
 
+    const setGradient = () => {
+        if (sentiment[2] === 100) {
+            return 'from-light-green to-light-green'
+        } else if (sentiment[2] === 0) {
+            return 'from-light-red to-light-red'
+        } else {
+            return 'from-light-red to-light-green'
+        }
+    }
+
     return (
         <>
             <div>
-                <div className='border-light-orange dark:border-dark-orange p-6 mb-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl'>
+                <div className='border-light-orange dark:border-dark-orange p-2 mb-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover duration-500'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
-                        <div className='grid grid-cols-2 grid-rows-2 justify-end content-end'>
-                            <div className=''>
+                        <div className='flex flex-row'>
+                            <div className="justify-start hidden sm:block">
+                                <img src={image} alt='Preview' width='120' height='120' className='rounded-lg' />
+                            </div>
+                            <div className="justify-start sm:hidden">
+                                <img src={image} alt='Preview' height={'150px'} width={'150px'} className='rounded-lg' />
+                            </div>
+                            <div className='m-auto'>
                                 <Title text={title} size={'text-3xl'} />
                             </div>
-                            <div className="justify-end pl-20 hidden sm:block">
-                                <img src={image} alt='Preview' height={imageHeight} width={imageWidth} className='rounded-lg' />
-                            </div>
-                            <div className="justify-end pl-5 sm:hidden grid-cols-1">
-                                <img src={image} alt='Preview' height={'150'} width={'150'} className='rounded-lg' />
-                            </div>
+                        </div>
+                        <div className='grid grid-cols-2 grid-rows-2 justify-end content-end'>
                             <div className='col-span-2 text-center dark:text-white text-black mt-10'>
                                 {contentPreview()}
+                            </div>
+                            <div className='col-span-2'>
+                                <SentimentIndicator
+                                    likes={sentiment[0]}
+                                    dislikes={sentiment[1]}
+                                    likePercent={sentiment[2]}
+                                    gradient={setGradient()}
+                                    miniArticle={true}
+                                />
                             </div>
                         </div>
                     </Link>

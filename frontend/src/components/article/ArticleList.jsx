@@ -24,6 +24,7 @@ const ArticleList = () => {
                     image={article.preview_image}
                     imageHeight={'150px'}
                     imageWidth={'150px'}
+                    sentiment={article.sentiment}
                 />
             </div>
         )
