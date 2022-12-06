@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { TrendBar, SidebarV2, Header, Title, ArticleLoading, ArticleList, TopLoader, RefreshPosts } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
+import API from '../../API'
 
 /**
  * Provides an interface for the user to browse articles and see trends
@@ -15,8 +16,22 @@ import { useStateContext } from '../../context/ContextProvider'
  */
 
 const Home = () => {
-    const { articleList, articleLoading, refreshing } = useStateContext()
+    const { articleList, articleLoading, refreshing, setArticleList } = useStateContext()
     const [topLoaderVisible, setTopLoaderVisible] = useState(false)
+
+    useEffect(() => {
+        const refreshArticles = () => {
+            API.get('/articles/all/')
+                .then((res) => {
+                    setArticleList({
+                        articles: res.data.reverse(),
+                        sortBy: 'newest',
+                    })
+                })
+                .catch(console.error)
+        }
+        refreshArticles()
+    }, [])
 
     // shows TopLoader after scrolling down the page
     // useEffect(() => {
