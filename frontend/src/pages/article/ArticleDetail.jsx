@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, TagIcon, ProfileArticleBar, SentimentIndicator } from "../../components";
+import { Title, SidebarV2, Header, Button, SentimentIndicator } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
 import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
 import AuthorBar from "../../components/article/AuthorBar";
-import { BiLike, BiDislike } from 'react-icons/bi'
+import { BiLike, BiDislike, BiBookBookmark } from 'react-icons/bi'
 
 /**
  * Displays a single Article in a full page view
@@ -79,7 +79,6 @@ const ArticleDetail = () => {
             likeArticle.append('user_id', loggedInProfile.id)
             likeArticle.append('article_id', article.id)
             likeArticle.append('sentiment', reaction)
-            console.log(loggedInProfile.id)
             await API.post(`/articles/reaction/${article.id}/`, likeArticle, {
                 headers: {
                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
@@ -104,6 +103,21 @@ const ArticleDetail = () => {
                 }))
             }
         }
+    }
+
+    const bookmarkArticle = async () => {
+        let bookmarkArticle = new FormData()
+        bookmarkArticle.append('user', loggedInProfile.id)
+        bookmarkArticle.append('article', article.id)
+
+        await API.post(`/articles/bookmark/${article.id}/`, bookmarkArticle, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(res => {
+            console.log(res)
+        })
     }
 
     if (article === '') {
@@ -164,12 +178,13 @@ const ArticleDetail = () => {
                             </div>
                             <div>
                                 <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
-
+                            </div>
+                            <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'block'}`}>
+                                <Button icon={<BiBookBookmark size={'26px'} />} func={() => bookmarkArticle()} />
                             </div>
                         </div>
-
                         <div>
-                            <SentimentIndicator 
+                            <SentimentIndicator
                                 dislikes={articleSentiment[1]}
                                 likes={articleSentiment[0]}
                                 likePercent={articleSentiment[2]}
