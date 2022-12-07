@@ -45,7 +45,7 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth,
     return (
         <>
             <div>
-                <div className='border-light-orange dark:border-dark-orange p-2 mb-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover duration-500'>
+                <div className='border-light-orange dark:border-dark-orange p-4 mb-3 mt-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover duration-500'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
                         <div className='flex flex-row'>
                             <div className="justify-start hidden sm:block">

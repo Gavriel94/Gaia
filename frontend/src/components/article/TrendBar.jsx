@@ -41,7 +41,7 @@ const TrendBar = () => {
                     </div>
                     <div className='pt-4 grid grid-cols-1 gap-y-4'>
                         {mostPopular.map((article) => (
-                            <div className='pt-4 grid grid-cols-1 gap-y-4' key={article.id}>
+                            <div className='grid grid-cols-1 gap-y-4' key={article.id}>
                                 <Link to={`/articles/${article.id}`} style={{textDecoration: 'none'}}>
                                     <TrendCard
                                         id={article.id}
