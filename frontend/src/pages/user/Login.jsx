@@ -29,7 +29,7 @@ const Login = () => {
                 <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true}/>
             )
         }
-        <Header />
+        <Header page={'login'}/>
 
                 <SidebarV2 />
 

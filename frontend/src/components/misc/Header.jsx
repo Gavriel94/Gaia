@@ -6,9 +6,7 @@ import { BiTrendingUp } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import RefreshArticles from '../article/RefreshArticles'
 import { Button, LoginButton, SortingButton } from '..'
-import { AiOutlineHome } from 'react-icons/ai'
 import { IoArrowBack } from 'react-icons/io5'
-import API from '../../API'
 
 /**
  * Dynamic header component
@@ -20,13 +18,13 @@ import API from '../../API'
  */
 
 const Header = ({ page }) => {
-    const { darkMode, setDarkMode, showLogoutAlert, showErrorAlert, loggedInProfile, walletUser } = useStateContext();
-    const [showSkip, setShowSkip] = useState(true)
+    const { darkMode, setDarkMode, showErrorAlert } = useStateContext();
+    const [showSkipButton, setShowSkipButton] = useState(true)
     let history = useNavigate()
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setShowSkip(false)
+            setShowSkipButton(false)
         }, 18000);
         return () => clearTimeout(timer);
     }, []);
@@ -34,15 +32,15 @@ const Header = ({ page }) => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className={`flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0 bg-white dark:bg-dark-grey ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100'}`}>
-                    <div className={`flex flex-row justify-end pr-10 w-full ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100 dark:bg-dark-grey'}`}>
-                        <div className={`${page === 'home' ? 'block py-3 px-4' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                <div className={`flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0`}>
+                    <div className={`flex flex-row justify-end pr-10 w-full ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100 dark:bg-dark-grey bg-white'}`}>
+                        <div className={`${page !== 'home' ? 'hidden' : 'block py-3 pr-2'}`}>
                             <RefreshArticles />
                         </div>
-                        <div className={`${page === 'home' ? 'block pr-2 mt-3' : 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'}`}>
+                        <div className={`${page !== 'home' ? 'hidden' : 'block py-3 pr-2'}`}>
                             <SortingButton />
                         </div>
-                        <div className={`py-3 px-2 xl:hidden ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'}`}>
+                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'py-3 pr-2 xl:hidden'}`}>
                             <Link to={'/trending'}>
                                 <Button
                                     title={'Trending'}
@@ -52,20 +50,13 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page === 'user' ? 'block pr-2 py-3' : page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'block pr-2 py-3' : 'hidden'}`}>
-                            {/* <Link to={'/home'}> */}
-                                <Button label={'Back'} labelProps={'text-sm pt-1 pl-2'} icon={<IoArrowBack size={'26px'} />} func={() => history(-1)} />
-                            {/* </Link> */}
+                        <div className={`${page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'block pr-2 py-3' : 'hidden'}`}>
+                            <Button label={'Back'} labelProps={'text-sm pt-1 pl-2'} icon={<IoArrowBack size={'26px'} />} func={() => history(-1)} />
                         </div>
-                        <div className={`${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} ${page === 'user' && 'hidden'} ${loggedInProfile.sessionToken && !walletUser && 'hidden'} pr-2 py-3`}>
+                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'pr-2 py-3'}`}>
                             <LoginButton />
                         </div>
-                        <div className={`${loggedInProfile.sessionToken && !walletUser ? 'block pr-2 py-3' : 'hidden'} ${page === 'user' && 'hidden'}`}>
-                            <Link to={`/profiles/${loggedInProfile.id}`}>
-                                <Button label={loggedInProfile.username} labelProps={'text-sm pt-1 pl-2'} image={loggedInProfile.profile_image} imageHeight={'22px'} imageWidth={'22px'} imageAlt={''} />
-                            </Link>
-                        </div>
-                        <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkip && 'hidden'}`}>
+                        <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkipButton && 'hidden'}`}>
                             <Link to={'/home'}>
                                 <button
                                     type='button'
@@ -77,13 +68,7 @@ const Header = ({ page }) => {
                                 </button>
                             </Link>
                         </div>
-                        {/* <div className={`${page !== 'login' ? 'hidden' : 'block'} py-3 px-2`}>
-                            <Button label={"Back"}
-                                func={() => history(-1)}
-                            />
-                        </div> */}
-
-                        <div className={`${showLogoutAlert && 'hidden'} ${showErrorAlert && 'hidden'} ${page === 'landing' && 'hidden'} ${page === 'login' && 'hidden'} py-3`}>
+                        <div className={`${showErrorAlert ? 'hidden' : page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : 'py-3'}`}>
                             <Button
                                 title={'mode-toggle'}
                                 func={() => {
@@ -92,7 +77,6 @@ const Header = ({ page }) => {
                                 icon={darkMode === false ? <BsMoon size={'26px'} /> : <BsSun size={'26px'} />}
                             />
                         </div>
-
                     </div>
                 </div>
             </div>
