@@ -66,7 +66,7 @@ const Home = () => {
         return (
             <>
                 <div className='mt-20' />
-                <Title text={'home'} size={'text-6xl'} />
+                <Title text={'home'} size={'text-6xl'} hover={true}/>
                 <ArticleLoading pageTitle={'Home'} />
                 {/* {serverTimeout()} */}
             </>
@@ -91,7 +91,7 @@ const Home = () => {
 
                     <div className='flex justify-center'>
                         <div className='pt-20'>
-                            <Title text={'home'} size={'text-6xl'} />
+                            <Title text={'home'} size={'text-6xl'} hover={true}/>
                             <div className={`${refreshing ? 'hidden' : 'mt-10 overflow-auto flex flex-row pb-20 sm:pb-10'}`}>
                                 <ArticleList />
                             </div>

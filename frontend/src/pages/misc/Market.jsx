@@ -16,7 +16,7 @@ const Market = () => {
             </div>
             <div className='flex justify-center'>
                 <div className='pt-20'>
-                    <Title text={'market'} size={'text-6xl'} />
+                    <Title text={'market'} size={'text-6xl'} hover={true}/>
                     <div className='mt-20 overflow-auto '>
                         content
                     </div>

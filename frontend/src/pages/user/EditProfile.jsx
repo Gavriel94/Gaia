@@ -118,7 +118,7 @@ const EditProfile = () => {
                 <div className='pt-20 justify-center mx-autow-full'>
                     <div className='flex justify-center flex-row'>
                         <div>
-                            <Title text={newDisplayName} size={'text-6xl'} />
+                            <Title text={newDisplayName} size={'text-6xl'} hover={true}/>
                         </div>
                     </div>
                     <div className='mt-20' />
@@ -130,7 +130,7 @@ const EditProfile = () => {
                         placeholder={'Add a personalised name'} defaultValue={''}
                         onChange={e => handleDisplayName(e.target.value)}
                     />
-                    <Title text={'Write about yourself'} size={'text-2xl'} />
+                    <Title text={'Write about yourself'} size={'text-2xl'} hover={true}/>
                     <Editor setContent={setNewBio} />
                     <div>
                         <div>
@@ -152,7 +152,7 @@ const EditProfile = () => {
                         </div>
                         <div className={`${walletUser && adaHandleDetected ? 'block' : 'hidden'}`}>
                             <div className='m-5 flex justify-center'>
-                                <Title text={'Display ADA Handle?'} size={'text-2xl'} />
+                                <Title text={'Display ADA Handle?'} size={'text-2xl'} hover={true}/>
                             </div>
                             <div>
                                 {adaHandleName.map(key =>

@@ -137,7 +137,7 @@ const UsernameUserRegister = () => {
                     </div>
                     <div className='flex justify-center'>
                         <form className='pt-20'>
-                            <Title text={'Register'} size={'text-6xl'} />
+                            <Title text={'Register'} size={'text-6xl'} hover={true}/>
                             <div className='mt-20'>
                                 <InputField
                                     required={true}

@@ -17,7 +17,7 @@ const ArticleGuide = () => {
             </div>
             <div className='flex justify-center'>
                 <div className='pt-20'>
-                    <Title text={'3 Steps'} size={'text-3xl'} />
+                    <Title text={'3 Steps'} size={'text-3xl'} hover={true}/>
                     <div className='justify-center items-center rounded-3xl border-1 shadow-md 
             py-2 px-4 transition-colors duration-500 cursor-pointer
             w-[300px] h-[300px]

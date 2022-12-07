@@ -34,7 +34,7 @@ const Login = () => {
                 <SidebarV2 />
 
             <div className='flex justify-center mt-20'>
-                <Title text={'Login'} size={'text-6xl'} />
+                <Title text={'Login'} size={'text-6xl'} hover={true}/>
             </div>
             <div className='flex justify-center mt-20'>
                 <LoginButton />

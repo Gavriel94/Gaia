@@ -37,7 +37,7 @@ const TrendBar = () => {
                 <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
                     <div className='py-4' />
                     <div className='w-[300px] h-[10px] justify-center py-10'>
-                        <Title text={'trending'} size={'text-3xl'} />
+                        <Title text={'trending'} size={'text-3xl'} hover={true}/>
                     </div>
                     <div className='pt-4 grid grid-cols-1 gap-y-4'>
                         {mostPopular.map((article) => (

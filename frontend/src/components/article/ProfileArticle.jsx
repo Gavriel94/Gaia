@@ -21,7 +21,7 @@ const ArticlesWritten = ({ id, title, image, imageHeight, imageWidth }) => {
       <div className='border-light-orange dark:border-dark-orange border-b-2 mb-2 w-full'>
         <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
           <div>
-            <Title text={title} size={'text-2xl'} />
+            <Title text={title} size={'text-2xl'} hover={true}/>
           </div>
           <div className='flex justify-center'>
             <img src={image} alt='Preview' height={imageHeight} width={imageWidth} className='rounded-lg mb-2'/>

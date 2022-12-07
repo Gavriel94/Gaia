@@ -1190,7 +1190,7 @@ export default class WalletConnect extends React.Component {
                         className={'flex justify-center w-full flex-col bg-light-white dark:bg-dark-silver shadow-2xl'}
                         ariaHideApp={true}
                     >
-                        <Title text={'Select wallet'} size={'text-semibold'} />
+                        <Title text={'Select wallet'} size={'text-semibold'} hover={true}/>
                         {this.state.wallets.map(key =>
                             <div key={key} className='flex justify-center pt-2 min-w-full'>
                                 <Button

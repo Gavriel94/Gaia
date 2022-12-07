@@ -51,7 +51,7 @@ const CreateArticle = () => {
                 <Header />
                 <Sidebar />
                 <div className='flex mt-20 justify-center'>
-                    <Title text={'Create an Article'} size={'text-6xl'} />
+                    <Title text={'Create an Article'} size={'text-6xl'} hover={true}/>
                 </div>
             </div>
 

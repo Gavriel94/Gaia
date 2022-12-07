@@ -23,7 +23,7 @@ const ArticleGuideBar = ({ title, content, tags, previewImage }) => {
         <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
           <div className='py-4' />
           <div className='w-[300px] h-[10px] justify-center py-10'>
-            <Title text={'Article Guide'} size={'text-3xl'} />
+            <Title text={'Article Guide'} size={'text-3xl'} hover={true} />
           </div>
           <div className='pt-4 gap-y-4 space-x-2 grid grid-cols-1 justify-center dark:text-white'>
             <div className='flex justify-center space-x-2'>

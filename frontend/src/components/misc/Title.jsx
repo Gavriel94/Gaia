@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react'
  * @returns {JSX.Element} - Title component
  */
 
-const Title = ({ text, size, lengthLimit }) => {
+const Title = ({ text, size, lengthLimit, hover }) => {
     const [dynamicSize, setDynamicSize] = useState(size)
     const [dynamicText, setDynamicText] = useState(text)
     function capitalize(word) {
@@ -35,8 +35,7 @@ const Title = ({ text, size, lengthLimit }) => {
     return (
         <div className={`${dynamicSize} font-bold 
         text-black dark:text-light-white
-        hover:text-light-orange
-        dark:hover:text-dark-orange
+        ${hover && 'hover:text-light-orange dark:hover:text-dark-orange'}
         transition-colors duration-500 select-none text-center`}>
             {capitalize(dynamicText)}
         </div>

@@ -54,7 +54,7 @@ const TagNavigation = () => {
             <SidebarV2 />
             <div className='flex justify-center'>
                 <div className='pt-20'>
-                    <Title text={`${tag}`} size={'text-6xl'} />
+                    <Title text={`${tag}`} size={'text-6xl'} hover={true} />
                     <div className={`${refreshing ? 'hidden' : 'mt-10 overflow-auto pb-20 sm:pb-10'}`}>
                         {articles.reverse()}
                     </div>

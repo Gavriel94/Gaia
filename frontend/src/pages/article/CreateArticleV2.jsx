@@ -204,7 +204,7 @@ const CreateArticleV2 = () => {
                 <LoadingSpinner />
               </div>
               <div className={`${submitted && 'hidden'} mt-10`}>
-                <Title text={'Submitting'} size={'text-3xl'} />
+                <Title text={'Submitting'} size={'text-3xl'} hover={true}/>
               </div>
             </div>
 
@@ -220,14 +220,14 @@ const CreateArticleV2 = () => {
       }
       {
         <>
-          <Header />
-          <SidebarV2 />
           <div className={`${submit ? 'hidden' : 'block'}`}>
             <div className='fixed justify-center m-auto left-0 right-0 '>
               <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
                 <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
               </div>
             </div>
+            <Header />
+            <SidebarV2 />
             <div>
               <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
                 <div className='mt-20'>
@@ -241,7 +241,7 @@ const CreateArticleV2 = () => {
             <div className={`${!loggedInProfile?.sessionToken ? 'hidden' : 'block'}`}>
               <div className='flex justify-center'>
                 <div className='pt-20'>
-                  <Title text={title} size={'text-6xl'} />
+                  <Title text={title} size={'text-6xl'} hover={true}/>
                   <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
                     <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
                   </div>

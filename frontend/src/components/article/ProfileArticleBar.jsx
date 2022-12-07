@@ -17,7 +17,7 @@ const ProfileArticleBar = ({ header, articles }) => {
                 <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
                     <div className='py-4' />
                     <div className='w-[300px] h-[10px] justify-center py-10'>
-                        <Title text={header} size={'text-3xl'} />
+                        <Title text={header} size={'text-3xl'} hover={true}/>
                     </div>
 
                     {articles.map((article) => (

@@ -18,7 +18,7 @@ const UnresolvedPath = () => {
         <div className='w-full h-full dark:bg-dark-grey'>
             <div className='flex justify-center'>
                 <div className='mt-60'>
-                    <Title text={`Oops looks like this page doesn't exist`} size={'text-6xl'} />
+                    <Title text={`Oops looks like this page doesn't exist`} size={'text-6xl'} hover={true}/>
                 </div>
                 <div className='flex pt-14' />
             </div>
