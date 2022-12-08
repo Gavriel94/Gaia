@@ -24,7 +24,9 @@ const ArticleList = () => {
                     image={article.preview_image}
                     imageHeight={'150px'}
                     imageWidth={'150px'}
-                    sentiment={article.sentiment}
+                    likes={article.sentiment[0]}
+                    dislikes={article.sentiment[1]}
+                    percent={article.sentiment[2]}
                 />
             </div>
         )
