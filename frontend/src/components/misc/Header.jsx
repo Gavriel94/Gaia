@@ -32,8 +32,8 @@ const Header = ({ page }) => {
     return (
         <div>
             <div className='flex items-end flex-col'>
-                <div className={`flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0`}>
-                    <div className={`flex flex-row justify-end pr-10 w-full ${page === 'landing' ? 'bg-opacity-0' : 'bg-opacity-100 dark:bg-dark-grey bg-white'}`}>
+                <div className={`flex min-w-full sm:w-1/2 items-center justify-center bottom-0 sm:left-24 sm:justify-end sm:top-0 sm:h-16 fixed sm:px-20 sm:py-1 sm:dark:bg-opacity-0 dark:bg-dark-grey bg-white ${page === 'landing' && 'bg-opacity-0'}`}>
+                    <div className={`flex flex-row justify-end pr-10 w-full`}>
                         <div className={`${page !== 'home' ? 'hidden' : 'block py-3 pr-2'}`}>
                             <RefreshArticles />
                         </div>
