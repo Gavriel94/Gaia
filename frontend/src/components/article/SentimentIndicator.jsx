@@ -5,13 +5,10 @@ const SentimentIndicator = ({ dislikes, likes, likePercent, gradient, miniArticl
 
     return (
         <div className='flex justify-center mt-5'>
-            <div className='grid grid-cols-3'>
+            <div className='flex flex-row'>
 
-            <div className='text-center flex justify-end pr-5 select-none'>
-                    {dislikes}
-                    <div className='px-2'>
-                        <BiDislike size={'26px'} />
-                    </div>
+            <div className='text-center flex justify-end select-none px-5'>
+                    {dislikes} dislikes
                 </div>
                 <div>
                     <div className={`bg-gradient-to-r ${gradient} rounded-lg px-5 select-none text-center`}>
@@ -20,11 +17,8 @@ const SentimentIndicator = ({ dislikes, likes, likePercent, gradient, miniArticl
                         </div>
                     </div> 
                 </div>
-                <div className='text-center flex justify-end pr-5 select-none'>
-                    {likes}
-                    <div className='px-2'>
-                        <BiLike size={'26px'}/>
-                    </div>
+                <div className='text-center flex px-5 select-none'>
+                    {likes} likes
                 </div>
             </div>
         </div>
