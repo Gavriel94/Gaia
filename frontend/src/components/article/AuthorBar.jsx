@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Title from '../misc/Title'
-import Button from '../misc/Button'
 import { Link } from 'react-router-dom'
 import API from '../../API'
 import TipButton from '../user/TipButton'
@@ -61,7 +60,7 @@ const AuthorBar = ({ authorID }) => {
             </Link>
           </div>
           <div className='flex justify-center mb-2'>
-            <TipButton authorUsername={authorProfile?.username} amountInADA={1}/>
+            <TipButton authorUsername={authorProfile?.username}/>
           </div>
         </div>
       </div>
