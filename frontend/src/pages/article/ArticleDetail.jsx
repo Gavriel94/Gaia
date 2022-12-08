@@ -7,6 +7,8 @@ import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
 import AuthorBar from "../../components/article/AuthorBar";
 import { BiLike, BiDislike, BiBookBookmark } from 'react-icons/bi'
+import { MdDeleteForever, MdCheck, MdOutlineCancel } from "react-icons/md";
+import Modal from 'react-modal'
 
 /**
  * Displays a single Article in a full page view
@@ -25,15 +27,23 @@ const ArticleDetail = () => {
      * idx 1 - total dislikes
      * idx 2 - (likes / likes + dislikes) * 100
      */
-    const [articleSentiment, setArticleSentiment] = useState([])
     const [buttonClick, setButtonClick] = useState(false)
     const [gradient, setGradient] = useState('')
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [deletionConfirmed, setDeletionConfirmed] = useState(false)
 
     useEffect(() => {
         const articleDetail = async () => {
             await API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
+                    if (res.data.sentiment[2] === 100) {
+                        setGradient('from-light-green to-light-green')
+                    } else if (res.data.sentiment[2] === 0) {
+                        setGradient('from-light-red to-light-red')
+                    } else {
+                        setGradient('from-light-red to-light-green')
+                    }
                 })
                 .catch(err => {
                     setNotLoaded(true)
@@ -41,26 +51,8 @@ const ArticleDetail = () => {
         }
 
         articleDetail()
-    }, [id])
 
-    useEffect(() => {
-        const articleSentiment = async () => {
-            await API.get(`/articles/sentiment/${id}/`)
-                .then((res) => {
-                    setArticleSentiment(res.data)
-                    if (res.data[2] === 100) {
-                        setGradient('from-light-green to-light-green')
-                    } else if (res.data[2] === 0) {
-                        setGradient('from-light-red to-light-red')
-                    } else {
-                        setGradient('from-light-red to-light-green')
-                    }
-                }).catch(err => {
-                    console.log(err)
-                })
-        }
-        articleSentiment()
-    }, [id, buttonClick])
+    }, [id])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -120,6 +112,31 @@ const ArticleDetail = () => {
         })
     }
 
+    /**
+     * TODO: ADD DELETE MODAL!!!
+     */
+
+    const handleDelete = async () => {
+        await API.delete(`articles/article/delete/${id}/`, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then((res => {
+            console.log(res)
+            setConfirmDelete(false)
+            setDeletionConfirmed(true)
+        }))
+    }
+
+    const openConfirmDelete = () => {
+        setConfirmDelete(true)
+    }
+
+    const cancelDelete = () => {
+        setConfirmDelete(false)
+    }
+
     if (article === '') {
         return (
             <>
@@ -135,6 +152,12 @@ const ArticleDetail = () => {
     else {
         return (
             <>
+                {
+                    deletionConfirmed && (
+                        <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true} />
+                    )
+                }
+                {console.log(article)}
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <div className="hidden xl:block">
                         <AuthorBar authorID={article.author} />
@@ -155,6 +178,10 @@ const ArticleDetail = () => {
                                     <p>Written by <Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0, 20) + '...'} </Link></p>
                                 </div>
                             </div>
+                        </div>
+                        <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
+                            <Button icon={<BiBookBookmark size={'26px'} />} func={() => bookmarkArticle()} />
+                            <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
                         </div>
                         <div className='mt-20' />
                         <div className='justify-center content-center text-center text-truncate [w-100px] md:[600px] lg:[750px] xl:[850px]'>
@@ -179,20 +206,42 @@ const ArticleDetail = () => {
                             <div>
                                 <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
                             </div>
-                            <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'block'}`}>
-                                <Button icon={<BiBookBookmark size={'26px'} />} func={() => bookmarkArticle()} />
-                            </div>
                         </div>
                         <div>
                             <SentimentIndicator
-                                dislikes={articleSentiment[1]}
-                                likes={articleSentiment[0]}
-                                likePercent={articleSentiment[2]}
+                                dislikes={article.sentiment[1]}
+                                likes={article.sentiment[0]}
+                                likePercent={article.sentiment[2]}
                                 gradient={gradient}
                             />
                         </div>
                     </div>
                 </div>
+                <Modal
+                    isOpen={confirmDelete}
+                    onRequestClose={() => setConfirmDelete(false)}
+                    contentLabel="Confirm Delete Modal"
+                    ariaHideApp={false}
+                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                    overlayClassName={'overlayModal'}
+                >
+                    <div>
+                        <div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                            Confirm Delete
+                        </div>
+                        <div className='text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                            Articles cannot be recovered once deleted
+                        </div>
+                        <div className='flex flex-row justify-center mt-5 space-x-5'>
+                            <Button func={() => cancelDelete()} icon={<MdOutlineCancel size={'26px'} />} />
+                            <Button func={() => handleDelete()} icon={<MdCheck size={'26px'} />} />
+                        </div>
+                    </div>
+                </Modal>
+
             </>
         )
     }
