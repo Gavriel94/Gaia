@@ -19,7 +19,7 @@ import SentimentIndicator from "./SentimentIndicator";
  * @returns {JSX.Element} Preview of an article
  */
 
-const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth, sentiment }) => {
+const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) => {
 
     /**
      * Trims the content if it is too long for the preview
@@ -33,9 +33,9 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth,
     }
 
     const setGradient = () => {
-        if (sentiment[2] === 100) {
+        if (percent === 100) {
             return 'from-light-green to-light-green'
-        } else if (sentiment[2] === 0) {
+        } else if (percent === 0) {
             return 'from-light-red to-light-red'
         } else {
             return 'from-light-red to-light-green'
@@ -64,9 +64,9 @@ const MiniArticle = ({ id, title, content, tags, image, imageHeight, imageWidth,
                             </div>
                             <div className='col-span-2'>
                                 <SentimentIndicator
-                                    likes={sentiment[0]}
-                                    dislikes={sentiment[1]}
-                                    likePercent={sentiment[2]}
+                                    likes={likes}
+                                    dislikes={dislikes}
+                                    likePercent={percent}
                                     gradient={setGradient()}
                                     miniArticle={true}
                                 />
