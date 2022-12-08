@@ -357,6 +357,7 @@ const LoginButton = () => {
                 profile_name: res.data.profile_name,
                 authored: res.data.authored,
                 reacted: res.data.reacted,
+                bookmarked: res.data.bookmarked,
             })
             if (res.data.profile_name.charAt(0) === '$') {
                 let handle = res.data?.profile_name?.slice(1, res.data?.display_name?.length)
