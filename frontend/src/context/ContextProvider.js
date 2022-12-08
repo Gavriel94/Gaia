@@ -87,6 +87,7 @@ export const ContextProvider = ({ children }) => {
         profile_name: '',
         authored: [],
         reacted: [],
+        bookmarked: [],
     })
 
     useEffect(() => {
