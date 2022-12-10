@@ -144,11 +144,10 @@ const CreateArticleV2 = () => {
     newArticle.append('tags', tags)
     newArticle.append('preview_image', previewImage)
     newArticle.append('author', loggedInProfile.id)
-    if (loggedInProfile.profile_name !== '') {
-      newArticle.append('author_profile_name', loggedInProfile.profile_name)
-    } else {
+    newArticle.append('author_username', loggedInProfile.username)
+    if (loggedInProfile.profile_name === '') {
       newArticle.append('author_profile_name', loggedInProfile.username)
-    }
+    } 
 
     for (const v of newArticle.values()) {
       console.log('values', v)
