@@ -52,7 +52,7 @@ const ArticleDetail = () => {
 
         articleDetail()
 
-    }, [id])
+    }, [id, buttonClick])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -66,12 +66,12 @@ const ArticleDetail = () => {
     }
 
     const handleReaction = async (reaction) => {
+        let userReaction = new FormData()
+        userReaction.append('user_id', loggedInProfile.id)
+        userReaction.append('article_id', article.id)
+        userReaction.append('sentiment', reaction)
         try {
-            let likeArticle = new FormData()
-            likeArticle.append('user_id', loggedInProfile.id)
-            likeArticle.append('article_id', article.id)
-            likeArticle.append('sentiment', reaction)
-            await API.post(`/articles/reaction/${article.id}/`, likeArticle, {
+            await API.post(`/articles/reaction/${article.id}/`, userReaction, {
                 headers: {
                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
                     'Content-Type': 'multipart/form-data',
@@ -111,10 +111,6 @@ const ArticleDetail = () => {
             console.log(res)
         })
     }
-
-    /**
-     * TODO: ADD DELETE MODAL!!!
-     */
 
     const handleDelete = async () => {
         await API.delete(`articles/article/delete/${id}/`, {
@@ -181,7 +177,9 @@ const ArticleDetail = () => {
                         </div>
                         <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
                             <Button icon={<BiBookBookmark size={'26px'} />} func={() => bookmarkArticle()} />
-                            <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
+                            <div className={`${article.author_username === loggedInProfile.username ? 'block' : 'hidden'}`}>
+                                <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
+                            </div>
                         </div>
                         <div className='mt-20' />
                         <div className='justify-center content-center text-center text-truncate [w-100px] md:[600px] lg:[750px] xl:[850px]'>
@@ -200,20 +198,20 @@ const ArticleDetail = () => {
                             {formatDate(article.pub_date)}
                         </div>
                         <div className='mt-10 flex justify-center space-x-5'>
-                            <div>
-                                <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
-                            </div>
-                            <div>
+                        </div>
+                        <div className='flex flex-row justify-center'>
+                            <div className='mt-3'>
                                 <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
                             </div>
-                        </div>
-                        <div>
                             <SentimentIndicator
                                 dislikes={article.sentiment[1]}
                                 likes={article.sentiment[0]}
                                 likePercent={article.sentiment[2]}
                                 gradient={gradient}
                             />
+                            <div className='mt-3'>
+                                <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
+                            </div>
                         </div>
                     </div>
                 </div>
