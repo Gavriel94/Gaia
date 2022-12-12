@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, SentimentIndicator } from "../../components";
+import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
@@ -37,6 +37,7 @@ const ArticleDetail = () => {
             await API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
+                    console.log(res.data)
                     if (res.data.sentiment[2] === 100) {
                         setGradient('from-light-green to-light-green')
                     } else if (res.data.sentiment[2] === 0) {
@@ -133,6 +134,16 @@ const ArticleDetail = () => {
         setConfirmDelete(false)
     }
 
+    /**
+     * Users cannot tip themselves
+     */
+    const showTipButton = () => {
+        if (article.author_username === loggedInProfile.username) {
+            return false
+        }
+        return true
+    }
+
     if (article === '') {
         return (
             <>
@@ -156,7 +167,7 @@ const ArticleDetail = () => {
                 {console.log(article)}
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <div className="hidden xl:block">
-                        <AuthorBar authorID={article.author} />
+                        <AuthorBar authorID={article.author} showTipButton={showTipButton()} />
                     </div>
                     <Header page={'articleDetail'} />
                     <SidebarV2 />
@@ -212,6 +223,9 @@ const ArticleDetail = () => {
                             <div className='mt-3'>
                                 <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
                             </div>
+                        </div>
+                        <div className='flex justify-center mt-10 mb-10'>
+                            <CommentSection articleID={article.id}/>
                         </div>
                     </div>
                 </div>
