@@ -29,9 +29,8 @@ const CommentSection = ({ articleID, currentComments }) => {
 
     useEffect(() => {
         const refreshComments = async () => {
-            await API.get('articles/article/comments/all/')
+            await API.get(`articles/article/comments/${articleID}/`)
                 .then((res) => {
-                    console.log(res.data)
                     setArticleComments(res.data.reverse())
                     if (commentSubmitted) {
                         setCommentSubmitted(false)
@@ -40,10 +39,12 @@ const CommentSection = ({ articleID, currentComments }) => {
                         setDeletionConfirmed(false)
                     }
                 })
-                .catch(console.err)
+                .catch(err => {
+                    console.log(err)
+                })
         }
         refreshComments()
-    }, [commentSubmitted, deletionConfirmed])
+    }, [commentSubmitted, deletionConfirmed, articleID])
 
     const handleSubmit = async () => {
         let newComment = new FormData()
@@ -138,7 +139,6 @@ const CommentSection = ({ articleID, currentComments }) => {
                     <Button label={'Submit'} func={handleSubmit} />
                 </div>
             </div>
-            {console.log(articleComments.reverse())}
             <div className='mt-5 w-full border-2 border-light-orange dark:border-dark-orange' />
             <div className='overflow-scroll'>
                 {articleComments?.map((articleComment) => (
