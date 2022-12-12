@@ -5,7 +5,6 @@ import { useStateContext } from '../../context/ContextProvider'
 import { Navigate } from 'react-router-dom'
 import { BsCardImage } from 'react-icons/bs'
 import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
-import { TbLayoutAlignRight } from 'react-icons/tb'
 
 /**
  * Provides an interface for the user to add additional information to their profile
