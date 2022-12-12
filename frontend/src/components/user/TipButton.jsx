@@ -131,6 +131,10 @@ const TipButton = ({ authorUsername }) => {
     }
 
     const createTip = () => {
+        if(!walletUser) {
+            alert('You must be logged in')
+            return
+        }
         setOpenModal(true)
         if (tipSuccessful) {
             setTipSuccessful(false)
