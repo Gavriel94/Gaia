@@ -46,7 +46,7 @@ const SidebarV2 = () => {
   return (
     <div className='h-full hidden sm:block'>
       <div className='fixed left-0 h-full md:border-r-1 border-light-orange dark:border-dark-orange sm:w-28 lg:w-72 overflow-scroll'>
-        <div className='dark:bg-dark-grey-lighter h-full'>
+        <div className='dark:bg-dark-grey-lighter bg-white h-full'>
           <div className='justify-center pt-4 mb-2 p-2 hidden lg:block content-center items-center sm:flex'>
             <Link to='/home' style={{ textDecoration: 'none' }} className='flex justify-center'>
               <img src={`${darkMode ? darkLogo : lightLogo }`} alt='Gaia Icon' width='125' className='md:block hidden'/>
