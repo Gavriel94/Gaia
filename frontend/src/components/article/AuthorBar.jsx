@@ -7,10 +7,11 @@ import TipButton from '../user/TipButton'
 /**
  * 
  * @param {String} authorID - ID of the Author  
+ * @param {Boolean} showTipButton - Displays the tip button if the reader is not using the same wallet as the author
  * @returns Link showing display name, profile picture and a tip button of article author
  */
 
-const AuthorBar = ({ authorID }) => {
+const AuthorBar = ({ authorID, showTipButton }) => {
   const [authorProfile, setAuthorProfile] = useState(undefined)
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const AuthorBar = ({ authorID }) => {
               </div>
             </Link>
           </div>
-          <div className='flex justify-center mb-2'>
+          <div className={`${showTipButton ? 'flex justify-center mb-2' : 'hidden'}`}>
             <TipButton authorUsername={authorProfile?.username}/>
           </div>
         </div>
