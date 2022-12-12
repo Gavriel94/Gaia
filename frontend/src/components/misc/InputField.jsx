@@ -21,7 +21,7 @@ const InputField = ({ required, type, placeholder, defaultValue, onChange, borde
     return (
 
         <div className={`border-4 ${borderColor === undefined ? 'border-light-orange dark:border-dark-orange' : borderColor} rounded-lg`}>
-            <input className='py-3 grid-cols-2 rounded w-full px-4
+            <input className='py-3 grid-cols-2 rounded w-full px-4 text-black
                 focus:outline-none'
                 required={required}
                 type={type}
