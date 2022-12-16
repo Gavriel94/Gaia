@@ -6,7 +6,8 @@ import { ArticleLoading } from "../../components";
 import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
 import AuthorBar from "../../components/article/AuthorBar";
-import { BiLike, BiDislike, BiBookBookmark } from 'react-icons/bi'
+import { BiLike, BiDislike } from 'react-icons/bi'
+import { BsBookmarksFill, BsBookmarks } from 'react-icons/bs'
 import { MdDeleteForever, MdCheck, MdOutlineCancel } from "react-icons/md";
 import Modal from 'react-modal'
 
@@ -28,23 +29,15 @@ const ArticleDetail = () => {
      * idx 2 - (likes / likes + dislikes) * 100
      */
     const [buttonClick, setButtonClick] = useState(false)
-    const [gradient, setGradient] = useState('')
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [deletionConfirmed, setDeletionConfirmed] = useState(false)
+    const [bookmarkIcon, setBookmarkIcon] = useState(<BsBookmarks size={'26px'} />)
 
     useEffect(() => {
         const articleDetail = async () => {
             await API.get(`/articles/article/${id}/`)
                 .then((res) => {
                     setArticle(res.data)
-                    console.log(res.data)
-                    if (res.data.sentiment[2] === 100) {
-                        setGradient('from-light-green to-light-green')
-                    } else if (res.data.sentiment[2] === 0) {
-                        setGradient('from-light-red to-light-red')
-                    } else {
-                        setGradient('from-light-red to-light-green')
-                    }
                 })
                 .catch(err => {
                     setNotLoaded(true)
@@ -85,7 +78,7 @@ const ArticleDetail = () => {
             if (err.response.status === 401) {
                 alert('You must be logged in')
             }
-            if (String(err.response.data.non_field_errors[0]).includes('must make a unique set')) {
+            if (err.response.status === 400) {
                 await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
                     headers: {
                         'Authorization': `Token ${loggedInProfile.sessionToken}`,
@@ -110,6 +103,18 @@ const ArticleDetail = () => {
             },
         }).then(res => {
             console.log(res)
+            setBookmarkIcon(<BsBookmarksFill size={'26px'}/>)
+        }).catch(err => {
+            console.log(err)
+            API.delete(`articles/bookmark/delete/${article.id}`, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then((res => {
+                console.log(res)
+                setBookmarkIcon(<BsBookmarks size={'26px'}/>)
+            }))
         })
     }
 
@@ -164,7 +169,7 @@ const ArticleDetail = () => {
                         <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true} />
                     )
                 }
-                {console.log(article)}
+                {console.log(loggedInProfile)}
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <div className="hidden xl:block">
                         <AuthorBar authorID={article.author} showTipButton={showTipButton()} />
@@ -187,7 +192,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
-                            <Button icon={<BiBookBookmark size={'26px'} />} func={() => bookmarkArticle()} />
+                            <Button icon={bookmarkIcon} func={() => bookmarkArticle()} />
                             <div className={`${article.author_username === loggedInProfile.username ? 'block' : 'hidden'}`}>
                                 <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
                             </div>
@@ -218,7 +223,6 @@ const ArticleDetail = () => {
                                 dislikes={article.sentiment[1]}
                                 likes={article.sentiment[0]}
                                 likePercent={article.sentiment[2]}
-                                gradient={gradient}
                             />
                             <div className='mt-3'>
                                 <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
