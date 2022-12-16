@@ -32,15 +32,6 @@ const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) =>
         return parser(content)
     }
 
-    const setGradient = () => {
-        if (percent === 100) {
-            return 'from-light-green to-light-green'
-        } else if (percent === 0) {
-            return 'from-light-red to-light-red'
-        } else {
-            return 'from-light-red to-light-green'
-        }
-    }
 
     return (
         <>
@@ -67,7 +58,6 @@ const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) =>
                                     likes={likes}
                                     dislikes={dislikes}
                                     likePercent={percent}
-                                    gradient={setGradient()}
                                     miniArticle={true}
                                 />
                             </div>
