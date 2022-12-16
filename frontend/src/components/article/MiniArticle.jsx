@@ -32,7 +32,6 @@ const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) =>
         return parser(content)
     }
 
-
     return (
         <>
             <div>
