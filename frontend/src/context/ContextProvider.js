@@ -85,6 +85,7 @@ export const ContextProvider = ({ children }) => {
         bio: '',
         profile_image: '',
         profile_name: '',
+        notifications: [],
         authored: [],
         reacted: [],
         bookmarked: [],
