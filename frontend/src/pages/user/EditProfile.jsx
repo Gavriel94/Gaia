@@ -75,7 +75,9 @@ const EditProfile = () => {
             bio: loggedInProfile.bio,
             profile_image: loggedInProfile.profile_image,
             profile_name: newDisplayName,
-            authored: loggedInProfile.authored
+            authored: loggedInProfile.authored,
+            reacted: loggedInProfile.reacted,
+            bookmarked: loggedInProfile.bookmarked
         })
 
 
