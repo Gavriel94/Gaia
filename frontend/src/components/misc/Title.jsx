@@ -22,11 +22,11 @@ const Title = ({ text, size, lengthLimit, hover }) => {
     useEffect(() => {
         setDynamicText(text)
         if (lengthLimit && text?.length > 20) {
-            setDynamicSize('text-6xl')
+            setDynamicSize('text-4xl')
             setDynamicText(text?.slice(0, 20) + '...')
         }
         if (lengthLimit && text?.length > 40) {
-            setDynamicSize('text-4xl')
+            setDynamicSize('text-2xl')
         }
     }, [lengthLimit, text])
 
