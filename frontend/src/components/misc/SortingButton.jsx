@@ -149,7 +149,6 @@ const SortingButton = () => {
 
     const handleOpen = () => {
         setOpen(!open)
-        console.log(open)
     }
 
     const menu = [
