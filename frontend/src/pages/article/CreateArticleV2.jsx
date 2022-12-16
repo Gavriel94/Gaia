@@ -60,7 +60,9 @@ const CreateArticleV2 = () => {
 
   const writeTag = (e) => {
     const { key } = e
-    const trimmedInput = tagInput.trim()
+    // const trimmedInput = tagInput.trim()
+    const removePunct = tagInput.replace(/[.,-/#!$%^&*;:{}=\-_`~()@+?><[\]+]/g, '')
+    const trimmedInput = removePunct.replace(/\s{2,}/g, ' ');
 
     if (trimmedInput.length < 2) {
       setTagTooShort(true)
@@ -147,7 +149,9 @@ const CreateArticleV2 = () => {
     newArticle.append('author_username', loggedInProfile.username)
     if (loggedInProfile.profile_name === '') {
       newArticle.append('author_profile_name', loggedInProfile.username)
-    } 
+    } else {
+      newArticle.append('author_profile_name', loggedInProfile.profile_name)
+    }
 
     for (const v of newArticle.values()) {
       console.log('values', v)
@@ -203,7 +207,7 @@ const CreateArticleV2 = () => {
                 <LoadingSpinner />
               </div>
               <div className={`${submitted && 'hidden'} mt-10`}>
-                <Title text={'Submitting'} size={'text-3xl'} hover={true}/>
+                <Title text={'Submitting'} size={'text-3xl'} hover={true} />
               </div>
             </div>
 
@@ -240,20 +244,23 @@ const CreateArticleV2 = () => {
             <div className={`${!loggedInProfile?.sessionToken ? 'hidden' : 'block'}`}>
               <div className='flex justify-center'>
                 <div className='pt-20'>
-                  <Title text={title} size={'text-6xl'} hover={true}/>
+                  <div>
+                    <Title text={title} size={'text-6xl'} hover={true} lengthLimit={true} />
+                  </div>
                   <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
                     <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
                   </div>
                   <div className='flex justify-center mt-20'>
-                    <div className={`rounded-full focus:outline-none hover:bg-light-white  
+                  <div className='cursor-pointer'>
+                  <input type='file' className='opacity-0 w-[100px] h-[45px] cursor-pointer absolute' onChange={handleImageUpload} />
+                  <div className={`rounded-full focus:outline-none hover:bg-light-white  
                     ${imageError ? 'bg-light-red' : 'bg-light-orange dark:bg-dark-orange'}
-                  text-light-white dark:text-white 
-                     w-[100px] py-2 px-4 text-xl font-bold cursor-pointer z-0 absolute content-center`}>
-                      <div className='flex justify-center'>
-                        <BsCardImage size={'26px'} />
+                     w-[100px] py-2 px-4 text-xl font-bold cursor-pointer content-center`}>
+                      <div className='flex justify-center cursor-pointer'>
+                        <BsCardImage size={'26px'} color={'white'}/>
                       </div>
                     </div>
-                    <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} />
+                    </div>
                   </div>
                   <div className={`${previewImage === undefined ? 'block mt-2 xl:hidden' : 'hidden'}`}>
                     <p className={`${darkMode && 'text-white'} flex justify-center`}>
