@@ -355,6 +355,7 @@ const LoginButton = () => {
                 bio: res.data.bio,
                 profile_image: res.data.profile_image,
                 profile_name: res.data.profile_name,
+                notifications: res.data.notifications,
                 authored: res.data.authored,
                 reacted: res.data.reacted,
                 bookmarked: res.data.bookmarked,
