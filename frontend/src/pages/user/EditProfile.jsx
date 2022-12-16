@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import API from '../../API'
-import { Header, SidebarV2, Title, InputField, Button, Editor } from '../../components'
+import { Header, SidebarV2, Title, InputField, Button, Editor, ImageTooLargeAlert, NotImageAlert } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 import { Navigate } from 'react-router-dom'
 import { BsCardImage } from 'react-icons/bs'
@@ -13,7 +13,7 @@ import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
  */
 
 const EditProfile = () => {
-    const { 
+    const {
         loggedInProfile,
         setLoggedInProfile,
         darkMode,
@@ -23,7 +23,11 @@ const EditProfile = () => {
         setDisplayAdaHandle,
         adaHandleDetected,
         adaHandleName,
-     } = useStateContext()
+        imageTooLargeAlert,
+        setImageTooLargeAlert,
+        notImageAlert,
+        setNotImageAlert,
+    } = useStateContext()
 
     const [newDisplayName, setNewDisplayName] = useState('')
     const [newBio, setNewBio] = useState('')
@@ -40,7 +44,13 @@ const EditProfile = () => {
 
     const handleImageUpload = e => {
         if (e.target.files[0].size > 800000) {
-            alert('Image must be less than 8MB')
+            setImageTooLargeAlert(true)
+            return
+        }
+
+        let img = e.target.files[0]
+        if (!img.type.match(/image.*/)) {
+            setNotImageAlert(true)
             return
         }
         setNewImage(e.target.files[0])
@@ -119,7 +129,7 @@ const EditProfile = () => {
                 <div className='pt-20 justify-center mx-autow-full'>
                     <div className='flex justify-center flex-row'>
                         <div>
-                            <Title text={newDisplayName} size={'text-6xl'} hover={true}/>
+                            <Title text={newDisplayName} size={'text-6xl'} hover={true} />
                         </div>
                     </div>
                     <div className='mt-20' />
@@ -131,7 +141,7 @@ const EditProfile = () => {
                         placeholder={'Add a personalised name'} defaultValue={''}
                         onChange={e => handleDisplayName(e.target.value)}
                     />
-                    <Title text={'Write about yourself'} size={'text-2xl'} hover={true}/>
+                    <Title text={'Write about yourself'} size={'text-2xl'} hover={true} />
                     <Editor setContent={setNewBio} />
                     <div>
                         <div>
@@ -153,7 +163,7 @@ const EditProfile = () => {
                         </div>
                         <div className={`${walletUser && adaHandleDetected ? 'block' : 'hidden'}`}>
                             <div className='m-5 flex justify-center'>
-                                <Title text={'Display ADA Handle?'} size={'text-2xl'} hover={true}/>
+                                <Title text={'Display ADA Handle?'} size={'text-2xl'} hover={true} />
                             </div>
                             <div>
                                 {adaHandleName.map(key =>
@@ -176,8 +186,9 @@ const EditProfile = () => {
                         <Button label={'Done'} func={handleSubmit} />
                     </div>
                 </div>
-
             </div>
+            <ImageTooLargeAlert open={imageTooLargeAlert} />
+            <NotImageAlert open={notImageAlert} />
         </>
     )
 }

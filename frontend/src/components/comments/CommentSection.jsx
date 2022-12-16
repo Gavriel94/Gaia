@@ -3,12 +3,11 @@ import API from '../../API'
 import { useStateContext } from '../../context/ContextProvider'
 import { BsReply } from 'react-icons/bs'
 import { BiLike, BiDislike } from 'react-icons/bi'
-import Button from '../misc/Button'
-import InputField from '../misc/InputField'
-import Title from '../misc/Title'
 import { Link } from 'react-router-dom'
 import Modal from 'react-modal'
+import '../../walletModal.css'
 import { MdDeleteForever, MdCheck, MdOutlineCancel } from 'react-icons/md'
+import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert } from '..'
 
 /**
  * 
@@ -20,7 +19,18 @@ import { MdDeleteForever, MdCheck, MdOutlineCancel } from 'react-icons/md'
  */
 
 const CommentSection = ({ articleID }) => {
-    const { loggedInProfile, darkMode } = useStateContext()
+    const {
+        loggedInProfile,
+        darkMode,
+        walletUser,
+        loginAlert,
+        setLoginAlert,
+        alreadySaidAlert,
+        setAlreadySaidAlert,
+        emptyFieldAlert,
+        setEmptyFieldAlert,
+    } = useStateContext()
+
     const [comment, setComment] = useState('')
     const [commentError, setCommentError] = useState(false)
     const [commentSubmitted, setCommentSubmitted] = useState(false)
@@ -67,6 +77,10 @@ const CommentSection = ({ articleID }) => {
     }, [commentSubmitted, deletionConfirmed, articleID, replySubmitted])
 
     const handleSubmit = async () => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         let newComment = new FormData()
         newComment.append('user', loggedInProfile.id)
         newComment.append('article', articleID)
@@ -92,18 +106,14 @@ const CommentSection = ({ articleID }) => {
             })
         } catch (err) {
             if (err.response.status === 400 && comment.length > 1) {
-                alert(`You've already said that!`)
+                setAlreadySaidAlert(true)
                 setCommentError(true)
                 return
             }
             if (err.response.status === 400) {
-                alert('Comment cannot be empty')
+                setEmptyFieldAlert(true)
                 setCommentError(true)
                 return
-            }
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-                setCommentError(true)
             }
         }
     }
@@ -185,6 +195,10 @@ const CommentSection = ({ articleID }) => {
     }
 
     const initReply = (createeID, commentID) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         setCommentUserID(commentID)
         setCreatee(createeID)
         setOpenReplyModal(true)
@@ -230,10 +244,6 @@ const CommentSection = ({ articleID }) => {
             setReplySubmitted(true)
         }).catch(err => {
             console.log(err)
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-                setOpenReplyModal(false)
-            }
         })
     }
 
@@ -356,6 +366,9 @@ const CommentSection = ({ articleID }) => {
                     <Button func={() => cancelResponse()} icon={<MdOutlineCancel size={'26px'} />} />
                 </div>
             </Modal>
+            <LoginAlert open={loginAlert} />
+            <AlreadySaidAlert open={alreadySaidAlert} />
+            <EmptyFieldAlert open={emptyFieldAlert} />
         </div>
     )
 }

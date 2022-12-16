@@ -1,5 +1,5 @@
 import React from 'react'
-import { InputField, Button, Title } from '..'
+import { InputField, Button, Title, LoginAlert } from '..'
 import {
     TransactionOutput,
     TransactionBuilder,
@@ -29,7 +29,7 @@ let Buffer = require('buffer/').Buffer
 
 const TipButton = ({ authorUsername }) => {
 
-    const { connectedWallet, darkMode, walletUser } = useStateContext()
+    const { connectedWallet, darkMode, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const [openModal, setOpenModal] = useState(false)
     const [tipAmount, setTipAmount] = useState('')
     const [amountError, setAmountError] = useState(false)
@@ -132,7 +132,7 @@ const TipButton = ({ authorUsername }) => {
 
     const createTip = () => {
         if(!walletUser) {
-            alert('You must be logged in')
+            setLoginAlert(true)
             return
         }
         setOpenModal(true)
@@ -253,7 +253,7 @@ const TipButton = ({ authorUsername }) => {
                     </div>
                 </div>
             </Modal>
-
+            <LoginAlert open={loginAlert}/>
         </>
     )
 }

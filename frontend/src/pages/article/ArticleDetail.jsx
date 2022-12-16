@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection } from "../../components";
+import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection, LoginAlert } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
@@ -16,7 +16,7 @@ import Modal from 'react-modal'
  */
 
 const ArticleDetail = () => {
-    const { darkMode, loggedInProfile } = useStateContext()
+    const { darkMode, loggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const [article, setArticle] = useState('')
     const [notLoaded, setNotLoaded] = useState(false)
     const { id } = useParams()
@@ -60,6 +60,10 @@ const ArticleDetail = () => {
     }
 
     const handleReaction = async (reaction) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         let userReaction = new FormData()
         userReaction.append('user_id', loggedInProfile.id)
         userReaction.append('article_id', article.id)
@@ -75,9 +79,6 @@ const ArticleDetail = () => {
             })
         } catch (err) {
             console.log(err)
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-            }
             if (err.response.status === 400) {
                 await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
                     headers: {
@@ -103,7 +104,7 @@ const ArticleDetail = () => {
             },
         }).then(res => {
             console.log(res)
-            setBookmarkIcon(<BsBookmarksFill size={'26px'}/>)
+            setBookmarkIcon(<BsBookmarksFill size={'26px'} />)
         }).catch(err => {
             console.log(err)
             API.delete(`articles/bookmark/delete/${article.id}`, {
@@ -113,7 +114,7 @@ const ArticleDetail = () => {
                 },
             }).then((res => {
                 console.log(res)
-                setBookmarkIcon(<BsBookmarks size={'26px'}/>)
+                setBookmarkIcon(<BsBookmarks size={'26px'} />)
             }))
         })
     }
@@ -229,7 +230,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='flex justify-center mt-10 mb-10'>
-                            <CommentSection articleID={article.id}/>
+                            <CommentSection articleID={article.id} />
                         </div>
                     </div>
                 </div>
@@ -257,7 +258,7 @@ const ArticleDetail = () => {
                         </div>
                     </div>
                 </Modal>
-
+                <LoginAlert open={loginAlert} />
             </>
         )
     }

@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Header, SidebarV2, Title, InputField, Button, Editor, LoadingSpinner, TagIcon, LoginButton, ArticleGuideBar } from '../../components'
+import {
+  Header,
+  SidebarV2,
+  Title,
+  InputField,
+  Button,
+  Editor,
+  LoadingSpinner,
+  TagIcon,
+  LoginButton,
+  ArticleGuideBar,
+  ImageTooLargeAlert,
+  NotImageAlert
+} from '../../components'
 import API from '../../API'
 import { useStateContext } from '../../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
@@ -20,7 +33,15 @@ import { MdOutlineCancel } from 'react-icons/md'
 
 const CreateArticleV2 = () => {
 
-  const { darkMode, loggedInProfile, submitted } = useStateContext()
+  const {
+    darkMode,
+    loggedInProfile,
+    submitted,
+    imageTooLargeAlert,
+    setImageTooLargeAlert,
+    notImageAlert,
+    setNotImageAlert,
+  } = useStateContext()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
@@ -116,13 +137,13 @@ const CreateArticleV2 = () => {
 
   const handleImageUpload = async e => {
     if (e.target.files[0].size > 800000) {
-      alert('Image must be less than 8MB')
+      setImageTooLargeAlert(true)
       return
     }
 
     let img = e.target.files[0]
     if (!img.type.match(/image.*/)) {
-      alert('File is not an image')
+      setNotImageAlert(true)
       return
     }
 
@@ -251,15 +272,15 @@ const CreateArticleV2 = () => {
                     <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
                   </div>
                   <div className='flex justify-center mt-20'>
-                  <div className='cursor-pointer'>
-                  <input type='file' className='opacity-0 w-[100px] h-[45px] cursor-pointer absolute' onChange={handleImageUpload} />
-                  <div className={`rounded-full focus:outline-none hover:bg-light-white  
+                    <div className='cursor-pointer'>
+                      <input type='file' className='opacity-0 w-[100px] h-[45px] cursor-pointer absolute' onChange={handleImageUpload} />
+                      <div className={`rounded-full focus:outline-none hover:bg-light-white  
                     ${imageError ? 'bg-light-red' : 'bg-light-orange dark:bg-dark-orange'}
                      w-[100px] py-2 px-4 text-xl font-bold cursor-pointer content-center`}>
-                      <div className='flex justify-center cursor-pointer'>
-                        <BsCardImage size={'26px'} color={'white'}/>
+                        <div className='flex justify-center cursor-pointer'>
+                          <BsCardImage size={'26px'} color={'white'} />
+                        </div>
                       </div>
-                    </div>
                     </div>
                   </div>
                   <div className={`${previewImage === undefined ? 'block mt-2 xl:hidden' : 'hidden'}`}>
@@ -343,6 +364,8 @@ const CreateArticleV2 = () => {
           </div>
         </>
       }
+      <ImageTooLargeAlert open={imageTooLargeAlert} />
+      <NotImageAlert open={notImageAlert} />
     </>
   )
 }

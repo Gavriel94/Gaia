@@ -10,9 +10,10 @@ import { useStateContext } from '../../context/ContextProvider'
 import { MdCheck, MdOutlineCancel } from 'react-icons/md'
 import InputField from '../misc/InputField'
 import API from '../../API'
+import LoginAlert from '../alerts/LoginAlert'
 
 const DisplayComment = ({ commentID, userID, userProfileName, userImage, comment, date, replies }) => {
-    const { darkMode, loggedInProfile } = useStateContext()
+    const { darkMode, loggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const [openReplyModal, setOpenReplyModal] = useState(false)
     const [response, setResponse] = useState('')
     const [responseError, setResponseError] = useState(false)
@@ -43,6 +44,10 @@ const DisplayComment = ({ commentID, userID, userProfileName, userImage, comment
     }
 
     const submitResponse = async () => {
+        if(!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         let userResponse = new FormData()
         userResponse.append('comment', commentID)
         userResponse.append('createe', userID)
@@ -63,10 +68,6 @@ const DisplayComment = ({ commentID, userID, userProfileName, userImage, comment
             setOpenReplyModal(false)
         }).catch(err => {
             console.log(err)
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-                setOpenReplyModal(false)
-            }
         })
     }
 
@@ -171,6 +172,7 @@ const DisplayComment = ({ commentID, userID, userProfileName, userImage, comment
                     <Button func={() => cancelResponse()} icon={<MdOutlineCancel size={'26px'} />} />
                 </div>
             </Modal>
+            <LoginAlert open={loginAlert}/>
         </>
     )
 }

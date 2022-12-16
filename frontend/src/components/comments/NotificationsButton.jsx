@@ -4,10 +4,12 @@ import { IoMdNotificationsOutline, IoMdNotifications } from 'react-icons/io'
 import { useStateContext } from '../../context/ContextProvider'
 import { MdOutlineCancel } from 'react-icons/md'
 import Title from '../misc/Title'
-import { Link, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import API from '../../API'
+import LoginAlert from '../alerts/LoginAlert'
+
 const NotificationsButton = () => {
-    const { loggedInProfile, setLoggedInProfile, walletUser } = useStateContext()
+    const { loggedInProfile, setLoggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const [openNotifications, setOpenNotifications] = useState(false)
     const [openEmpty, setOpenEmpty] = useState(false)
     const [viewComment, setViewComment] = useState(false)
@@ -18,8 +20,8 @@ const NotificationsButton = () => {
     }
 
     const handleOpenEmpty = () => {
-        if (!walletUser) {
-            alert('Login to see notifications')
+        if(!walletUser) {
+            setLoginAlert(true)
             return
         }
         setOpenEmpty(!openEmpty)
@@ -130,6 +132,7 @@ const NotificationsButton = () => {
                     </div>
                 )
             }
+            <LoginAlert open={loginAlert}/>
         </>
     )
 }

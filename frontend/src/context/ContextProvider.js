@@ -55,6 +55,15 @@ export const ContextProvider = ({ children }) => {
     const [submitted, setSubmitted] = useState(false) //Used for displaying loading pages
 
     /**
+     * Used for opening alerts throughout Gaia
+     */
+    const [loginAlert, setLoginAlert] = useState(false)
+    const [alreadySaidAlert, setAlreadySaidAlert] = useState(false)
+    const [emptyFieldAlert, setEmptyFieldAlert] = useState(false)
+    const [imageTooLargeAlert, setImageTooLargeAlert] = useState(false)
+    const [notImageAlert, setNotImageAlert] = useState(false)
+
+    /**
      * State variables for connecting a wallet
      * When the wallet connects it returns a connector written to the API variable
      * All further operations on the wallet at performed using this variable
@@ -133,6 +142,11 @@ export const ContextProvider = ({ children }) => {
                 walletUser, setWalletUser,
                 adaHandleDetected, setadaHandleDetected,
                 adaHandleName, setadaHandleName,
+                loginAlert, setLoginAlert,
+                alreadySaidAlert, setAlreadySaidAlert,
+                emptyFieldAlert, setEmptyFieldAlert,
+                imageTooLargeAlert, setImageTooLargeAlert,
+                notImageAlert, setNotImageAlert,
             }}
         >
             {children}

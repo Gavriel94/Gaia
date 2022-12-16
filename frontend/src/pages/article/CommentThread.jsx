@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import API from '../../API';
 import { useStateContext } from '../../context/ContextProvider';
-import { Button, InputField, Title, Header, SidebarV2 } from '../../components';
+import { Button, InputField, Title, Header, SidebarV2, LoginAlert } from '../../components';
 import { BsReply } from 'react-icons/bs'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { MdDeleteForever, MdOutlineCancel, MdCheck } from 'react-icons/md'
@@ -15,7 +15,7 @@ import Modal from 'react-modal'
  */
 
 const CommentThread = () => {
-    const { darkMode, loggedInProfile } = useStateContext()
+    const { darkMode, loggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const { id } = useParams()
     const [originalPost, setOriginalPost] = useState('')
     const [replies, setReplies] = useState([])
@@ -82,6 +82,10 @@ const CommentThread = () => {
     }
 
     const submitResponse = async () => {
+        if(!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         let userResponse = new FormData()
         userResponse.append('user', loggedInProfile.id)
         userResponse.append('reply', originalPost.id)
@@ -104,9 +108,7 @@ const CommentThread = () => {
             setResponse('')
         }).catch(err => {
             console.log(err)
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-            }
+
         })
     }
 
@@ -133,10 +135,6 @@ const CommentThread = () => {
             setReplyToResponseSubmitted(true)
         }).catch(err => {
             console.log(err)
-            if (err.response.status === 401) {
-                alert('You must be logged in')
-                setOpenReplyModal(false)
-            }
         })
     }
 
@@ -164,6 +162,10 @@ const CommentThread = () => {
     }
 
     const initReplyToResponse = (commentID, commentCreateeID) => {
+        if(!walletUser) {
+            setLoginAlert(true)
+            return
+        }
         setCommentUserID(commentID)
         setCommentCreatee(commentCreateeID)
         setOpenReplyModal(true)
@@ -357,6 +359,7 @@ const CommentThread = () => {
                     <Button func={() => cancelResponse()} icon={<MdOutlineCancel size={'26px'} />} />
                 </div>
             </Modal>
+            <LoginAlert open={loginAlert}/>
         </>
     )
 }
