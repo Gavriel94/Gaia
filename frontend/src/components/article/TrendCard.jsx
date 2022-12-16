@@ -27,10 +27,9 @@ const TrendCard = ({ image, imageAlt, title, tags }) => {
             bg-light-orange dark:bg-dark-orange
             hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover'>
                     <div className='justify-center grid grid-cols-3 space-x-2'>
-                        <img className='rounded-t-lg'
+                        <img className='rounded-lg'
                             src={image}
                             alt={imageAlt}
-
                         />
                         <p className='col-span-2 flex-shrink font-medium'>
                             {capitalize(title)}
