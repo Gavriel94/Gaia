@@ -61,7 +61,6 @@ const UserProfile = () => {
         liked.push(profileData.reacted[i].article_id)
       }
     }
-    console.log(liked)
     setShowArticles(liked)
   }
 
@@ -142,7 +141,6 @@ const UserProfile = () => {
         <div className={`${profileData.profile_name === null ? 'hidden' : 'block'} pt-20 flex justify-center dark:text-white`}>
           <Title text={profileData.profile_name} size={'text-3xl'} lengthLimit={true} hover={true}/>
         </div>
-
         <div className='grid grid-cols-1'>
 
           <div className='mt-10 flex justify-center'>
