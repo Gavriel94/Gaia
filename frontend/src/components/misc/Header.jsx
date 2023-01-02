@@ -18,7 +18,7 @@ import { IoArrowBack } from 'react-icons/io5'
  */
 
 const Header = ({ page }) => {
-    const { darkMode, setDarkMode, showErrorAlert } = useStateContext();
+    const { darkMode, setDarkMode, showErrorAlert, walletUser } = useStateContext();
     const [showSkipButton, setShowSkipButton] = useState(true)
     let history = useNavigate()
 
@@ -53,11 +53,20 @@ const Header = ({ page }) => {
                         <div className={`${page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'block pr-2 py-3' : page === 'thread' ? 'block pr-2 py-3' : 'hidden'}`}>
                             <Button label={'Back'} labelProps={'text-sm pt-1 pl-2'} icon={<IoArrowBack size={'26px'} />} func={() => history(-1)} />
                         </div>
-                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'pr-2 py-3'}`}>
+                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'py-3 pr-2'}`}>
                             <LoginButton />
                         </div>
-                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'block pr-2 py-3'}`}>
+                        <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : walletUser === false ? 'hidden' : 'block pr-2 py-3'}`}>
                             <NotificationsButton />
+                        </div>
+                        <div className={`${showErrorAlert ? 'hidden' : page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : 'py-3'}`}>
+                            <Button
+                                title={'mode-toggle'}
+                                func={() => {
+                                    setDarkMode(!darkMode);
+                                }}
+                                icon={darkMode === false ? <BsMoon size={'26px'} /> : <BsSun size={'26px'} />}
+                            />
                         </div>
                         <div className={`${page !== 'landing' && 'hidden'} py-3 ${!showSkipButton && 'hidden'}`}>
                             <Link to={'/home'}>
@@ -70,15 +79,6 @@ const Header = ({ page }) => {
                                     </div>
                                 </button>
                             </Link>
-                        </div>
-                        <div className={`${showErrorAlert ? 'hidden' : page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : 'py-3'}`}>
-                            <Button
-                                title={'mode-toggle'}
-                                func={() => {
-                                    setDarkMode(!darkMode);
-                                }}
-                                icon={darkMode === false ? <BsMoon size={'26px'} /> : <BsSun size={'26px'} />}
-                            />
                         </div>
                     </div>
                 </div>
