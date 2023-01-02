@@ -20,7 +20,7 @@ const NotImageAlert = ({ open }) => {
             <div className='text-2xl font-bold 
         text-light-white
         transition-colors duration-500 select-none text-center m-4'>
-                Incorrect image type upload
+                Incorrect image file type
             </div>
             <div className='flex flex-row justify-center mt-5 space-x-5'>
                 <Button func={() => setNotImageAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
