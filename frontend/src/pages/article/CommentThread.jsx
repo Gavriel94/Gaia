@@ -227,8 +227,8 @@ const CommentThread = () => {
         <>
             <Header page={'thread'} />
             <SidebarV2 />
-            <div className='flex justify-center mb-10'>
-                <div className='mt-36'>
+            <div className='flex justify-center'>
+                <div className='mt-36 pb-10'>
                     <div className=''>
                         <div className='flex flex-row justify-center'>
                             <Link to={`/profiles/${originalPost?.user?.id}`} style={{ textDecoration: 'none' }}>
