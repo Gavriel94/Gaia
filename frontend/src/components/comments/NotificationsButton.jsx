@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import Button from '../misc/Button'
 import { IoMdNotificationsOutline, IoMdNotifications } from 'react-icons/io'
 import { useStateContext } from '../../context/ContextProvider'
-import { MdOutlineCancel } from 'react-icons/md'
+import { MdRefresh, MdOutlineCancel } from 'react-icons/md'
 import Title from '../misc/Title'
 import { Navigate } from 'react-router-dom'
 import API from '../../API'
 import LoginAlert from '../alerts/LoginAlert'
+import LoadingSpinner from '../misc/LoadingSpinner'
+
 
 const NotificationsButton = () => {
     const { loggedInProfile, setLoggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
@@ -14,13 +16,14 @@ const NotificationsButton = () => {
     const [openEmpty, setOpenEmpty] = useState(false)
     const [viewComment, setViewComment] = useState(false)
     const [commentID, setCommentID] = useState('')
+    const [refreshButton, setRefreshButton] = useState(<MdRefresh size={'26px'} />)
 
     const handleOpenNotifications = () => {
         setOpenNotifications(!openNotifications)
     }
 
     const handleOpenEmpty = () => {
-        if(!walletUser) {
+        if (!walletUser) {
             setLoginAlert(true)
             return
         }
@@ -38,7 +41,7 @@ const NotificationsButton = () => {
         }
         else {
             return (
-                <Button icon={<IoMdNotifications size={'26px'} />} notification='true' func={() => { handleOpenNotifications() }} />
+                <Button icon={<IoMdNotifications size={'26px'} />} notification='true' func={() =>  handleOpenNotifications() } />
             )
         }
     }
@@ -56,11 +59,11 @@ const NotificationsButton = () => {
             let newNotificationsArray = loggedInProfile.notifications
             console.log(newNotificationsArray)
             let index = -1
-            for(let i = 0; i < newNotificationsArray.length; i++) {
+            for (let i = 0; i < newNotificationsArray.length; i++) {
                 if (newNotificationsArray[i].id === notificationID) {
                     index = i
                 }
-            } 
+            }
             if (index > -1) { // item is found
                 newNotificationsArray.splice(index, 1)
             }
@@ -71,10 +74,44 @@ const NotificationsButton = () => {
                 bio: loggedInProfile.bio,
                 profile_image: loggedInProfile.profile_image,
                 profile_name: loggedInProfile.profile_name,
+                authored: loggedInProfile.authored,
+                reacted: loggedInProfile.reacted,
+                bookmarked: loggedInProfile.bookmarked,
                 notifications: newNotificationsArray
             })
             setViewComment(true)
         }).catch(console.err)
+    }
+
+    const refreshNotifications = async () => {
+        setRefreshButton(<LoadingSpinner />)
+
+        console.log('pre-refresh', loggedInProfile)
+
+        await API.get(`profile/notification/get/${loggedInProfile.id}`, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then((res) => {
+            console.log(res)
+            setLoggedInProfile({
+                sessionToken: loggedInProfile.sessionToken,
+                id: loggedInProfile.id,
+                username: loggedInProfile.username,
+                bio: loggedInProfile.bio,
+                profile_image: loggedInProfile.profile_image,
+                profile_name: loggedInProfile.profile_name,
+                authored: loggedInProfile.authored,
+                reacted: loggedInProfile.reacted,
+                bookmarked: loggedInProfile.bookmarked,
+                notifications: res.data
+            })
+            setRefreshButton(<MdRefresh size={'26px'} />)
+            console.log('post-refresh', loggedInProfile)
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     return (
@@ -87,25 +124,28 @@ const NotificationsButton = () => {
             }
             {
                 openEmpty && (
-                    <div className='bg-white dark:bg-dark-grey dark:text-white opacity-100 p-5 mt-20 rounded-lg w-100 h-[200px]'>
+                    <div className='bg-white dark:bg-dark-grey dark:text-white opacity-100 p-5 mt-20 rounded-lg w-100 h-[200px] border-1 border-black'>
                         <div className='flex justify-center'>
-                        <Title text={'Empty'} size={'text-xl'} />
+                            <Title text={'No notifications'} size={'text-xl'} />
                         </div>
-                        <div className='flex justify-center mt-5'>
-                            <Button icon={<MdOutlineCancel size={'26px'} />} func={() => handleOpenEmpty()} />
+                        <div className='flex flex-row mt-5 justify-center space-x-2'>
+                            <div className=''>
+                                <Button icon={refreshButton} func={() => refreshNotifications()} />
+                            </div>
+
+                            <div className=''>
+                                <Button icon={<MdOutlineCancel size={'26px'} />} func={() => handleOpenEmpty()} />
+                            </div>
                         </div>
                     </div>
                 )
             }
             {
                 openNotifications && (
-                    <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-40 rounded-lg w-100 h-[300px] overflow-scroll'>
+                    <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-40 rounded-lg w-100 h-[300px] overflow-scroll border-1 border-black dark:border-white'>
                         {loggedInProfile.notifications.map((notification) => (
                             <div key={notification.message.id} className='mt-2'>
                                 {console.log(notification)}
-                                {/* <Link
-                            to={`/articles/comments/${notification.message.id}`}
-                            style={{ textDecoration: 'none' }}> */}
                                 <button
                                     className='w-full border-1 border-light-orange dark:border-dark-orange rounded-xl mt-5'
                                     type="button"
@@ -123,16 +163,18 @@ const NotificationsButton = () => {
                                         {notification.message.comment}
                                     </div>
                                 </button>
-                                {/* </Link> */}
                             </div>
                         ))}
+                        <div className='flex justify-center'>
+                            <Button icon={refreshButton} func={() => refreshNotifications()} />
+                        </div>
                         <div className='flex justify-center mt-5'>
                             <Button icon={<MdOutlineCancel size={'26px'} />} func={() => handleOpenNotifications()} />
                         </div>
                     </div>
                 )
             }
-            <LoginAlert open={loginAlert}/>
+            <LoginAlert open={loginAlert} />
         </>
     )
 }
