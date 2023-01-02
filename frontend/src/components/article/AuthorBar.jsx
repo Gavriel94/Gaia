@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Title from '../misc/Title'
 import { Link } from 'react-router-dom'
 import API from '../../API'
-import TipButton from '../user/TipButton'
+import TipButton from '../buttons/TipButton'
 
 /**
  * 
