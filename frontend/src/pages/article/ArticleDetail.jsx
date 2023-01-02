@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection, LoginAlert } from "../../components";
+import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection, LoginAlert, BookmarkButton } from "../../components";
 import API from '../../API'
 import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
 import { ArticleLoading } from "../../components";
@@ -7,7 +7,6 @@ import { useStateContext } from "../../context/ContextProvider";
 import parser from 'html-react-parser'
 import AuthorBar from "../../components/article/AuthorBar";
 import { BiLike, BiDislike } from 'react-icons/bi'
-import { BsBookmarksFill, BsBookmarks } from 'react-icons/bs'
 import { MdDeleteForever, MdCheck, MdOutlineCancel } from "react-icons/md";
 import Modal from 'react-modal'
 
@@ -31,7 +30,6 @@ const ArticleDetail = () => {
     const [buttonClick, setButtonClick] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(false)
     const [deletionConfirmed, setDeletionConfirmed] = useState(false)
-    const [bookmarkIcon, setBookmarkIcon] = useState(<BsBookmarks size={'26px'} />)
 
     useEffect(() => {
         const articleDetail = async () => {
@@ -90,33 +88,6 @@ const ArticleDetail = () => {
                 }))
             }
         }
-    }
-
-    const bookmarkArticle = async () => {
-        let bookmarkArticle = new FormData()
-        bookmarkArticle.append('user', loggedInProfile.id)
-        bookmarkArticle.append('article', article.id)
-
-        await API.post(`/articles/bookmark/${article.id}/`, bookmarkArticle, {
-            headers: {
-                'Authorization': `Token ${loggedInProfile.sessionToken}`,
-                'Content-Type': 'multipart/form-data',
-            },
-        }).then(res => {
-            console.log(res)
-            setBookmarkIcon(<BsBookmarksFill size={'26px'} />)
-        }).catch(err => {
-            console.log(err)
-            API.delete(`articles/bookmark/delete/${article.id}`, {
-                headers: {
-                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            }).then((res => {
-                console.log(res)
-                setBookmarkIcon(<BsBookmarks size={'26px'} />)
-            }))
-        })
     }
 
     const handleDelete = async () => {
@@ -193,7 +164,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
-                            <Button icon={bookmarkIcon} func={() => bookmarkArticle()} />
+                            <BookmarkButton articleID={article.id} preview_image={article.preview_image} title={article.title}/>
                             <div className={`${article.author_username === loggedInProfile.username ? 'block' : 'hidden'}`}>
                                 <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
                             </div>
