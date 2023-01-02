@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 
 /**
  * This is a bar which floats next to the article creation portal
- * The icons change from a quill to a tick when the user fills the appropraite input
+ * The icons change from a quill to a tick when the user fills the appropriate input
  * The bar also contains a link to the full article guide which entails the ToS
  * 
  * @param {string} title
