@@ -6,12 +6,12 @@ import Button from '../misc/Button'
 import { MdOutlineCancel } from 'react-icons/md'
 
 const EmptyFieldAlert = ({ open }) => {
-    const { setShowEmptyFieldAlert, darkMode } = useStateContext()
+    const { setEmptyFieldAlert, darkMode } = useStateContext()
 
     return (
         <Modal
             isOpen={open}
-            onRequestClose={() => setShowEmptyFieldAlert(false)}
+            onRequestClose={() => setEmptyFieldAlert(false)}
             contentLabel="Reply"
             ariaHideApp={false}
             className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
@@ -23,7 +23,7 @@ const EmptyFieldAlert = ({ open }) => {
                 Field cannot be empty
             </div>
             <div className='flex flex-row justify-center mt-5 space-x-5'>
-                <Button func={() => setShowEmptyFieldAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
+                <Button func={() => setEmptyFieldAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
             </div>
         </Modal>
     )
