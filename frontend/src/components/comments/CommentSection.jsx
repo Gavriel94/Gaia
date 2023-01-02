@@ -14,8 +14,6 @@ import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAler
  * @param {String} articleID - ID of the parent article
  *  
  * @returns Comment section with ability to -----
- * 
- * TODO: ! ** Either figure out how to filter is_reply by boolean or do it with a CharField with binary 0/1 values ** !
  */
 
 const CommentSection = ({ articleID }) => {
@@ -153,7 +151,6 @@ const CommentSection = ({ articleID }) => {
     }
 
     const showReplies = (replies, commentID) => {
-        console.log(replies)
         if (replies.length === 1) {
             return (
                 <div className='mt-2'>
