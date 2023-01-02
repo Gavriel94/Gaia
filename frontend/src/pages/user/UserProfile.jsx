@@ -99,6 +99,7 @@ const UserProfile = () => {
   else {
     return (
       <>
+      {console.log(loggedInProfile)}
         <div className='fixed justify-center m-auto left-0 right-0'>
           {/* <ProfileArticleBar header={'Articles Written'} articles={profileData.authored} /> */}
           <div>
@@ -110,7 +111,6 @@ const UserProfile = () => {
                 </div>
                 {showArticles.map((article) => (
                   <div className='pt-4 grid grid-cols-1 gap-y-4' key={article.id}>
-                    {console.log(article)}
                     <ProfileArticle
                       id={article.id}
                       title={article.title}
