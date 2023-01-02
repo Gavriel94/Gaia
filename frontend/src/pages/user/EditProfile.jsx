@@ -31,7 +31,10 @@ const EditProfile = () => {
 
     const [newDisplayName, setNewDisplayName] = useState('')
     const [newBio, setNewBio] = useState('')
-    const [newImage, setNewImage] = useState(undefined)
+    const [previewImage, setPreviewImage] = useState(undefined)
+    const [showPreview, setShowPreview] = useState(undefined)
+    const [imageError, setImageError] = useState(false)
+    const [imageErrorMessage, setImageErrorMessage] = useState('')
     const [updateSuccess, setUpdateSuccess] = useState(false)
 
     const handleBio = (e) => {
@@ -42,18 +45,31 @@ const EditProfile = () => {
         setNewDisplayName(e)
     }
 
-    const handleImageUpload = e => {
-        if (e.target.files[0].size > 800000) {
-            setImageTooLargeAlert(true)
+    const handleImageUpload = async e => {
+        setShowPreview(undefined)
+        setImageError(false)
+        setImageErrorMessage('')
+        let image = e.target.files[0]
+        console.log(image)
+
+        if (image.size > 800000) {
+            setImageError(true)
+            setImageErrorMessage('Image must be less than 8MB')
             return
         }
 
-        let img = e.target.files[0]
-        if (!img.type.match(/image.*/)) {
-            setNotImageAlert(true)
+        let imageRegEx = /(\.gif|\.jpeg|\.jpg|\.tiff?|\.png|\.webp|\.bmp)$/
+        let imageValid = imageRegEx.test(image.name)
+        console.log(imageValid)
+        if (!imageValid) {
+            setImageError(true)
+            setImageErrorMessage('No image found. File must end with .gif / .jpeg / .jpg / .tiff / .png / .webp / .bmp.')
             return
         }
-        setNewImage(e.target.files[0])
+
+
+        setPreviewImage(image)
+        setShowPreview(URL.createObjectURL(image))
     }
 
     const handleAdaHandleSelect = (obj) => {
@@ -71,31 +87,36 @@ const EditProfile = () => {
             updatedProfile.append('bio', newBio)
         }
 
-        if (newImage !== undefined) {
-            updatedProfile.append('profile_image', newImage)
+        if (previewImage !== undefined) {
+            updatedProfile.append('profile_image', previewImage)
         }
 
         if (newDisplayName !== null) {
             updatedProfile.append('profile_name', newDisplayName)
         }
-        setLoggedInProfile({
-            sessionToken: loggedInProfile.sessionToken,
-            id: loggedInProfile.id,
-            username: loggedInProfile.username,
-            bio: loggedInProfile.bio,
-            profile_image: loggedInProfile.profile_image,
-            profile_name: newDisplayName,
-            authored: loggedInProfile.authored,
-            reacted: loggedInProfile.reacted,
-            bookmarked: loggedInProfile.bookmarked
-        })
+
+        console.log('pre loggedInProfile', loggedInProfile)
+
+        // setLoggedInProfile({
+        //     sessionToken: loggedInProfile.sessionToken,
+        //     id: loggedInProfile.id,
+        //     username: loggedInProfile.username,
+        //     bio: loggedInProfile.bio,
+        //     profile_image: loggedInProfile.profile_image,
+        //     profile_name: newDisplayName,
+        //     authored: loggedInProfile.authored,
+        //     reacted: loggedInProfile.reacted,
+        //     bookmarked: loggedInProfile.bookmarked,
+        //     notifications: loggedInProfile.notifications
+        // })
+        setLoggedInProfile({...loggedInProfile, ...updatedProfile})
 
 
         for (const v of updatedProfile.values()) {
             console.log('values', v)
         }
 
-        console.log('loggedInProfile', loggedInProfile)
+        console.log('post loggedInProfile', loggedInProfile)
 
         try {
             await API.patch(`/profile/user/${loggedInProfile.id}/update/`, updatedProfile, {
@@ -127,40 +148,41 @@ const EditProfile = () => {
             </div>
             <div className={`flex justify-center ${darkMode ? '' : ''}`}>
                 <div className='pt-20 justify-center mx-autow-full'>
-                    <div className='flex justify-center flex-row'>
-                        <div>
-                            <Title text={newDisplayName} size={'text-6xl'} hover={true} />
+                    <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
+                        <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
+                    </div>
+                    <div className='flex justify-center mt-10'>
+
+                        <div className='cursor-pointer'>
+                            <input type='file' className='opacity-0 w-[100px] h-[45px] cursor-pointer absolute' onChange={handleImageUpload} />
+                            <div className={`rounded-full focus:outline-none hover:bg-light-white  
+                    ${imageError ? 'bg-light-red' : 'bg-light-orange dark:bg-dark-orange'}
+                     w-[100px] py-2 px-4 text-xl font-bold cursor-pointer content-center`}>
+                                <div className='flex justify-center cursor-pointer'>
+                                    <BsCardImage size={'26px'} color={'white'} />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className='mt-20' />
-                    {/* <div className={`${newImage !== undefined ? 'flex justify-center m-5' : 'hidden'}`}>
-                        <img src={newImage} alt={'New user profile'} height={'26px'} width={'26px'}/>
-                    </div> */}
+                    <div className={`${imageError ? 'flex justify-center dark:text-white mt-5' : 'hidden'}`}>
+                        {imageErrorMessage}
+                    </div>
+                    <div className='flex justify-center flex-row mt-5'>
+                        <div>
+                            <Title text={newDisplayName} size={'text-6xl'} hover={true} lengthLimit={true} />
+                        </div>
+                    </div>
+                    <div className='mt-5' />
                     <InputField
                         required={false} type={'input'}
                         placeholder={'Add a personalised name'} defaultValue={''}
                         onChange={e => handleDisplayName(e.target.value)}
                     />
-                    <Title text={'Write about yourself'} size={'text-2xl'} hover={true} />
+                    <div className='mt-10' />
+                    <Title text={'Bio'} size={'text-2xl'} hover={true} />
+                    <div className='mt-5' />
                     <Editor setContent={setNewBio} />
                     <div>
-                        <div>
-                            <div className='flex justify-center mt-10 mb-5'>
-                                <div className='rounded-full focus:outline-none cursor-pointer
-                                    bg-light-orange hover:bg-light-white  
-                                    text-light-white dark:bg-dark-orange dark:text-white 
-                                    py-2 px-4 text-xl font-bold z-0 absolute content-center'
-                                >
-                                    <div className='flex justify-center cursor-pointer'>
-                                        <BsCardImage size={'26px'} />
-                                        <div className='pl-2 text-base cursor-pointer'>
-                                            Edit profile picture
-                                        </div>
-                                    </div>
-                                </div>
-                                <input type='file' className='opacity-0 z-10 w-[100px] h-[50px] cursor-pointer' onChange={handleImageUpload} required={false} />
-                            </div>
-                        </div>
                         <div className={`${walletUser && adaHandleDetected ? 'block' : 'hidden'}`}>
                             <div className='m-5 flex justify-center'>
                                 <Title text={'Display ADA Handle?'} size={'text-2xl'} hover={true} />
