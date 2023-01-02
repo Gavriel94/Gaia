@@ -25,9 +25,6 @@ const Title = ({ text, size, lengthLimit, hover }) => {
             setDynamicSize('text-4xl')
             setDynamicText(text?.slice(0, 20) + '...')
         }
-        if (lengthLimit && text?.length > 40) {
-            setDynamicSize('text-2xl')
-        }
     }, [lengthLimit, text])
 
 
