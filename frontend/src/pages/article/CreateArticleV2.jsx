@@ -11,14 +11,13 @@ import {
   TagIcon,
   LoginButton,
   ArticleGuideBar,
-  ImageTooLargeAlert,
-  NotImageAlert
 } from '../../components'
 import API from '../../API'
 import { useStateContext } from '../../context/ContextProvider'
 import { RiQuillPenLine } from 'react-icons/ri'
 import { BsCardImage } from 'react-icons/bs'
 import { MdOutlineCancel } from 'react-icons/md'
+import Modal from 'react-modal'
 
 /**
  * Provides an interface for the user to write an article and submit it to the database
@@ -37,11 +36,8 @@ const CreateArticleV2 = () => {
     darkMode,
     loggedInProfile,
     submitted,
-    imageTooLargeAlert,
-    setImageTooLargeAlert,
-    notImageAlert,
-    setNotImageAlert,
   } = useStateContext()
+
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
@@ -60,9 +56,13 @@ const CreateArticleV2 = () => {
   const [ID, setID] = useState('')
 
   const [imageError, setImageError] = useState(false)
+  const [imageErrorMessage, setImageErrorMessage] = useState('')
   const [titleError, setTitleError] = useState(false)
   const [contentError, setContentError] = useState(false)
   const [tagsError, setTagsError] = useState(false)
+
+  const [openErrorAlert, setOpenErrorAlert] = useState(false)
+  const [errors, setErrors] = useState([])
 
   const handleTitle = (e) => {
     setTitle(e)
@@ -136,23 +136,30 @@ const CreateArticleV2 = () => {
   }
 
   const handleImageUpload = async e => {
-    if (e.target.files[0].size > 800000) {
-      setImageTooLargeAlert(true)
+    setShowPreview(undefined)
+    setImageError(false)
+    setImageErrorMessage('')
+    let image = e.target.files[0]
+    console.log(image)
+
+    if (image.size > 800000) {
+      setImageError(true)
+      setImageErrorMessage('Image must be less than 8MB')
+      return
+    } 
+  
+    let imageRegEx = /(\.gif|\.jpeg|\.jpg|\.tiff?|\.png|\.webp|\.bmp)$/
+    let imageValid = imageRegEx.test(image.name)
+    console.log(imageValid)
+    if (!imageValid) {
+      setImageError(true)
+      setImageErrorMessage('No image found. File must end with .gif / .jpeg / .jpg / .tiff / .png / .webp / .bmp.')
       return
     }
 
-    let img = e.target.files[0]
-    if (!img.type.match(/image.*/)) {
-      setNotImageAlert(true)
-      return
-    }
 
-
-    setPreviewImage(img)
-    setShowPreview(URL.createObjectURL(img))
-    if (imageError) {
-      setImageError(false)
-    }
+    setPreviewImage(image)
+    setShowPreview(URL.createObjectURL(image))
   }
 
   const handleSubmit = async () => {
@@ -195,25 +202,32 @@ const CreateArticleV2 = () => {
         setIDSet(true)
       })
     } catch (err) {
+      let collectErrors = []
       console.log(err.response.data)
       for (let v in err.response.data) {
         if (v === 'preview_image') {
           setImageError(true)
+          collectErrors.push(imageErrorMessage)
           console.log('Image error')
         }
         if (v === 'title') {
           setTitleError(true)
+          collectErrors.push('Title is empty')
           console.log('Title error')
         }
         if (v === 'content') {
           setContentError(true)
-          console.log('Content error')
+          collectErrors.push('Content is empty')
+          console.log('Content is empty')
         }
         if (v === 'tags') {
           setTagsError(true)
+          collectErrors.push('Tags Error')
           console.log('Tags error')
         }
       }
+      setErrors(collectErrors)
+      setOpenErrorAlert(true)
       setSubmit(false)
     }
   }
@@ -231,7 +245,6 @@ const CreateArticleV2 = () => {
                 <Title text={'Submitting'} size={'text-3xl'} hover={true} />
               </div>
             </div>
-
           </>
         )
       }
@@ -282,6 +295,9 @@ const CreateArticleV2 = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className={`${imageError ? 'flex justify-center dark:text-white mt-5' : 'hidden'}`}>
+                    {imageErrorMessage}
                   </div>
                   <div className={`${previewImage === undefined ? 'block mt-2 xl:hidden' : 'hidden'}`}>
                     <p className={`${darkMode && 'text-white'} flex justify-center`}>
@@ -364,8 +380,28 @@ const CreateArticleV2 = () => {
           </div>
         </>
       }
-      <ImageTooLargeAlert open={imageTooLargeAlert} />
-      <NotImageAlert open={notImageAlert} />
+      <Modal
+        isOpen={openErrorAlert}
+        onRequestClose={() => setOpenErrorAlert(false)}
+        contentLabel="Reply"
+        ariaHideApp={false}
+        className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+        overlayClassName={'overlayModal'}
+      >
+        <div className='text-2xl font-bold 
+        text-light-white
+        transition-colors duration-500 select-none text-center m-4'>
+          {
+            errors.map((error) => (
+              <div className='mt-2'>
+                {error}
+              </div>
+            ))}
+        </div>
+        <div className='flex flex-row justify-center mt-5 space-x-5'>
+          <Button func={() => setOpenErrorAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
+        </div>
+      </Modal>
     </>
   )
 }
