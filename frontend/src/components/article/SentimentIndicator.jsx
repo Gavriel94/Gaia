@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SentimentIndicator = ({ dislikes, likes, likePercent }) => {
+const SentimentIndicator = ({ dislikes, likes, likePercent, miniArticle }) => {
 
     const calculateIndicatorGradient = () => {
         if (likePercent === 100) {
@@ -20,7 +20,7 @@ const SentimentIndicator = ({ dislikes, likes, likePercent }) => {
         } else if (likePercent === 0 && dislikes === 0) {
             return (
                 <div className='text-black dark:text-white'>
-                    No likes
+                    No sentiment
                 </div>
             )
         } else {
@@ -35,7 +35,7 @@ const SentimentIndicator = ({ dislikes, likes, likePercent }) => {
 
     return (
         <div className='flex justify-center mt-5'>
-            <div className='flex flex-row'>
+            <div className={`${miniArticle ? 'hidden' : 'flex flex-row'}`}>
                 <div className={`${dislikes === 1 ? 'text-center flex px-5 select-none text-black dark:text-white' : 'hidden'}`}>
                     {dislikes} dislike
                 </div>
@@ -52,7 +52,13 @@ const SentimentIndicator = ({ dislikes, likes, likePercent }) => {
                     {likes} likes
                 </div>
             </div>
+            <div className={`${miniArticle ? 'block' : 'hidden'}`}>
+                <div>
+                    {calculateIndicatorGradient()}
+                </div>
+            </div>
         </div>
+
     )
 }
 
