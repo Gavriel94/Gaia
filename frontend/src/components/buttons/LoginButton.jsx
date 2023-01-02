@@ -297,35 +297,35 @@ const LoginButton = () => {
      */
     const refreshData = async () => {
         try {
-            const f = checkIfWalletFound()
-            console.log('wallet found', f)
-            if (f) {
+            const walletFound = checkIfWalletFound()
+            console.log('wallet found', walletFound)
+            if (walletFound) {
                 setLoading(true)
                 setwalletLoginButton(<LoadingSpinner />)
-                const wAPI = await getAPIVersion()
-                const wn = await getWalletName()
-                const enabled = await enableWallet()
-                console.log('wallet enabled', enabled)
-                if (enabled) {
-                    const nID = await getNetworkId()
-                    const u = await getUtxos()
+                const walletAPI = await getAPIVersion()
+                const walletName = await getWalletName()
+                const walletEnabled = await enableWallet()
+                console.log('wallet enabled', walletEnabled)
+                if (walletEnabled) {
+                    const networkID = await getNetworkId()
+                    const utxos = await getUtxos()
                     console.log(adaHandleName)
-                    const b = await getBalance()
+                    const balance = await getBalance()
                     console.log(walletAPI)
-                    const ca = await getChangeAddress()
-                    handleUserID(ca)
+                    const changeAddress = await getChangeAddress()
+                    handleUserID(changeAddress)
                     setConnectedWallet({
                         whichWalletSelected: whichWalletSelected,
-                        walletFound: f,
-                        walletIsEnabled: enabled,
-                        walletName: wn,
-                        walletAPIVersion: wAPI,
+                        walletFound: walletFound,
+                        walletIsEnabled: walletEnabled,
+                        walletName: walletName,
+                        walletAPIVersion: walletAPI,
                         walletIcon: walletIcon,
                         wallets: wallets,
-                        networkId: nID,
-                        Utxos: u,
-                        balance: b,
-                        changeAddress: ca,
+                        networkId: networkID,
+                        Utxos: utxos,
+                        balance: balance,
+                        changeAddress: changeAddress,
                         walletAPI: walletAPI,
                     })
                     authenticate()
