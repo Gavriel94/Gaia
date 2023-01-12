@@ -17,7 +17,8 @@ import {
   EditProfile,
   Login,
   TagNavigation,
-  CommentThread
+  CommentThread,
+  AllNotifications
 } from './pages'
 
 /**
@@ -47,6 +48,7 @@ function App() {
             <Route path='/profiles/edit' element={<EditProfile/>} />
             <Route path='/articles/tags/:tag/' element={<TagNavigation/>}/>
             <Route path='/articles/comments/:id' element={<CommentThread/>}/>
+            <Route path='/profile/notifications' element={<AllNotifications/>}/>
 
             <Route path={'*'} element={<UnresolvedPath />} />
           </Routes>
