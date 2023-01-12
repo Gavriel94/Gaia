@@ -6,12 +6,12 @@ import Button from '../misc/Button'
 import { MdOutlineCancel } from 'react-icons/md'
 
 const AlreadySaidAlert = ({ open }) => {
-    const { setAlreadySaid, darkMode } = useStateContext()
+    const { setAlreadySaidAlert, darkMode } = useStateContext()
 
     return (
         <Modal
             isOpen={open}
-            onRequestClose={() => setAlreadySaid(false)}
+            onRequestClose={() => setAlreadySaidAlert(false)}
             contentLabel="Reply"
             ariaHideApp={false}
             className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
@@ -23,7 +23,7 @@ const AlreadySaidAlert = ({ open }) => {
                 Already said that!
             </div>
             <div className='flex flex-row justify-center mt-5 space-x-5'>
-                <Button func={() => setAlreadySaid(false)} icon={<MdOutlineCancel size={'26px'} />} />
+                <Button func={() => setAlreadySaidAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
             </div>
         </Modal>
     )
