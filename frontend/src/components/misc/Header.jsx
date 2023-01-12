@@ -5,7 +5,7 @@ import { useStateContext } from '../../context/ContextProvider'
 import { BiTrendingUp } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import RefreshArticles from '../article/RefreshArticles'
-import { Button, LoginButton, SortingButton, NotificationsButton } from '..'
+import { Button, LoginButton, SortingButton, NotificationButton } from '..'
 import { IoArrowBack } from 'react-icons/io5'
 
 /**
@@ -57,7 +57,7 @@ const Header = ({ page }) => {
                             <LoginButton />
                         </div>
                         <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : walletUser === false ? 'hidden' : 'block pr-2 py-3'}`}>
-                            <NotificationsButton />
+                            <NotificationButton />
                         </div>
                         <div className={`${showErrorAlert ? 'hidden' : page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : 'py-3'}`}>
                             <Button
