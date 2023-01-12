@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useStateContext } from '../../context/ContextProvider'
 import { TbSun, TbSunrise } from 'react-icons/tb'
-import Button from './Button'
+import Button from '../misc/Button'
 import API from '../../API'
 import { GiNightSleep } from 'react-icons/gi'
 import { BiLike, BiDislike } from 'react-icons/bi'
+import { MdOutlineCancel } from 'react-icons/md'
 
 /**
  * 
@@ -34,8 +35,8 @@ const SortingButton = () => {
             setOpen(!open)
             setSortingIcon(<GiNightSleep size={'26px'} />)
             return
-        } 
-        else if(orderBy === 'newest' && articleList.sortBy === 'oldest') {
+        }
+        else if (orderBy === 'newest' && articleList.sortBy === 'oldest') {
             setArticleList({
                 articles: articleList.articles.reverse(),
                 sortBy: 'newest'
@@ -46,8 +47,8 @@ const SortingButton = () => {
         else if (orderBy === 'oldest' && articleList.sortBy === 'oldest') {
             setOpen(!open)
             return
-        } 
-        
+        }
+
         else if (orderBy === 'newest') {
             API.get('/articles/all/')
                 .then((res) => {
@@ -59,8 +60,8 @@ const SortingButton = () => {
                     setSortingIcon(<TbSunrise size={'26px'} />)
                 })
                 .catch(console.error)
-                console.log(articleList.sortBy)
-                return
+            console.log(articleList.sortBy)
+            return
         } else if (orderBy === 'oldest') {
             console.log('API call')
             API.get('/articles/all/')
@@ -73,17 +74,17 @@ const SortingButton = () => {
                     setSortingIcon(<GiNightSleep size={'26px'} />)
                 })
                 .catch(console.error)
-                console.log(articleList.sortBy)
-                return
+            console.log(articleList.sortBy)
+            return
         }
     }
 
-        /**
-     * This function minimises API calls by only making an API call if the current articleList is sorted by publishing date
-     * 
-     * @param {String} orderBy - desired order
-     * @returns 
-     */
+    /**
+ * This function minimises API calls by only making an API call if the current articleList is sorted by publishing date
+ * 
+ * @param {String} orderBy - desired order
+ * @returns 
+ */
     const refreshPopular = (orderBy) => {
         if (orderBy === 'mostPopular' && articleList.sortBy === 'most popular') {
             console.log('no API call')
@@ -100,8 +101,8 @@ const SortingButton = () => {
             setSortingIcon(<BiDislike size={'26px'} />)
             console.log(articleList.sortBy)
             return
-        } 
-        else if(orderBy === 'mostPopular' && articleList.sortBy === 'least popular') {
+        }
+        else if (orderBy === 'mostPopular' && articleList.sortBy === 'least popular') {
             setArticleList({
                 articles: articleList.articles.reverse(),
                 sortBy: 'most popular'
@@ -114,8 +115,8 @@ const SortingButton = () => {
             console.log(articleList.sortBy)
             setOpen(!open)
             return
-        } 
-        
+        }
+
         else if (orderBy === 'mostPopular') {
             console.log('API call')
             API.get('/articles/popular/')
@@ -128,8 +129,8 @@ const SortingButton = () => {
                     setSortingIcon(<BiLike size={'26px'} />)
                 })
                 .catch(console.error)
-                console.log(articleList.sortBy)
-                return
+            console.log(articleList.sortBy)
+            return
         } else if (orderBy === 'leastPopular') {
             console.log('API call')
             API.get('/articles/popular/')
@@ -142,8 +143,8 @@ const SortingButton = () => {
                     setSortingIcon(<BiDislike size={'26px'} />)
                 })
                 .catch(console.error)
-                console.log(articleList.sortBy)
-                return
+            console.log(articleList.sortBy)
+            return
         }
     }
 
@@ -187,8 +188,20 @@ const SortingButton = () => {
                     icon={<BiDislike size={'26px'} />}
                     labelProps={'text-sm pt-1 pl-2'}
                 />
+        },
+        {
+            option: '',
+            button:
+                <Button icon={<MdOutlineCancel size={'26px'} />}
+                    func={() => setOpen(!open)}
+
+                />
         }
     ]
+
+    function capitalize(word) {
+        return word?.charAt(0).toUpperCase() + word?.slice(1)
+    }
 
     return (
         <>
@@ -198,13 +211,13 @@ const SortingButton = () => {
                     title={'Sort'}
                     icon={sortingIcon}
                     func={() => handleOpen()}
-                    label={`Sorting by ${articleList.sortBy}`}
+                    label={`${capitalize(articleList.sortBy)}`}
                     labelProps={'text-sm pt-1 pl-2'}
                 />
             </div>
             <div>
                 {open ? (
-                    <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-20 rounded-lg'>
+                    <div className='bg-white dark:bg-dark-grey border-4 border-black dark:border-white opacity-100 p-5 mt-40 rounded-lg'>
                         {menu.map((item) => (
                             <div key={item.option} className='flex justify-center pt-2'>
                                 {item.button}
