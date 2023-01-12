@@ -241,7 +241,7 @@ const CommentThread = () => {
                             </div>
                         </div>
                         <div className='mt-10'>
-                            <Title text={originalPost?.comment} lengthLimit={true} hover={false} />
+                            <Title text={originalPost?.comment} hover={false} />
                         </div>
                         <div className='flex justify-center mt-2 dark:text-white'>
                             {formatDate(originalPost?.date)}
