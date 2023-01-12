@@ -39,7 +39,7 @@ const RefreshArticles = () => {
     }
   return (
 
-    <div><Button icon={buttonIcon} func={() => handleRefresh()} label={'Refresh content'} labelProps={'text-sm pt-1 pl-2'}/></div>
+    <div><Button icon={buttonIcon} func={() => handleRefresh()} label={'Refresh'} labelProps={'text-sm pt-1 pl-2'}/></div>
   )
 }
 
