@@ -97,10 +97,11 @@ const CommentSection = ({ articleID }) => {
                 },
             }).then(res => {
                 console.log(res)
-                if (res.status === 201) {
-                    setCommentSubmitted(true)
-                    setComment('')
-                }
+                // if (res.status === 201) {
+                //     setCommentSubmitted(true)
+                //     setComment('')
+                // }
+                setCommentSubmitted(true)
             })
         } catch (err) {
             if (err.response.status === 400 && comment.length > 1) {
