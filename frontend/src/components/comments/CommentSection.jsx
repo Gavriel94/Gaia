@@ -16,7 +16,7 @@ import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAler
  * @returns Comment section with ability to -----
  */
 
-const CommentSection = ({ articleID }) => {
+const CommentSection = ({ articleID, articleAuthor }) => {
     const {
         loggedInProfile,
         darkMode,
@@ -79,11 +79,16 @@ const CommentSection = ({ articleID }) => {
             setLoginAlert(true)
             return
         }
+
         let newComment = new FormData()
         newComment.append('user', loggedInProfile.id)
+        newComment.append('sender', loggedInProfile.id)
+        newComment.append('receiver', articleAuthor)
         newComment.append('article', articleID)
         newComment.append('comment', comment)
         newComment.append('is_reply', '0')
+
+        // newComment.append('recipient', articleAuthor)
 
         for (const v of newComment.values()) {
             console.log(newComment.keys(), v)
@@ -221,7 +226,8 @@ const CommentSection = ({ articleID }) => {
 
     const submitResponse = async () => {
         let userResponse = new FormData()
-        userResponse.append('user', loggedInProfile.id)
+        userResponse.append('sender', loggedInProfile.id)
+        userResponse.append('receiver', articleAuthor)
         userResponse.append('reply', commentUserID)
         userResponse.append('comment', response)
         userResponse.append('article', articleID)
@@ -277,16 +283,16 @@ const CommentSection = ({ articleID }) => {
             <div className='mt-5 w-full border-2 border-light-orange dark:border-dark-orange' />
             <div className='overflow-scroll'>
                 {articleComments?.map((articleComment) => (
-                    <div key={articleComment.user + articleComment.comment} className='mt-2'>
+                    <div key={articleComment.sender + articleComment.comment} className='mt-2'>
                         <div className='border-t-2 border-l-2 border-r-2 border-b-2 border-light-orange dark:border-dark-orange rounded-lg p-3 mt-5'>
                             <div>
-                                <Link to={`/profiles/${articleComment.user.id}`} style={{ textDecoration: 'none' }}>
+                                <Link to={`/profiles/${articleComment.sender.id}`} style={{ textDecoration: 'none' }}>
                                     <div className='flex flex-row'>
                                         <div className='m-auto'>
-                                            <Title text={articleComment.user.profile_name} lengthLimit={true} hover={false} />
+                                            <Title text={articleComment.sender.profile_name} lengthLimit={true} hover={false} />
                                         </div>
                                         <div className='m-auto'>
-                                            <img src={articleComment.user.profile_image} alt={'User profile'} width={60} />
+                                            <img src={articleComment.sender.profile_image} alt={'User profile'} width={60} />
                                         </div>
                                     </div>
                                 </Link>
@@ -297,10 +303,10 @@ const CommentSection = ({ articleID }) => {
                                     {formatDate(articleComment.date)}
                                 </div>
                                 <div className='flex flex-row justify-center mt-5 space-x-2'>
-                                    <Button icon={<BsReply size={'26px'} />} func={() => initReply(articleComment.user.id, articleComment.id)} />
+                                    <Button icon={<BsReply size={'26px'} />} func={() => initReply(articleComment.sender.id, articleComment.id)} />
                                     <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(1)} />
                                     <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(2)} />
-                                    <div className={`${loggedInProfile.id === articleComment.user.id ? 'flex justify-center' : 'hidden'}`}>
+                                    <div className={`${loggedInProfile.id === articleComment.sender.id ? 'flex justify-center' : 'hidden'}`}>
                                         <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(articleComment.id)} />
                                     </div>
                                 </div>

@@ -9,9 +9,7 @@ import { MdDeleteForever, MdOutlineCancel, MdCheck } from 'react-icons/md'
 import Modal from 'react-modal'
 /**
  * 
- * !Very similar to CommentSection except any replies are appended to the top of the page
- * TODO: replies need a date
- * TODO: Require commentID for each comment in order to be able to reply to it
+ * Similar to CommentSection except any replies are appended to the top of the page
  */
 
 const CommentThread = () => {
@@ -86,12 +84,14 @@ const CommentThread = () => {
             setLoginAlert(true)
             return
         }
+        console.log(originalPost)
         let userResponse = new FormData()
-        userResponse.append('user', loggedInProfile.id)
-        userResponse.append('reply', originalPost.id)
+        userResponse.append('sender', loggedInProfile.id)
         userResponse.append('comment', response)
-        userResponse.append('article', '')
+        userResponse.append('receiver', originalPost.sender.id)
         userResponse.append('is_reply', '1')
+        userResponse.append('article', '')
+        userResponse.append('reply', originalPost.id)
         for (const v of userResponse) {
             console.log(userResponse.keys())
             console.log(v)
@@ -114,8 +114,9 @@ const CommentThread = () => {
 
     const submitReplyToResponse = async () => {
         let userResponse = new FormData()
+        userResponse.append('sender', loggedInProfile.id)
         userResponse.append('user', loggedInProfile.id)
-        userResponse.append('reply', commentCreatee)
+        userResponse.append('receiver', commentCreatee)
         userResponse.append('comment', response)
         userResponse.append('article', '')
         userResponse.append('is_reply', '1')
@@ -231,13 +232,13 @@ const CommentThread = () => {
                 <div className='mt-36 pb-10'>
                     <div className=''>
                         <div className='flex flex-row justify-center'>
-                            <Link to={`/profiles/${originalPost?.user?.id}`} style={{ textDecoration: 'none' }}>
+                            <Link to={`/profiles/${originalPost?.sender?.id}`} style={{ textDecoration: 'none' }}>
                                 <div>
-                                    <Title text={originalPost?.user?.profile_name} lengthLimit={true} hover={false} />
+                                    <Title text={originalPost?.sender?.profile_name} lengthLimit={true} hover={false} />
                                 </div>
                             </Link>
                             <div className='flex justify-end'>
-                                <img src={originalPost?.user?.profile_image} alt={'User profile'} width={80} />
+                                <img src={originalPost?.sender?.profile_image} alt={'User profile'} width={80} />
                             </div>
                         </div>
                         <div className='mt-10'>
@@ -270,18 +271,18 @@ const CommentThread = () => {
                     <div className='mt-5 w-full border-2 border-light-orange dark:border-dark-orange' />
                     <div className='mt-20'>
                         {replies?.map((reply) => (
-                            <div key={reply.user.id + reply.comment} className='mt-2'>
+                            <div key={reply.sender.id + reply.comment} className='mt-2'>
                                 {console.log(reply)}
                                 <div className='border-t-2 border-l-2 border-r-2 border-b-2 border-light-orange dark:border-dark-orange rounded-lg p-3 mt-5'>
                                     <div>
                                         <div className='flex'>
-                                            <Link to={`/profiles/${reply?.user.id}`} style={{ textDecoration: 'none' }}>
+                                            <Link to={`/profiles/${reply?.sender.id}`} style={{ textDecoration: 'none' }}>
                                                 <div>
-                                                    <Title text={reply?.user?.profile_name} lengthLimit={true} hover={false} />
+                                                    <Title text={reply?.sender?.profile_name} lengthLimit={true} hover={false} />
                                                 </div>
                                             </Link>
                                             <div className='ml-auto'>
-                                                <img src={reply?.user?.profile_image} alt={'User profile'} width={60} />
+                                                <img src={reply?.sender?.profile_image} alt={'User profile'} width={60} />
                                             </div>
                                         </div>
                                         <div className='flex justify-center mt-2 dark:text-white'>
@@ -291,10 +292,10 @@ const CommentThread = () => {
                                             {formatDate(reply?.date)}
                                         </div>
                                         <div className='flex flex-row justify-center mt-5 space-x-2'>
-                                            <Button icon={<BsReply size={'26px'} />} func={() => initReplyToResponse(reply?.user?.id, reply?.id)} />
+                                            <Button icon={<BsReply size={'26px'} />} func={() => initReplyToResponse(reply?.sender?.id, reply?.id)} />
                                             <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(1)} />
                                             <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(2)} />
-                                            <div className={`${loggedInProfile.id === reply?.responder?.id ? 'flex justify-center' : 'hidden'}`}>
+                                            <div className={`${loggedInProfile.id === reply?.sender?.id ? 'flex justify-center' : 'hidden'}`}>
                                                 <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(reply?.id)} />
                                             </div>
                                         </div>

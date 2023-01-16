@@ -201,7 +201,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='flex justify-center mt-10 mb-10'>
-                            <CommentSection articleID={article.id} />
+                            <CommentSection articleID={article.id} articleAuthor={article.author} />
                         </div>
                     </div>
                 </div>

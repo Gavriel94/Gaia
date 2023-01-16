@@ -21,22 +21,21 @@ const NotificationButton = () => {
     const [notifications, setNotifications] = useState([])
     const [commentID, setCommentID] = useState('')
     const [viewComment, setViewComment] = useState(false)
+    const [numberOfNotifications, setNumberOfNotifications] = useState(undefined)
 
     useEffect(() => {
         const getNotifications = async () => {
             if (loggedInProfile.sessionToken === '') {
                 return
             }
-
-            console.log(loggedInProfile)
-
             await API.get(`profile/notification/unread/${loggedInProfile.id}/`, {
                 headers: {
                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
                     'Content-Type': 'multipart/form-data',
                 },
             }).then((res) => {
-                console.log(res)
+                setNumberOfNotifications(res.data.length)
+                // Only show the 5 latest notifications in the dropdown menu
                 setNotifications(res.data.slice(0, 5).reverse())
                 if (notifications.length > 0) {
                     setNotificationIcon(
@@ -87,7 +86,10 @@ const NotificationButton = () => {
             console.log(res)
             setCommentID(commentID)
             setViewComment(true)
-        }).catch(console.err)
+            setOpen(false)
+        }).catch(err => {
+            console.log(err)
+        })
     }
 
     const showNotifications = () => {
@@ -109,6 +111,9 @@ const NotificationButton = () => {
             return (
                 <div>
                     <div className='bg-white dark:bg-dark-grey opacity-100 pb-2 relative mt-56 m-auto top-0 rounded-lg border-4 border-black dark:border-white w-full'>
+                        <div className='flex text-center justify-center dark:text-white mt-2'>
+                            {numberOfNotifications} total notifications
+                        </div>
                         {
                             notifications.map((notification) => (
                                 <button
@@ -118,7 +123,7 @@ const NotificationButton = () => {
                                 >
                                     <div key={notification.timestamp} className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} grid grid-cols-3 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
                                         <div className='ml-10'>
-                                            <img src={notification.message.user.profile_image} width={'50'} alt={'user profile'} />
+                                            <img src={notification.message.sender.profile_image} width={'50'} alt={'user profile'} />
                                         </div>
                                         <div className='text-black dark:text-white mt-2 text-center'>
                                             {sliceComment(notification.message.comment)}

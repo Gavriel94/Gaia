@@ -100,27 +100,29 @@ const Notifications = () => {
     }
     return (
       notifications.map((notification) => (
-        <button
-          className='w-full rounded-xl mt-5'
-          type="button"
-          onClick={() => viewCommentDetail(notification.message.id, notification.id)}
-        >
-          <div key={notification.timestamp} className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} grid grid-cols-4 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
-            <div className='ml-10'>
-              <img src={notification.message.user.profile_image} width={'50'} alt={'user profile'} />
+        <div className='flex flex-row space-x-5'>
+          <button
+            className='w-full rounded-xl mt-5'
+            type="button"
+            onClick={() => viewCommentDetail(notification.message.id, notification.id)}
+          >
+            <div key={notification.timestamp} className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} grid grid-cols-4 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
+              <div className='ml-10'>
+                <img src={notification.message.sender.profile_image} width={'50'} alt={'sender profile'} />
+              </div>
+              <div className='text-black dark:text-white mt-2 text-center'>
+                {notification.message.comment}
+              </div>
+              <div className='ml-10 mt-2'>
+                {readIcon(notification.is_read)}
+              </div>
             </div>
-            <div className='text-black dark:text-white mt-2 text-center'>
-              {notification.message.comment}
-            </div>
-            <div className='ml-10 mt-2'>
-              {console.log(notification.is_read)}
-              {readIcon(notification.is_read)}
-            </div>
-            <div>
-              <Button icon={<MdDeleteForever size={'26px'} />} func={() => deleteNotification(notification.id)} />
-            </div>
+          </button>
+          <div className='mt-10'>
+            <Button icon={<MdDeleteForever size={'26px'} />} func={() => deleteNotification(notification.id)} />
           </div>
-        </button>
+        </div>
+
       ))
     )
   }
