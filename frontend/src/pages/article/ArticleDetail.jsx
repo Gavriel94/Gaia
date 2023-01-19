@@ -18,6 +18,8 @@ const ArticleDetail = () => {
     const { darkMode, loggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
     const [article, setArticle] = useState('')
     const [notLoaded, setNotLoaded] = useState(false)
+    const [tagToLoad, setTagToLoad] = useState('')
+    const [loadTag, setLoadTag] = useState(false)
     const { id } = useParams()
     let history = useNavigate()
 
@@ -121,6 +123,11 @@ const ArticleDetail = () => {
         return true
     }
 
+    const navigateToTab = (tag) => {
+        setTagToLoad(tag)
+        setLoadTag(true)
+    }
+
     if (article === '') {
         return (
             <>
@@ -137,6 +144,11 @@ const ArticleDetail = () => {
         return (
             <>
                 {
+                    loadTag && (
+                        <Navigate to={`/articles/tags/${tagToLoad}`} replace={true}/>
+                    )
+                }
+                {
                     deletionConfirmed && (
                         <Navigate to={`/profiles/${loggedInProfile.id}`} replace={true} />
                     )
@@ -151,7 +163,6 @@ const ArticleDetail = () => {
                 </div>
                 <div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
                     <div className='pt-20 justify-center'>
-                        {/* <Title text={`${article.title}`} size={'text-6xl'} /> */}
                         <div className='pr-2 sm:pr-0 pl-2 md:pl-10 flex justify-center'>
                             <img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'300px'} width={'300px'} />
                         </div>
@@ -164,7 +175,7 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
-                            <BookmarkButton articleID={article.id} preview_image={article.preview_image} title={article.title}/>
+                            <BookmarkButton articleID={article.id} preview_image={article.preview_image} title={article.title} />
                             <div className={`${article.author_username === loggedInProfile.username ? 'block' : 'hidden'}`}>
                                 <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
                             </div>
@@ -174,11 +185,12 @@ const ArticleDetail = () => {
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
+                            <Title text={'Tags'} size={'text-2xl'} />
+                        </div>
+                        <div className='flex justify-center mt-2'>
                             {article.article_tags.map((tag) =>
                                 <div key={tag.tag} className='px-2'>
-                                    <Link to={`/articles/tags/${tag.tag}`}>
-                                        {tag.tag}
-                                    </Link>
+                                    <Button label={tag.tag} func={() => navigateToTab(tag.tag)} />
                                 </div>)
                             }
                         </div>
