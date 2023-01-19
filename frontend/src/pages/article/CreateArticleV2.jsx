@@ -196,7 +196,7 @@ const CreateArticleV2 = () => {
           'Content-Type': 'multipart/form-data',
         },
       }).then(res => {
-        articleID = res.data.id
+        articleID = res.data
         setSubmit(false)
         setID(articleID)
         setIDSet(true)
