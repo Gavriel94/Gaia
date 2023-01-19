@@ -63,6 +63,20 @@ const NotificationButton = () => {
         }
     }
 
+    /**
+     * Used to test connection to Websocket
+     * !currently unused
+     */
+    const notificationTest = () => {
+        let notificationSocket = new WebSocket(`ws://18.130.61.179:8000/ws/notifications/${loggedInProfile.id}`)
+        notificationSocket.onmessage = (e) => {
+            console.log(e)
+        }
+        notificationSocket.onclose = (e) => {
+            console.log('Closed unexpectedly')
+        }
+    }
+
     const readIcon = (readStatus) => {
         if (readStatus === "0") {
             return (
@@ -157,6 +171,7 @@ const NotificationButton = () => {
                 open && (
                     <div>
                         {showNotifications()}
+                        {/* {notificationTest()} */}
                     </div>
                 )
             }
