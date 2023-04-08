@@ -37,12 +37,14 @@ const TrendBar = () => {
                 <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
                     <div className='py-4' />
                     <div className='w-[300px] h-[10px] justify-center py-10'>
-                        <Title text={'trending'} size={'text-3xl'} hover={true}/>
+                        <Link to={`/trending`} style={{ textDecoration: 'none' }}>
+                            <Title text={'trending'} size={'text-3xl'} hover={true} />
+                        </Link>
                     </div>
                     <div className='pt-4 grid grid-cols-1 gap-y-4'>
                         {mostPopular.map((article) => (
                             <div className='grid grid-cols-1 gap-y-4' key={article.id}>
-                                <Link to={`/articles/${article.id}`} style={{textDecoration: 'none'}}>
+                                <Link to={`/articles/${article.id}`} style={{ textDecoration: 'none' }}>
                                     <TrendCard
                                         id={article.id}
                                         title={article.title}
