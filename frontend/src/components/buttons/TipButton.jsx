@@ -11,6 +11,7 @@ import {
     Value,
     TransactionUnspentOutputs,
     Address,
+    TransactionBuilderConfig,
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import Modal from 'react-modal'
@@ -45,34 +46,102 @@ const TipButton = ({ authorUsername }) => {
         return outputs
     }
 
+    const printAll = (
+            linearFee, 
+            txBuilderCfg, 
+            txBuilder, 
+            shelleyOutputAddress, 
+            shelleyChangeAddress, 
+            strAmountInLovelace, 
+            txUnspentOutputs, 
+            txBody, 
+            transactionWitnessSet, 
+            tx, 
+            txVkeyWitnesses, 
+            signedTx,
+            submittedTxHash
+        ) => {
+        console.log('linearFee', linearFee)
+        console.log('txBuilderCfg', txBuilderCfg)
+        console.log('txBuilder', txBuilder)
+        console.log('shelleyOutputAddress', shelleyOutputAddress)
+        console.log('shelleyChangeAddress', shelleyChangeAddress)
+        console.log('strAmountInLovelace', strAmountInLovelace)
+        console.log('txBuilder post build', txBuilder)
+        console.log('txUnspentOutputs', txUnspentOutputs)
+        console.log('txBody', txBody)
+        console.log('transactionWitnessSet', transactionWitnessSet)
+        console.log('tx', tx)
+        console.log('txVkeyWitnesses', txVkeyWitnesses)
+        console.log('signedTx', signedTx)
+        console.log('submittedTxHash', submittedTxHash)
+    }
+
     const buildADATransaction = async (amountInADA) => {
         try {
             console.log(amountInADA)
-            // Protocol parameters set by IOG
-            const linearFee = LinearFee.new(
-                BigNum.from_str('44'),
-                BigNum.from_str('155381')
-            );
-            const txBuilderCfg = TransactionBuilderConfigBuilder.new()
-                .fee_algo(linearFee)
-                .pool_deposit(BigNum.from_str('500000000'))
-                .key_deposit(BigNum.from_str('2000000'))
-                .max_value_size(4000)
-                .max_tx_size(8000)
-                .coins_per_utxo_word(BigNum.from_str('34482'))
-                .build();
 
-            const txBuilder = TransactionBuilder.new(txBuilderCfg);
+            const protocol_params = {
+                linearFee: {
+                    minFeeA: '44',
+                    minFeeB: '155381'
+                },
+                minUtxo: '34482',
+                poolDeposit: '500000000',
+                keyDeposit: '2000000',
+                maxValSize: 5000,
+                maxTxSize: 16384,
+                priceMem: 0.0577,
+                priceStep: 0.0000721,
+                coinsPerUtxoWord: '34482',
+            }
 
-            // recipient address
+            const txBuilder = TransactionBuilder.new(
+                TransactionBuilderConfigBuilder.new()
+                .fee_algo(
+                    LinearFee.new(
+                        BigNum.from_str(protocol_params.linearFee.minFeeA),
+                        BigNum.from_str(protocol_params.linearFee.minFeeB)
+                    )
+                )
+                .pool_deposit(BigNum.from_str(protocol_params.poolDeposit))
+                .key_deposit(BigNum.from_str(protocol_params.keyDeposit))
+                .coins_per_utxo_word(BigNum.from_str(protocol_params.coinsPerUtxoWord))
+                .max_value_size(protocol_params.maxValSize)
+                .max_tx_size(protocol_params.maxTxSize)
+                .prefer_pure_change(true)
+                .build()        
+            )
+
+            // // Protocol parameters set by IOG
+            // const linearFee = LinearFee.new(
+            //     BigNum.from_str('44'),
+            //     BigNum.from_str('155381')
+            // );
+
+            // var cpUtxoByte = String(4310)
+            // const txBuilderCfg = TransactionBuilderConfigBuilder.new()
+            //     .fee_algo(linearFee)
+            //     .pool_deposit(BigNum.from_str('500000000'))
+            //     .key_deposit(BigNum.from_str('2000000'))
+            //     .max_value_size(4000)
+            //     .max_tx_size(8000)
+            //     .coins_per_utxo_byte(BigNum.from_str(cpUtxoByte))
+            //     .build();
+
+            // const txBuilder = TransactionBuilder.new(txBuilderCfg);
+
+            // tip recipient address
             const shelleyOutputAddress = Address.from_bech32(authorUsername);
-            // sender address
+            // tip sender address (receives change)
             const shelleyChangeAddress = Address.from_bech32(connectedWallet.changeAddress);
 
             // 1 ADA = 1,000,000 Lovelace
             const strAmountInLovelace = (amountInADA * 1000000).toString()
 
-            console.log('strAmountInLovelace', strAmountInLovelace)
+            // Use available UTxOs to converge funds for transaction
+            const txUnspentOutputs = await getTxUnspentOutputs();
+            txBuilder.add_inputs_from(txUnspentOutputs, 3)
 
             // add output to the tx
             txBuilder.add_output(
@@ -81,10 +150,6 @@ const TipButton = ({ authorUsername }) => {
                     Value.new(BigNum.from_str(strAmountInLovelace))
                 ),
             );
-
-            // Use available UTxOs to converge funds for transaction
-            const txUnspentOutputs = await getTxUnspentOutputs();
-            txBuilder.add_inputs_from(txUnspentOutputs, 1)
 
             // Calculate min-fee and register change address
             txBuilder.add_change_if_needed(shelleyChangeAddress)
@@ -100,6 +165,22 @@ const TipButton = ({ authorUsername }) => {
                 txBody,
                 TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
             )
+
+            printAll(            
+                // linearFee, 
+                // txBuilderCfg, 
+                txBody,
+                txBuilder, 
+                shelleyOutputAddress, 
+                shelleyChangeAddress, 
+                strAmountInLovelace, 
+                txUnspentOutputs, 
+                txBody, 
+                transactionWitnessSet, 
+                tx, 
+            )
+
+            console.log(typeof(connectedWallet.walletAPI))
 
             let txVkeyWitnesses = await connectedWallet.walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
             txVkeyWitnesses = TransactionWitnessSet.from_bytes(Buffer.from(txVkeyWitnesses, "hex"));
@@ -117,6 +198,7 @@ const TipButton = ({ authorUsername }) => {
             console.log('Transaction successful')
             setOpenModal(false)
             setTipSuccessful(true)
+ 
         } catch (err) {
             console.log(err)
             if (err === 'UTxO Balance Insufficient') {
@@ -197,7 +279,7 @@ const TipButton = ({ authorUsername }) => {
                     Tip Success
                 </div>
                 <div className='font-bold text-light-white transition-colors duration-500 select-none text-center mt-5'>
-                    {tipAmount} sent to {authorUsername?.slice(0, 12) + '...'}
+                    {tipAmount}₳ sent to {authorUsername?.slice(0, 12) + '...'}
                 </div>
                 <div className='flex flex-row justify-center mt-5 space-x-5'>
                     <Button func={() => confirmSuccess()} icon={<MdOutlineCancel size={'26px'} />} />

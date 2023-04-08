@@ -14,6 +14,15 @@ import {
     Address,
     TransactionUnspentOutput,
     Value,
+
+    TransactionOutput,
+    TransactionBuilder,
+    TransactionBuilderConfigBuilder,
+    LinearFee,
+    BigNum,
+    TransactionWitnessSet,
+    Transaction,
+    TransactionUnspentOutputs,
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
@@ -144,10 +153,13 @@ const LoginButton = () => {
         const key = whichWalletSelected
         try {
             walletAPI = await window.cardano[key].enable()
+            console.log(walletAPI)
         } catch (err) {
             console.log(err)
             // resetWalletSelection()
         }
+
+        console.log(checkIfWalletEnabled())
         return checkIfWalletEnabled()
     }
 
@@ -302,7 +314,7 @@ const LoginButton = () => {
             if (walletFound) {
                 setLoading(true)
                 setwalletLoginButton(<LoadingSpinner />)
-                const walletAPI = await getAPIVersion()
+                const walletAPIVersion = await getAPIVersion()
                 const walletName = await getWalletName()
                 const walletEnabled = await enableWallet()
                 console.log('wallet enabled', walletEnabled)
@@ -319,7 +331,7 @@ const LoginButton = () => {
                         walletFound: walletFound,
                         walletIsEnabled: walletEnabled,
                         walletName: walletName,
-                        walletAPIVersion: walletAPI,
+                        walletAPIVersion: walletAPIVersion,
                         walletIcon: walletIcon,
                         wallets: wallets,
                         networkId: networkID,
@@ -328,7 +340,8 @@ const LoginButton = () => {
                         changeAddress: changeAddress,
                         walletAPI: walletAPI,
                     })
-                    authenticate()
+                    console.log(connectedWallet)
+                    await authenticate()
                 } else {
                     console.log('no wallet enabled')
                     clearWallet('error')
@@ -421,6 +434,7 @@ const LoginButton = () => {
             }
             setLoading(false) //could display an error message
         }
+
     }
 
     const openWalletSelectModal = () => {
@@ -455,6 +469,57 @@ const LoginButton = () => {
 
     const openLoginOptionModal = () => {
         setShowLoginOptionModal(true)
+    }
+
+    const walletSelectModalContent = () => {
+        if (wallets.length === 0) {
+            return (
+                <div className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
+                    No wallets found
+                </div>
+            )
+        } else {
+            return (
+                <>
+                    <div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                        Select Wallet
+                    </div>
+                    <div>
+                        {
+
+                            wallets.map(key =>
+                                <div key={key} className={`flex justify-center pt-5 pl-5 pr-5 ${darkMode && 'text-white'}`}>
+                                    <button
+                                        type='button'
+                                        onClick={() => handleWalletSelect(key)}
+                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-60 rounded-full duration-150 ease-in-out p-3'>
+                                        <div className='flex flex-row justify-center'>
+                                            <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
+                                            <p className='pt-3'>{window.cardano[key].name}</p>
+                                        </div>
+                                    </button>
+                                </div>
+                            )
+                        }
+
+                        <div className='justify-center pt-5 pl-5 pr-5' />
+                        <div>
+                            <span className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
+                                This does not give Gaia permission to access funds.
+                                <br />
+                                <br />
+                                Cardano generates different addresses for different wallets.
+                                <br />
+                                Ensure you always use the same wallet for your Gaia profile.
+                                <br />
+                            </span>
+                        </div>
+                    </div>
+                </>
+            )
+        }
     }
 
     Modal.setAppElement("#root")
@@ -559,44 +624,9 @@ const LoginButton = () => {
                     className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
                     overlayClassName={'overlayModal'}
                 >
-                    <div className='text-4xl font-bold 
-                    text-light-white
-                    transition-colors duration-500 select-none text-center mt-2'>
-                        Select Wallet
-                    </div>
-                    <div>
-                        {
-
-                            wallets.map(key =>
-                                <div key={key} className={`flex justify-center pt-5 pl-5 pr-5 ${darkMode && 'text-white'}`}>
-                                    <button
-                                        type='button'
-                                        onClick={() => handleWalletSelect(key)}
-                                        className='hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover w-60 rounded-full duration-150 ease-in-out p-3'>
-                                        <div className='flex flex-row justify-center'>
-                                            <img src={window.cardano[key].icon} alt={'Wallet icon'} height={48} width={48} />
-                                            <p className='pt-3'>{window.cardano[key].name}</p>
-                                        </div>
-                                    </button>
-                                </div>
-                            )
-                        }
-
-                        <div className='justify-center pt-5 pl-5 pr-5' />
-                        <div>
-                            <span className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
-                                This does not give Gaia permission to access funds.
-                                <br />
-                                <br />
-                                Cardano generates different addresses for different wallets.
-                                <br />
-                                Ensure you always use the same wallet for your Gaia profile.
-                                <br />
-                            </span>
-                        </div>
-                        <div className='flex justify-center pt-10 pb-4'>
-                            <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
-                        </div>
+                    {walletSelectModalContent()}
+                    <div className='flex justify-center pt-10 pb-4'>
+                        <Button func={() => closeWalletSelectModal()} icon={<MdOutlineCancel />} />
                     </div>
                 </Modal>
             </div>
