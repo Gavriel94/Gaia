@@ -62,6 +62,7 @@ export const ContextProvider = ({ children }) => {
     const [emptyFieldAlert, setEmptyFieldAlert] = useState(false)
     const [imageTooLargeAlert, setImageTooLargeAlert] = useState(false)
     const [notImageAlert, setNotImageAlert] = useState(false)
+    const [exceedsLengthAlert, setExceedsLengthAlert] = useState(false)
 
     /**
      * State variables for connecting a wallet
@@ -147,6 +148,7 @@ export const ContextProvider = ({ children }) => {
                 emptyFieldAlert, setEmptyFieldAlert,
                 imageTooLargeAlert, setImageTooLargeAlert,
                 notImageAlert, setNotImageAlert,
+                exceedsLengthAlert, setExceedsLengthAlert,
             }}
         >
             {children}
