@@ -89,7 +89,7 @@ const CreateArticle = () => {
                             <label className='block input-dark-grey dark:input-light-white font-bold mb-1 md:mb-0 pr-4'
                                 htmlFor='tags'
                             >
-                                Tags
+                                Topics
                             </label>
                             <div className='border-1 border-light-orange dark:border-dark-orange rounded-lg'>
                                 <input className='grid-cols-2 rounded w-full py-2 px-4 appearance-none leading-tight border-2 
@@ -98,7 +98,7 @@ const CreateArticle = () => {
                         focus:outline-none focus:bg-light-white focus:border-light-orange'
                                     required={true}
                                     type='input'
-                                    placeholder='Tags'
+                                    placeholder='Topics'
                                     defaultValue={''}
                                     onChange={e => handleTags(e.target.value)}
                                 />
