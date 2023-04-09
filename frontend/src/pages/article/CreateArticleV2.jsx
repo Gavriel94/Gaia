@@ -28,6 +28,7 @@ import Modal from 'react-modal'
 /**
  * TODO: Create a checkbox for users to have to comply with ToS
  * TODO: Resize all images to be the same
+ * TODO: Handle new response from pre/post save methods 
  */
 
 const CreateArticleV2 = () => {
@@ -222,11 +223,18 @@ const CreateArticleV2 = () => {
         }
         if (v === 'tags') {
           setTagsError(true)
-          collectErrors.push('Tags Error')
+          collectErrors.push('Topics Error')
           console.log('Tags error')
         }
       }
-      setErrors(collectErrors)
+      if(collectErrors.length === 0) {
+        let error_data = []
+        error_data.push(err.response.data)
+        setErrors(error_data)
+      } else {
+        setErrors(collectErrors)
+      }
+      console.log(errors)
       setOpenErrorAlert(true)
       setSubmit(false)
     }
@@ -334,7 +342,7 @@ const CreateArticleV2 = () => {
                       id='tag field'
                       required={true}
                       type='input'
-                      placeholder='Tags'
+                      placeholder='Topics'
                       value={tagInput}
                       borderColor={`${tagsError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
                       onChange={(e) => {
@@ -351,13 +359,13 @@ const CreateArticleV2 = () => {
                     </div>
                     <div className='flex justify-center dark:text-white pt-5'>
                       <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
-                        Tags must be between 3-15 characters
+                        Topics must be between 3-15 characters
                       </div>
                       <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
-                        Add at least 2 tags
+                        Add at least 2 topics
                       </div>
                       <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
-                        Too many tags!
+                        Too many topics!
                       </div>
 
                     </div>
