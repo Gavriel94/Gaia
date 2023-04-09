@@ -29,16 +29,18 @@ const Trending = () => {
     const articles = mostPopular?.map(function iterateArticles(article) {
     return (
         <div key={article.id} className='flex justify-center'>
-            <MiniArticle
-                id={article.id}
-                title={article.title}
-                content={article.content}
-                tags={article.tags}
-                image={article.preview_image}
-                imageHeight={'150px'}
-                imageWidth={'150px'}
-                sentiment={article.sentiment}
-            />
+                <MiniArticle
+                    id={article.id}
+                    title={article.title}
+                    content={article.content}
+                    tags={article.tags}
+                    image={article.preview_image}
+                    imageHeight={'150px'}
+                    imageWidth={'150px'}
+                    likes={article.sentiment[0]}
+                    dislikes={article.sentiment[1]}
+                    percent={article.sentiment[2]}
+                />
         </div>
         )
     })
@@ -52,7 +54,12 @@ const Trending = () => {
         <div className='flex justify-center'>
             <div className='pt-20'>
                 <Title text={'trending'} size={'text-6xl'} hover={true}/>
-                <div className='mt-20 overflow-auto '>
+                <div className='mt-10 overflow-auto '>
+                <div className='text-center dark:text-white mb-10'>
+                    Shows the  highest rated articles of the last 24 hours
+                    <br/>
+                    Updates every day
+                </div>
                 {articles}
                 {console.log(mostPopular)}
                 </div>
