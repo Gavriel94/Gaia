@@ -33,24 +33,42 @@ const SentimentIndicator = ({ dislikes, likes, likePercent, miniArticle }) => {
         }
     }
 
+    const indicatorLabel = () => {
+        let likesLabel = 'Likes'
+        let dislikesLabel = 'Dislikes'
+
+        if (likes === 1) {
+            likesLabel = 'Like'
+        }
+
+        if (dislikes === 1) {
+            dislikesLabel = 'Dislike'
+        }
+
+        const likesOutput = likesLabel + ': ' + likes
+        const dislikesOutput = dislikesLabel + ': ' + dislikes
+
+        return (
+            <div className='mt-5'>
+                <div className='dark:text-white text-black text-center'>
+                    {likesOutput}
+                </div>
+                <div className='dark:text-white text-black text-center'>
+                    {dislikesOutput}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='flex justify-center mt-5'>
-            <div className={`${miniArticle ? 'hidden' : 'flex flex-row'}`}>
-                <div className={`${dislikes === 1 ? 'text-center flex px-5 select-none text-black dark:text-white' : 'hidden'}`}>
-                    {dislikes} dislike
-                </div>
-                <div className={`${dislikes !== 1 ? 'text-center flex px-5 select-none text-black dark:text-white' : 'hidden'}`}>
-                    {dislikes} dislikes
-                </div>
+            <div className={`${miniArticle ? 'hidden' : ''}`}>
+
                 <div>
                     {calculateIndicatorGradient()}
+                    {indicatorLabel()}
                 </div>
-                <div className={`${likes === 1 ? 'text-center flex px-5 select-none text-black dark:text-white' : 'hidden'}`}>
-                    {likes} like
-                </div>
-                <div className={`${likes !== 1 ? 'text-center flex px-5 select-none text-black dark:text-white' : 'hidden'}`}>
-                    {likes} likes
-                </div>
+
             </div>
             <div className={`${miniArticle ? 'block' : 'hidden'}`}>
                 <div>
