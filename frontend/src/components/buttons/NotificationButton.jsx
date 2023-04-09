@@ -109,7 +109,7 @@ const NotificationButton = () => {
     const showNotifications = () => {
         if (notifications.length === 0) {
             return (
-                <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-4 rounded-lg border-4 border-black dark:border-white'>
+                <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-2 rounded-lg border-2 border-black dark:border-white'>
                     <div className='flex justify-center text-center dark:text-white'>
                         No new notifications
                     </div>
@@ -135,7 +135,7 @@ const NotificationButton = () => {
                                     type="button"
                                     onClick={() => viewCommentDetail(notification.message.id, notification.id)}
                                 >
-                                    <div key={notification.timestamp} className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} grid grid-cols-3 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
+                                    <div key={notification.timestamp} className={`${notification.is_read === "0" ? '' : 'bg-white dark:bg-dark-grey'} grid grid-cols-3 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
                                         <div className='ml-10'>
                                             <img src={notification.message.sender.profile_image} width={'50'} alt={'user profile'} />
                                         </div>

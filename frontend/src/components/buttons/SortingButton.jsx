@@ -163,20 +163,20 @@ const SortingButton = () => {
                 />
         },
         {
-            option: 'Most Popular',
-            button:
-                <Button label={'Most Popular'}
-                    func={() => refreshPopular('mostPopular')}
-                    icon={<BiLike size={'26px'} />}
-                    labelProps={'text-sm pt-1 pl-2'}
-                />
-        },
-        {
             option: 'Oldest',
             button:
                 <Button label={'Oldest'}
                     func={() => refreshNew('oldest')}
                     icon={<GiNightSleep size={'26px'} />}
+                    labelProps={'text-sm pt-1 pl-2'}
+                />
+        },
+        {
+            option: 'Most Popular',
+            button:
+                <Button label={'Most Popular'}
+                    func={() => refreshPopular('mostPopular')}
+                    icon={<BiLike size={'26px'} />}
                     labelProps={'text-sm pt-1 pl-2'}
                 />
         },
@@ -217,7 +217,7 @@ const SortingButton = () => {
             </div>
             <div>
                 {open ? (
-                    <div className='bg-white dark:bg-dark-grey border-4 border-black dark:border-white opacity-100 p-5 mt-40 rounded-lg'>
+                    <div className='bg-white dark:bg-dark-grey border-2 border-black dark:border-white opacity-100 p-5 mt-40 rounded-lg'>
                         {menu.map((item) => (
                             <div key={item.option} className='flex justify-center pt-2'>
                                 {item.button}
