@@ -7,13 +7,14 @@ import { Link } from 'react-router-dom'
 import Modal from 'react-modal'
 import '../../walletModal.css'
 import { MdDeleteForever, MdCheck, MdOutlineCancel } from 'react-icons/md'
-import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert } from '..'
+import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert, SentimentIndicator, ExceedsLengthAlert } from '..'
 
 /**
  * 
  * @param {String} articleID - ID of the parent article
+ * @param {String} articleAuthor - ID of the writer of the article
  *  
- * @returns Comment section with ability to -----
+ * @returns Comment section to be displayed underneath an article, shows all top level comments
  */
 
 const CommentSection = ({ articleID, articleAuthor }) => {
@@ -27,6 +28,8 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         setAlreadySaidAlert,
         emptyFieldAlert,
         setEmptyFieldAlert,
+        exceedsLengthAlert,
+        setExceedsLengthAlert,
     } = useStateContext()
 
     const [comment, setComment] = useState('')
@@ -44,6 +47,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
     const [commentUserID, setCommentUserID] = useState('')
 
     const [replySubmitted, setReplySubmitted] = useState(false)
+    const [reactionSubmitted, setReactionSubmitted] = useState(false)
 
     const handleComment = (e) => {
         setComment(e)
@@ -72,7 +76,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                 })
         }
         refreshComments()
-    }, [commentSubmitted, deletionConfirmed, articleID, replySubmitted])
+    }, [commentSubmitted, deletionConfirmed, articleID, replySubmitted, reactionSubmitted])
 
     const handleSubmit = async () => {
         if (!walletUser) {
@@ -90,9 +94,14 @@ const CommentSection = ({ articleID, articleAuthor }) => {
 
         // newComment.append('recipient', articleAuthor)
 
+        let aggregateValues = ''
+
         for (const v of newComment.values()) {
-            console.log(newComment.keys(), v)
+            aggregateValues += newComment.keys() + ' ' + v + ' \n'
         }
+        aggregateValues += comment.length
+
+        console.log(aggregateValues)
 
         try {
             await API.post(`/articles/article/comment/${articleID}/`, newComment, {
@@ -109,6 +118,11 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                 setCommentSubmitted(true)
             })
         } catch (err) {
+            if (comment.length > 250) {
+                setExceedsLengthAlert(true)
+                setCommentError(true)
+                return
+            }
             if (err.response.status === 400 && comment.length > 1) {
                 setAlreadySaidAlert(true)
                 setCommentError(true)
@@ -251,12 +265,92 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         })
     }
 
-    const submitSentiment = (e) => {
-        let response = new FormData()
-        response.append('comment',)
-        response.append('createe')
-        response.append('responder')
-        response.append('sentiment', e)
+    // const handleReaction = async (reaction) => {
+    //     if (!walletUser) {
+    //         setLoginAlert(true)
+    //         return
+    //     }
+    //     let userReaction = new FormData()
+    //     userReaction.append('user_id', loggedInProfile.id)
+    //     userReaction.append('article_id', article.id)
+    //     userReaction.append('sentiment', reaction)
+    //     try {
+    //         await API.post(`/articles/reaction/${article.id}/`, userReaction, {
+    //             headers: {
+    //                 'Authorization': `Token ${loggedInProfile.sessionToken}`,
+    //                 'Content-Type': 'multipart/form-data',
+    //             },
+    //         }).then(res => {
+    //             setButtonClick(!buttonClick)
+    //         })
+    //     } catch (err) {
+    //         console.log(err)
+    //         if (err.response.status === 400) {
+    //             await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
+    //                 headers: {
+    //                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
+    //                     'Content-Type': 'multipart/form-data',
+    //                 },
+    //             }).then((res => {
+    //                 setButtonClick(!buttonClick)
+    //             }))
+    //         }
+    //     }
+    // }
+
+    const handleReaction = async (op_id, comment_id, sentiment) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+        let reaction = new FormData()
+        reaction.append('original_poster_id', op_id)
+        reaction.append('reactor_id', loggedInProfile.id)
+        reaction.append('comment_id', comment_id)
+        reaction.append('sentiment', sentiment)
+
+        try {
+            await API.post(`user/comment/reaction/${comment_id}/`, reaction, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => {
+                console.log(res)
+                setReactionSubmitted(!reactionSubmitted)
+            })
+        } catch (err) {
+            console.log(err)
+            if (err.response.status === 400) {
+                await API.delete(`user/comment/reaction/delete/${comment_id}/`, {
+                    headers: {
+                        'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then((res => {
+                    setReactionSubmitted(!reactionSubmitted)
+                }))
+            }
+        }
+    }
+
+    const handleCommentLength = (comment, commentID) => {
+        if (comment.length > 80) {
+            let reducedComment = comment.slice(0, 79) + '...'
+            return (
+                <Link to={`articles/comments/${commentID}`}>
+                    {reducedComment}
+                </Link>
+            )
+        }
+        else {
+            return (
+                <div>
+                    {comment}
+                </div>
+            )
+        }
+
     }
 
     return (
@@ -275,6 +369,9 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                         borderColor={`${commentError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
                         onChange={e => handleComment(e.target.value)}
                     />
+                    <div className='flex justify-end mt-2'>
+                        {comment.length}/250
+                    </div>
                 </div>
                 <div className='flex justify-center mt-5'>
                     <Button label={'Submit'} func={handleSubmit} />
@@ -297,18 +394,25 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                                     </div>
                                 </Link>
                                 <div className='flex justify-center mt-2'>
-                                    {articleComment.comment}
+                                    {handleCommentLength(articleComment.comment, articleComment.id)}
                                 </div>
                                 <div className='flex justify-center mt-2'>
                                     {formatDate(articleComment.date)}
                                 </div>
                                 <div className='flex flex-row justify-center mt-5 space-x-2'>
                                     <Button icon={<BsReply size={'26px'} />} func={() => initReply(articleComment.sender.id, articleComment.id)} />
-                                    <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(1)} />
-                                    <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(2)} />
+                                    <Button icon={<BiLike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 1)} />
+                                    <Button icon={<BiDislike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 2)} />
                                     <div className={`${loggedInProfile.id === articleComment.sender.id ? 'flex justify-center' : 'hidden'}`}>
                                         <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(articleComment.id)} />
                                     </div>
+                                </div>
+                                <div className='mt-5'>
+                                    <SentimentIndicator
+                                        dislikes={articleComment.sentiment[1]}
+                                        likes={articleComment.sentiment[0]}
+                                        likePercent={articleComment.sentiment[2]}
+                                    />
                                 </div>
                                 <div>
                                     {showReplies(articleComment.comment_replies, articleComment.id)}
@@ -373,6 +477,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
             <LoginAlert open={loginAlert} />
             <AlreadySaidAlert open={alreadySaidAlert} />
             <EmptyFieldAlert open={emptyFieldAlert} />
+            <ExceedsLengthAlert open={exceedsLengthAlert} />
         </div>
     )
 }
