@@ -50,7 +50,7 @@ const Header = ({ page }) => {
                                 />
                             </Link>
                         </div>
-                        <div className={`${page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'block pr-2 py-3' : page === 'thread' ? 'block pr-2 py-3' : 'hidden'}`}>
+                        <div className={`${page === 'edit' ? 'block pr-2 py-3' : page === 'articleDetail' ? 'block pr-2 py-3' : page === 'login' ? 'hidden' : page === 'thread' ? 'block pr-2 py-3' : 'hidden'}`}>
                             <Button label={'Back'} labelProps={'text-sm pt-1 pl-2'} icon={<IoArrowBack size={'26px'} />} func={() => history(-1)} />
                         </div>
                         <div className={`${page === 'landing' ? 'hidden' : page === 'login' ? 'hidden' : page === 'user' ? 'hidden' : 'py-3 pr-2'}`}>
