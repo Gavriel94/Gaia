@@ -145,7 +145,7 @@ const ArticleDetail = () => {
             <>
                 {
                     loadTag && (
-                        <Navigate to={`/articles/tags/${tagToLoad}`} replace={true}/>
+                        <Navigate to={`/articles/tags/${tagToLoad}`} replace={true} />
                     )
                 }
                 {
@@ -185,7 +185,7 @@ const ArticleDetail = () => {
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
-                            <Title text={'Tags'} size={'text-2xl'} />
+                            <Title text={'Topics'} size={'text-2xl'} />
                         </div>
                         <div className='flex justify-center mt-2'>
                             {article.article_tags.map((tag) =>
@@ -199,19 +199,19 @@ const ArticleDetail = () => {
                         </div>
                         <div className='mt-10 flex justify-center space-x-5'>
                         </div>
-                        <div className='flex flex-row justify-center'>
+                        <div className='flex flex-row justify-center space-x-5'>
+                            <div className='mt-3'>
+                                <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
+                            </div>
                             <div className='mt-3'>
                                 <Button icon={<BiDislike size={'26px'} />} func={e => handleReaction(2)} />
                             </div>
-                            <SentimentIndicator
+                        </div>
+                        <SentimentIndicator
                                 dislikes={article.sentiment[1]}
                                 likes={article.sentiment[0]}
                                 likePercent={article.sentiment[2]}
                             />
-                            <div className='mt-3'>
-                                <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
-                            </div>
-                        </div>
                         <div className='flex justify-center mt-10 mb-10'>
                             <CommentSection articleID={article.id} articleAuthor={article.author} />
                         </div>
