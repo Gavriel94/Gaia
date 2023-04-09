@@ -36,7 +36,10 @@ const Login = () => {
             <div className='flex justify-center mt-20'>
                 <Title text={'Login'} size={'text-6xl'} hover={true}/>
             </div>
-            <div className='flex justify-center mt-20'>
+            <div className='mt-20 dark:text-white text-center'>
+                Login to view your profile
+            </div>
+            <div className='mt-5 flex justify-center'>
                 <LoginButton />
             </div>
         </>
