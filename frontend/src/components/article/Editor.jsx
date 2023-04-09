@@ -37,16 +37,28 @@ import { useStateContext } from '../../context/ContextProvider'
 /**
  * TODO: Sanitise all HTML input 
  * TODO: Add dark mode styles
+ * TODO: Change image upload to file input in addImage()
  */
 
 const MenuBar = ({ editor }) => {
 
-    const addImage = () => {
-        const url = window.prompt('URL')
+    // const addImage = () => {
+    //     const url = window.prompt('URL')
 
-        if (url) {
-            editor.chain().focus().setImage({ src: url }).run()
-        }
+    //     if (url) {
+    //         editor.chain().focus().setImage({ src: url }).run()
+    //     }
+    // }
+
+    const addImage = async e => {
+        console.log('add image')
+        const img = e.target.files[0]
+        const imgURL = URL.createObjectURL(img)
+
+        // Perform image checks
+
+        // if(imageChecksOut)
+        editor.chain().focus().setImage({ src: imgURL}).run()
     }
 
     const setLink = useCallback(() => {
@@ -71,15 +83,15 @@ const MenuBar = ({ editor }) => {
             .run()
     }, [editor])
 
-    const clear =() => {
+    const clear = () => {
         var c = window.confirm(`Are you sure you want to clear?\nThis can't be undone`)
-        if(c === 'true') {
+        if (c === 'true') {
             editor.commands.clearContent()
         }
         else {
             return
         }
-      }
+    }
 
     if (!editor) {
         return null
@@ -194,14 +206,26 @@ const MenuBar = ({ editor }) => {
                 >
                     <MdOutlineHorizontalRule size={'26px'} />
                 </button>
-                <button onClick={(event) => {
+                {/* <button onClick={(event) => {
                     addImage()
                 }
                 }
                     className='editor'
                 >
                     <BsCardImage size={'26px'} />
+                </button> */}
+                <input type='file' onChange={addImage} className='opacity-40 w-[40px] h-[50px] absolute cursor-pointer' />
+                <button
+                    className={'editor'}
+                    onClick={(event) => {
+                        addImage()
+                    }}
+                >
+
+                    <BsCardImage size={'26px'} />
                 </button>
+
+
                 <button onClick={setLink} className={editor.isActive('link') ? 'is-active' : 'editor'}>
                     <TbLink size={'26px'} />
                 </button>
@@ -213,7 +237,7 @@ const MenuBar = ({ editor }) => {
                     <TbUnlink size={'26px'} />
                 </button>
                 <button className='editor' onClick={() => clear()}>
-                <AiOutlineClear size={'26px'} />
+                    <AiOutlineClear size={'26px'} />
                 </button>
             </div>
         </div>
@@ -251,7 +275,8 @@ const Editor = ({ setContent, borderColor }) => {
         `,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
-            setContent(html)
+            setContent(html + ' ')
+            console.log(html + ' ')
         },
     })
 
