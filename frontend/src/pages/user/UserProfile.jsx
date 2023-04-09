@@ -18,7 +18,7 @@ import { BsPen } from 'react-icons/bs'
  */
 
 const UserProfile = () => {
-  const { loggedInProfile } = useStateContext()
+  const { loggedInProfile, connectedWallet } = useStateContext()
   const { id } = useParams()
   const [profileData, setProfileData] = useState({
     id: '',
@@ -100,6 +100,7 @@ const UserProfile = () => {
     return (
       <>
       {console.log(loggedInProfile)}
+      {console.log(connectedWallet)}
         <div className='fixed justify-center m-auto left-0 right-0'>
           {/* <ProfileArticleBar header={'Articles Written'} articles={profileData.authored} /> */}
           <div>
