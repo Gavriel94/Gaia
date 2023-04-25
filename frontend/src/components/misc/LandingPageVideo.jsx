@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import GaiaAnim from '../../assets/GaiaAnimCompressed.mp4'
+import GaiaAnim from '../../assets/NewLandingVideo.mp4'
 import '../../video.css'
 import { CgEnter } from 'react-icons/cg'
 
@@ -16,7 +16,7 @@ const LandingPageVideo = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowButton(true)
-    }, 18000);
+    }, 21000);
     return () => clearTimeout(timer);
   }, [showButton]);
 
@@ -28,17 +28,16 @@ const LandingPageVideo = () => {
       </div>
       <div className={`${showButton ? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' : 'hidden'}`}>
         <Link to={'/home'}>
-        <button
+          <button
             type='button'
-            className='rounded-full focus:outline-none
-        bg-light-orange hover:bg-light-white hover:text-light-orange text-light-white
-        dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'>
+            className='rounded-full
+          bg-black text-light-white dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'>
             <div className='flex flex-row text-center justify-center'>
-                {<CgEnter size={'26px'}/>}
+              <div>Enter</div>
             </div>
-        </button>
-      </Link>
-    </div>
+          </button>
+        </Link>
+      </div>
     </>
   )
 }
