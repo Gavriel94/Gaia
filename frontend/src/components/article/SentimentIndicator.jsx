@@ -6,7 +6,7 @@ import React from 'react'
  * @param {string} likes - Number of likes
  * @param {string} likePercent - Number of likes / (likes+dislikes)
  * @param {boolean} miniArticle - Hide number of likes if being displayed in MiniArticle
- * @returns 
+ * @returns {JSX.Element} - Component displaying user sentiment within a gradient
  */
 
 const SentimentIndicator = ({ dislikes, likes, likePercent, miniArticle }) => {

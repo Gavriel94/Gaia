@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useStateContext } from '../../context/ContextProvider'
-import { TbSun, TbSunrise } from 'react-icons/tb'
+import {  TbSunrise } from 'react-icons/tb'
 import Button from '../misc/Button'
 import API from '../../API'
 import { GiNightSleep } from 'react-icons/gi'
@@ -21,7 +21,6 @@ const SortingButton = () => {
      * This function minimises API calls by only making an API call if the current articleList is sorted by popularity
      * 
      * @param {String} orderBy - desired order
-     * @returns 
      */
     const refreshNew = (orderBy) => {
         if (orderBy === 'newest' && articleList.sortBy === 'newest') {
@@ -80,7 +79,6 @@ const SortingButton = () => {
  * This function minimises API calls by only making an API call if the current articleList is sorted by publishing date
  * 
  * @param {String} orderBy - desired order
- * @returns 
  */
     const refreshPopular = (orderBy) => {
         if (orderBy === 'mostPopular' && articleList.sortBy === 'most popular') {
