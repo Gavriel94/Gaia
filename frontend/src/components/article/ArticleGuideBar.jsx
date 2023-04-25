@@ -63,7 +63,6 @@ const ArticleGuideBar = ({ title, content, tags, previewImage }) => {
               <span className='select-none'>Tags</span>
             </div>
             <div className='text-center justify-center place-self-center w-[150px]'>
-            <div className='mt-2 text-black dark:text-white justify-center text-center select-none'>Articles must comply with the terms of service. Find out more in the <Link to="/articleguide" className="font-medium text-light-orange dark:text-dark-orange" style={{ textDecoration: 'none' }}>Article Guide</Link>.</div>
             </div>
           </div>
         </div>
