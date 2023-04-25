@@ -10,31 +10,31 @@ import { MdOutlineCancel } from 'react-icons/md'
  * @param {boolean} open - Parent component opens alert
  * @returns {JSX.Element} Modal with message
  */
-const LoginAlert = ({ open }) => {
+const LoginErrorAlert = ({ open }) => {
   
-  const { setLoginAlert, darkMode } = useStateContext()
+  const { setLoginErrorAlert, darkMode } = useStateContext()
 
   return (
     <Modal
       isOpen={open}
-      onRequestClose={() => setLoginAlert(false)}
+      onRequestClose={() => setLoginErrorAlert(false)}
       contentLabel="Reply"
       ariaHideApp={false}
       className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
       overlayClassName={'overlayModal'}
     >
-            <div className='
+      <div className='
                 text-2xl font-bold 
                 text-light-white
                 transition-colors duration-500 select-none text-center m-4
             '>
-        Login to continue
+        Error, please refresh and try again.
       </div>
       <div className='flex flex-row justify-center mt-5 space-x-5'>
-        <Button func={() => setLoginAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
+        <Button func={() => setLoginErrorAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
       </div>
     </Modal>
   )
 }
 
-export default LoginAlert
+export default LoginErrorAlert

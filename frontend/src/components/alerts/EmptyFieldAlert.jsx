@@ -5,7 +5,13 @@ import '../../walletModal.css'
 import Button from '../misc/Button'
 import { MdOutlineCancel } from 'react-icons/md'
 
+/**
+ * 
+ * @param {boolean} open - Parent component opens alert
+ * @returns {JSX.Element} Modal with message
+ */
 const EmptyFieldAlert = ({ open }) => {
+    
     const { setEmptyFieldAlert, darkMode } = useStateContext()
 
     return (
@@ -17,9 +23,11 @@ const EmptyFieldAlert = ({ open }) => {
             className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
             overlayClassName={'overlayModal'}
         >
-            <div className='text-2xl font-bold 
-        text-light-white
-        transition-colors duration-500 select-none text-center m-4'>
+            <div className='
+                text-2xl font-bold 
+                text-light-white
+                transition-colors duration-500 select-none text-center m-4
+            '>
                 Field cannot be empty
             </div>
             <div className='flex flex-row justify-center mt-5 space-x-5'>

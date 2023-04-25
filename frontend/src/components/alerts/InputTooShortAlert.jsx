@@ -10,14 +10,14 @@ import { MdOutlineCancel } from 'react-icons/md'
  * @param {boolean} open - Parent component opens alert
  * @returns {JSX.Element} Modal with message
  */
-const AlreadySaidAlert = ({ open }) => {
+const InputTooShortAlert = ({ open }) => {
     
-    const { setAlreadySaidAlert, darkMode } = useStateContext()
+    const { setInputTooShortAlert, darkMode } = useStateContext()
 
     return (
         <Modal
             isOpen={open}
-            onRequestClose={() => setAlreadySaidAlert(false)}
+            onRequestClose={() => setInputTooShortAlert(false)}
             contentLabel="Reply"
             ariaHideApp={false}
             className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
@@ -28,13 +28,13 @@ const AlreadySaidAlert = ({ open }) => {
                 text-light-white
                 transition-colors duration-500 select-none text-center m-4
             '>
-                Already said that!
+                Input is too short!
             </div>
             <div className='flex flex-row justify-center mt-5 space-x-5'>
-                <Button func={() => setAlreadySaidAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
+                <Button func={() => setInputTooShortAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />
             </div>
         </Modal>
     )
 }
 
-export default AlreadySaidAlert
+export default InputTooShortAlert
