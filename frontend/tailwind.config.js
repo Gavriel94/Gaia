@@ -85,6 +85,9 @@ module.exports = {
             "light-orange-hover": "#F4AC57",
             "dark-orange-hover": "#FF974D",
             "white": "#FFFFFF",
+            "amber-500": '#f59e0b',
+            "emerald-500": '#10b981',
+            "red-500": "#ef4444",
         },
         extend: {
             fontFamily: {

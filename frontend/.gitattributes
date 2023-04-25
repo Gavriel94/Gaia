@@ -1,1 +1,2 @@
 *.mp4 filter=lfs diff=lfs merge=lfs -text
+frontend/src/assets/GaiaLanding.mov filter=lfs diff=lfs merge=lfs -text
