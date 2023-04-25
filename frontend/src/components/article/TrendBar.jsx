@@ -34,7 +34,7 @@ const TrendBar = () => {
             <div className={`flex invisible xl:visible items-end px-10
             flex-col h-full 
             border-light-orange dark:border-dark-orange border-opacity-50`}>
-                <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
+                <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-auto fixed'>
                     <div className='py-4' />
                     <div className='w-[300px] h-[10px] justify-center py-10'>
                         <Link to={`/trending`} style={{ textDecoration: 'none' }}>
@@ -50,6 +50,7 @@ const TrendBar = () => {
                                         title={article.title}
                                         tags={article.tags}
                                         image={article.preview_image}
+                                        likes={article?.sentiment[0]}
                                     />
                                 </Link>
                             </div>
