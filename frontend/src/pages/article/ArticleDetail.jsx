@@ -78,7 +78,6 @@ const ArticleDetail = () => {
                 setButtonClick(!buttonClick)
             })
         } catch (err) {
-            console.log(err)
             if (err.response.status === 400) {
                 await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
                     headers: {
@@ -99,7 +98,6 @@ const ArticleDetail = () => {
                 'Content-Type': 'multipart/form-data',
             },
         }).then((res => {
-            console.log(res)
             setConfirmDelete(false)
             setDeletionConfirmed(true)
         }))
@@ -153,7 +151,6 @@ const ArticleDetail = () => {
                         <Navigate to={`/home/`} replace={true} />
                     )
                 }
-                {console.log(loggedInProfile)}
                 <div className='fixed justify-center m-auto left-0 right-0'>
                     <div className="hidden xl:block">
                         <AuthorBar authorID={article.author} showTipButton={showTipButton()} />
@@ -181,25 +178,32 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='mt-20' />
-                        <div className='justify-center content-center text-center text-truncate w-[100px] md:w-[500px] lg:w-[600px] xl:w-[850px]'>
+                        <div className='justify-center text-center pl-36 w-[300px] sm:w-[350px] sm:pl-10 md:w-[500px] lg:w-[600px] xl:w-[850px]'>
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
                             <Title text={'Topics'} size={'text-2xl'} />
                         </div>
-                        <div className='flex justify-center mt-2'>
+                        <div className='hidden flex-row justify-center mt-2 sm:flex'>
                             {article.article_tags.map((tag) =>
                                 <div key={tag.tag} className='px-2'>
                                     <Button label={tag.tag} func={() => navigateToTab(tag.tag)} />
                                 </div>)
                             }
                         </div>
-                        <div className='flex justify-center mt-10'>
+                        <div className='flex flex-row justify-center mt-2 sm:hidden'>
+                            {article.article_tags.map((tag) =>
+                                <div key={tag.tag} className='px-2'>
+                                    <Link to={`/articles/tags/${tag.tag}`}>{tag.tag}</Link>
+                                </div>)
+                            }
+                        </div>
+                        <div className='flex justify-center mt-10 overflow-auto'>
                             {formatDate(article.pub_date)}
                         </div>
-                        <div className='mt-10 flex justify-center space-x-5'>
+                        <div className='hidden sm:block mt-10 justify-center space-x-5'>
                         </div>
-                        <div className='flex flex-row justify-center space-x-5'>
+                        <div className='hidden sm:flex flex-row justify-center space-x-5'>
                             <div className='mt-3'>
                                 <Button icon={<BiLike size={'26px'} />} func={e => handleReaction(1)} />
                             </div>
@@ -208,10 +212,10 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <SentimentIndicator
-                                dislikes={article.sentiment[1]}
-                                likes={article.sentiment[0]}
-                                likePercent={article.sentiment[2]}
-                            />
+                            dislikes={article.sentiment[1]}
+                            likes={article.sentiment[0]}
+                            likePercent={article.sentiment[2]}
+                        />
                         <div className='flex justify-center mt-10 mb-10'>
                             <CommentSection articleID={article.id} articleAuthor={article.author} />
                         </div>

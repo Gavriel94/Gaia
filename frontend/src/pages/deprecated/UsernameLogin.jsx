@@ -49,7 +49,6 @@ const UsernameLogin = () => {
   }
 
   const handleNewToken = (e) => {
-    console.log(e)
     setSessionToken(e)
   }
 

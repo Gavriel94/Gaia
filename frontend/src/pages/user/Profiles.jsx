@@ -4,8 +4,7 @@ import { Navigate } from 'react-router-dom'
 /**
  * Hosted in the Sidebar component 
  * Redirects user to the login page if they are not logged in and click the Profile button
- * 
- * @returns {JSX.Navigate} - Navigator to register page
+ * Navigator to register page
  */
 
 const Profiles = () => {

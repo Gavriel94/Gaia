@@ -7,8 +7,7 @@ import { useStateContext } from '../../context/ContextProvider'
  * 
  * Provides a button for the user to login
  * Automatically redirects to the users profile page
- * 
- * @returns {JSX.Element} Login page 
+ * Login page 
  */
 
 const Login = () => {

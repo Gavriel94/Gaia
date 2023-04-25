@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TrendBar, SidebarV2, Header, Title, ArticleLoading, ArticleList, TopLoader, RefreshPosts } from '../../components'
+import { TrendBar, SidebarV2, Header, Title, ArticleLoading, ArticleList, TopLoader, RefreshPosts, Footer } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
 
@@ -8,11 +8,6 @@ import API from '../../API'
  * Displays an ArticleList component complete with links to each article
  * 
  * @returns {JSX.Element} Home page
- */
-
-/**
- * TODO: TopLoader currently hidden as useEffect causes multiple re-renders 
- * TODO: serverTimeout warning appears when server has not timed out
  */
 
 const Home = () => {
@@ -33,22 +28,24 @@ const Home = () => {
         refreshArticles()
     }, [])
 
+    // ! element to render button which takes user back to the top of the page
+    // ! hidden as causes an issue with constant re-rendering
     // shows TopLoader after scrolling down the page
     // useEffect(() => {
     //     window.addEventListener("scroll", listenToScroll)
     //     return () => window.removeEventListener("scroll", listenToScroll)
     // }, [])
 
-    const listenToScroll = () => {
-        let showFrom = 300
-        const windowScroll = document.body.scrollTop || document.documentElement.scrollTop
+    // const listenToScroll = () => { 
+    //     let showFrom = 300
+    //     const windowScroll = document.body.scrollTop || document.documentElement.scrollTop
 
-        if (windowScroll > showFrom) {
-            setTopLoaderVisible(true)
-        } else {
-            setTopLoaderVisible(false)
-        }
-    }
+    //     if (windowScroll > showFrom) {
+    //         setTopLoaderVisible(true)
+    //     } else {
+    //         setTopLoaderVisible(false)
+    //     }
+    // }
 
     var timer = 0
     const serverTimeout = (e) => {
@@ -101,6 +98,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
+                <Footer/>
             </>
         )
     }

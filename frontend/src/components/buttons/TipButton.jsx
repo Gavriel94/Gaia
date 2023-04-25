@@ -24,8 +24,9 @@ let Buffer = require('buffer/').Buffer
  * Functional tip button which allows a logged in user to send ADA to an authors wallet
  * 
  * @param {String} authorUsername - username of tip recipient
- * @param {String} amountInAda - Amount to tip author (must be >=1₳) 
- * @returns 
+ * @param {String} amountInAda - amount to tip author (must be >=1₳) 
+ * 
+ * @returns {JSX.Element} - button for user to execute tipping feature
  */
 
 const TipButton = ({ authorUsername }) => {
@@ -39,7 +40,6 @@ const TipButton = ({ authorUsername }) => {
 
     const getTxUnspentOutputs = async () => {
         let outputs = TransactionUnspentOutputs.new()
-        console.log(connectedWallet.Utxos)
         for (const utxo of connectedWallet.Utxos) {
             outputs.add(utxo.TransactionUnspentOutput)
         }
@@ -79,8 +79,6 @@ const TipButton = ({ authorUsername }) => {
 
     const buildADATransaction = async (amountInADA) => {
         try {
-            console.log(amountInADA)
-
             const protocol_params = {
                 linearFee: {
                     minFeeA: '44',
@@ -112,24 +110,6 @@ const TipButton = ({ authorUsername }) => {
                 .prefer_pure_change(true)
                 .build()        
             )
-
-            // // Protocol parameters set by IOG
-            // const linearFee = LinearFee.new(
-            //     BigNum.from_str('44'),
-            //     BigNum.from_str('155381')
-            // );
-
-            // var cpUtxoByte = String(4310)
-            // const txBuilderCfg = TransactionBuilderConfigBuilder.new()
-            //     .fee_algo(linearFee)
-            //     .pool_deposit(BigNum.from_str('500000000'))
-            //     .key_deposit(BigNum.from_str('2000000'))
-            //     .max_value_size(4000)
-            //     .max_tx_size(8000)
-            //     .coins_per_utxo_byte(BigNum.from_str(cpUtxoByte))
-            //     .build();
-
-            // const txBuilder = TransactionBuilder.new(txBuilderCfg);
 
             // tip recipient address
             const shelleyOutputAddress = Address.from_bech32(authorUsername);
@@ -166,22 +146,6 @@ const TipButton = ({ authorUsername }) => {
                 TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
             )
 
-            printAll(            
-                // linearFee, 
-                // txBuilderCfg, 
-                txBody,
-                txBuilder, 
-                shelleyOutputAddress, 
-                shelleyChangeAddress, 
-                strAmountInLovelace, 
-                txUnspentOutputs, 
-                txBody, 
-                transactionWitnessSet, 
-                tx, 
-            )
-
-            console.log(typeof(connectedWallet.walletAPI))
-
             let txVkeyWitnesses = await connectedWallet.walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
             txVkeyWitnesses = TransactionWitnessSet.from_bytes(Buffer.from(txVkeyWitnesses, "hex"));
 
@@ -194,8 +158,7 @@ const TipButton = ({ authorUsername }) => {
 
 
             const submittedTxHash = await connectedWallet.walletAPI.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
-            console.log(submittedTxHash)
-            console.log('Transaction successful')
+
             setOpenModal(false)
             setTipSuccessful(true)
  

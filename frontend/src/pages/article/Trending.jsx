@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Header, SidebarV2, Title, MiniArticle } from '../../components'
+import { Header, SidebarV2, Title, MiniArticle, Footer } from '../../components'
 import API from '../../API'
+
 /**
  * Page which allows users to see trending topics if they are not using a screen large enough to see the TrendBar
  * Shows 8 Articles instead of the 4 you can see with the TrendBar
@@ -20,7 +21,6 @@ const Trending = () => {
                 .catch(err => {
                     console.log(err)
                 })
-                console.log(mostPopular)
         }
 
         getTrending()
@@ -61,10 +61,10 @@ const Trending = () => {
                     Updates every day
                 </div>
                 {articles}
-                {console.log(mostPopular)}
                 </div>
             </div>
         </div>
+        <Footer/>
 </>
   )
 }

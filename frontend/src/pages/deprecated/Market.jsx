@@ -3,8 +3,7 @@ import { SidebarV2, Header, Title } from '../../components'
 
 /**
  * Page for implementing a market API such as CoinMarketCap
- * 
- * ? Currently hidden from user, unsure if it will be implemented 
+ *  
  */
 
 const Market = () => {

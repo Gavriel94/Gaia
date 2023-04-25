@@ -9,7 +9,7 @@ import adaHandleLogo from '../../assets/adaHandleLogoRounded.png'
 /**
  * Provides an interface for the user to add additional information to their profile
  * 
- * @returns {JSX.Element} - Page which allows user to add profile image and bio
+ * Page which allows user to add profile image and bio
  */
 
 const EditProfile = () => {
@@ -18,15 +18,12 @@ const EditProfile = () => {
         setLoggedInProfile,
         darkMode,
         walletUser,
-        adaHandleSelected,
         setAdaHandleSelected,
         setDisplayAdaHandle,
         adaHandleDetected,
         adaHandleName,
         imageTooLargeAlert,
-        setImageTooLargeAlert,
         notImageAlert,
-        setNotImageAlert,
     } = useStateContext()
 
     const [newDisplayName, setNewDisplayName] = useState('')
@@ -50,7 +47,6 @@ const EditProfile = () => {
         setImageError(false)
         setImageErrorMessage('')
         let image = e.target.files[0]
-        console.log(image)
 
         if (image.size > 800000) {
             setImageError(true)
@@ -58,12 +54,11 @@ const EditProfile = () => {
             return
         }
 
-        let imageRegEx = /(\.gif|\.jpeg|\.jpg|\.tiff?|\.png|\.webp|\.bmp)$/
+        let imageRegEx = /(\.gif|\.jpg|\.png|\.bmp)$/
         let imageValid = imageRegEx.test(image.name)
-        console.log(imageValid)
         if (!imageValid) {
             setImageError(true)
-            setImageErrorMessage('No image found. File must end with .gif / .jpeg / .jpg / .tiff / .png / .webp / .bmp.')
+            setImageErrorMessage('File must end with .gif / .jpg / .png / .bmp.')
             return
         }
 
@@ -83,6 +78,8 @@ const EditProfile = () => {
     const handleSubmit = async () => {
         let updatedProfile = new FormData()
 
+        updatedProfile.append('id', loggedInProfile.id)
+
         if (newBio.length > 0) {
             updatedProfile.append('bio', newBio)
         }
@@ -95,28 +92,8 @@ const EditProfile = () => {
             updatedProfile.append('profile_name', newDisplayName)
         }
 
-        console.log('pre loggedInProfile', loggedInProfile)
 
-        // setLoggedInProfile({
-        //     sessionToken: loggedInProfile.sessionToken,
-        //     id: loggedInProfile.id,
-        //     username: loggedInProfile.username,
-        //     bio: loggedInProfile.bio,
-        //     profile_image: loggedInProfile.profile_image,
-        //     profile_name: newDisplayName,
-        //     authored: loggedInProfile.authored,
-        //     reacted: loggedInProfile.reacted,
-        //     bookmarked: loggedInProfile.bookmarked,
-        //     notifications: loggedInProfile.notifications
-        // })
-        setLoggedInProfile({...loggedInProfile, ...updatedProfile})
-
-
-        for (const v of updatedProfile.values()) {
-            console.log('values', v)
-        }
-
-        console.log('post loggedInProfile', loggedInProfile)
+        setLoggedInProfile({ ...loggedInProfile, ...updatedProfile })
 
         try {
             await API.patch(`/profile/user/${loggedInProfile.id}/update/`, updatedProfile, {
@@ -124,8 +101,9 @@ const EditProfile = () => {
                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
                     'Content-Type': 'multipart/form-data',
                 },
-            }).then(response => console.log(response))
-            setUpdateSuccess(true)
+            }).then(response => {
+                setUpdateSuccess(true)
+            })
         } catch (err) {
             console.log(err)
         }
@@ -144,7 +122,6 @@ const EditProfile = () => {
             <div className='fixed justify-center m-auto left-0 right-0'>
                 <Header page={'edit'} />
                 <SidebarV2 />
-                {console.log(loggedInProfile)}
             </div>
             <div className={`flex justify-center ${darkMode ? '' : ''}`}>
                 <div className='pt-20 justify-center mx-autow-full'>
@@ -163,6 +140,12 @@ const EditProfile = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className={`${previewImage === undefined ? 'flex text-center justify-center mt-2 ml-5 dark:text-white' : 'hidden'}`}>
+                        Add an image
+                    </div>
+                    <div className='dark:text-white text-black flex justify-center'>
+                        Gaia only accepts image files which end in .gif / .jpg / .png / .bmp.
                     </div>
                     <div className={`${imageError ? 'flex justify-center dark:text-white mt-5' : 'hidden'}`}>
                         {imageErrorMessage}

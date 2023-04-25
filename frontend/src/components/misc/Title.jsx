@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 
 /**
- * Simple title component to enable consistent headers throughout the app
+ * Title component to enable consistent headers throughout the app
  * 
  * @param {string} text - text to be displayed as the title
  * @param {string} size - size of the text displayed. Must be a complete Tailwind value e.g 'text-2xl'
  * @param {bool} lengthLimit - will slice and resize text if it's too long
+ * @param {bool} hover - text fades to orange when the cursor hovers on it 
  * 
  * @returns {JSX.Element} - Title component
  */
@@ -13,11 +14,10 @@ import React, { useEffect, useState } from 'react'
 const Title = ({ text, size, lengthLimit, hover }) => {
     const [dynamicSize, setDynamicSize] = useState(size)
     const [dynamicText, setDynamicText] = useState(text)
+    
     function capitalize(word) {
         return word?.charAt(0).toUpperCase() + word?.slice(1)
     }
-
-
 
     useEffect(() => {
         setDynamicText(text)
@@ -26,8 +26,6 @@ const Title = ({ text, size, lengthLimit, hover }) => {
             setDynamicText(text?.slice(0, 20) + '...')
         }
     }, [lengthLimit, text])
-
-
 
     return (
         <div className={`${dynamicSize} font-bold 

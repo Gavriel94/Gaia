@@ -6,14 +6,13 @@ import { useStateContext } from '../../context/ContextProvider'
 import { Link, Navigate } from 'react-router-dom'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { useParams } from 'react-router-dom'
-import { BiLike, BiDislike, BiBookBookmark } from 'react-icons/bi'
-import { BsPen } from 'react-icons/bs'
+import { BiLike, BiDislike } from 'react-icons/bi'
+import { BsPen, BsBookmarksFill } from 'react-icons/bs'
 
 /**
  * Page which displays information about the user
  * Allows a logged in user access to their personal EditProfile page
- * 
- * @returns {JSX.Element} - Profile details page
+ * Profile details page
  * 
  */
 
@@ -37,11 +36,9 @@ const UserProfile = () => {
     const profileDetail = () => {
       API.get(`/profile/user/${id}/`)
         .then((res) => {
-          // console.log(res.data)
           setProfileData(res.data)
           setShowArticles(res.data.authored)
         }).catch(err => {
-          console.log(err.response)
           setNotLoaded(true)
         })
     }
@@ -99,13 +96,11 @@ const UserProfile = () => {
   else {
     return (
       <>
-      {console.log(loggedInProfile)}
-      {console.log(connectedWallet)}
         <div className='fixed justify-center m-auto left-0 right-0'>
           {/* <ProfileArticleBar header={'Articles Written'} articles={profileData.authored} /> */}
           <div>
             <div className={`flex invisible xl:visible items-end px-10 flex-col h-full`}>
-              <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
+              <div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-auto fixed'>
                 <div className='py-4' />
                 <div className='w-[300px] h-[10px] justify-center py-10'>
                   <Title text={title} size={'text-3xl'} hover={true}/>
@@ -126,7 +121,7 @@ const UserProfile = () => {
                   <Button icon={<BiLike size={'26px'} />} func={() => sortByLiked()} />
                   <Button icon={<BiDislike size={'26px'} />} func={() => sortByDisliked()} />
                   <div className={`${loggedInProfile.id !== profileData.id ? 'hidden' : 'block'}`}>
-                    <Button icon={<BiBookBookmark size={'26px'} />} func={() => sortByBookmarked()} />
+                    <Button icon={<BsBookmarksFill size={'26px'} />} func={() => sortByBookmarked()} />
                   </div>
                 </div>
 

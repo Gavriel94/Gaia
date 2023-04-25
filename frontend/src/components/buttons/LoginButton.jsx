@@ -14,27 +14,16 @@ import {
     Address,
     TransactionUnspentOutput,
     Value,
-
-    TransactionOutput,
-    TransactionBuilder,
-    TransactionBuilderConfigBuilder,
-    LinearFee,
-    BigNum,
-    TransactionWitnessSet,
-    Transaction,
-    TransactionUnspentOutputs,
 } from "@emurgo/cardano-serialization-lib-asmjs"
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
+import LoginErrorAlert from '../alerts/LoginErrorAlert'
 let Buffer = require('buffer/').Buffer
 
 /**
- * Login button currently coupled with wallet logic for transactions etc
+ * Allows user to select a wallet, authenticate their login and sets users profile to state context
+ * 
  * @returns {JSX.Element} Login button
- */
-
-/**
- * TODO: Hardcode which wallets are allowed (typhoncip30, eternl & nami) instead of polling the browser
  */
 
 const LoginButton = () => {
@@ -51,6 +40,9 @@ const LoginButton = () => {
         loggedInProfile, setLoggedInProfile,
         setadaHandleDetected,
         adaHandleName,
+        loginErrorAlert, setLoginErrorAlert,
+        profileName, setProfileName,
+        profileNameFound, setProfileNameFound,
     } = useStateContext()
     const [showWalletSelectModal, setshowWalletSelectModal] = useState(false)
     const [wallets] = useState([])
@@ -89,7 +81,7 @@ const LoginButton = () => {
         let discardedWallets = [] //remove legacy or unsupported wallets
         for (const key in window.cardano) {
             if (window.cardano[key].enable && wallets.indexOf(key) === -1) {
-                if (key === 'ccvault' || key === 'typhon' || key === 'flint') {
+                if (key === 'ccvault' || key === 'typhon' || key === 'flint' || key === 'nami' || key === 'yoroi' || key === 'gero') {
                     discardedWallets.push(key)
                 }
                 else {
@@ -123,8 +115,6 @@ const LoginButton = () => {
      */
     const checkIfWalletFound = () => {
         const key = whichWalletSelected
-        console.log('whichWalletSelected', whichWalletSelected)
-        console.log('key', key)
         walletFound = !!window?.cardano?.[key]
         return walletFound
     }
@@ -153,13 +143,10 @@ const LoginButton = () => {
         const key = whichWalletSelected
         try {
             walletAPI = await window.cardano[key].enable()
-            console.log(walletAPI)
         } catch (err) {
             console.log(err)
-            // resetWalletSelection()
         }
 
-        console.log(checkIfWalletEnabled())
         return checkIfWalletEnabled()
     }
 
@@ -310,20 +297,16 @@ const LoginButton = () => {
     const refreshData = async () => {
         try {
             const walletFound = checkIfWalletFound()
-            console.log('wallet found', walletFound)
             if (walletFound) {
                 setLoading(true)
                 setwalletLoginButton(<LoadingSpinner />)
                 const walletAPIVersion = await getAPIVersion()
                 const walletName = await getWalletName()
                 const walletEnabled = await enableWallet()
-                console.log('wallet enabled', walletEnabled)
                 if (walletEnabled) {
                     const networkID = await getNetworkId()
                     const utxos = await getUtxos()
-                    console.log(adaHandleName)
                     const balance = await getBalance()
-                    console.log(walletAPI)
                     const changeAddress = await getChangeAddress()
                     handleUserID(changeAddress)
                     setConnectedWallet({
@@ -340,18 +323,15 @@ const LoginButton = () => {
                         changeAddress: changeAddress,
                         walletAPI: walletAPI,
                     })
-                    console.log(connectedWallet)
                     await authenticate()
                 } else {
-                    console.log('no wallet enabled')
                     clearWallet('error')
                 }
             } else {
-                console.log('no wallet found')
                 clearWallet('error')
             }
         } catch (err) {
-            console.log(err)
+            setLoginErrorAlert(true)
         }
     }
 
@@ -382,6 +362,10 @@ const LoginButton = () => {
                     }
                 }
             }
+            if (res.data.profile_name.length > 0) {
+                setProfileNameFound(true)
+                setProfileName(res.data.profile_name)
+            }
         }).catch(console.err)
     }
 
@@ -405,7 +389,6 @@ const LoginButton = () => {
             })
             setUserID(userID)
             setWalletUser(true)
-
             setLoading(false)
         } catch (err) {
             if (err.response.status === 404) {
@@ -416,7 +399,6 @@ const LoginButton = () => {
                         },
                     }).then(response => {
                         sessionToken = response.data.token
-                        console.log('in create', sessionToken)
                         handleNewToken(response.data.token)
                         getUserProfile(response.data.token)
                     })
@@ -425,16 +407,14 @@ const LoginButton = () => {
                     getUserProfile()
                     setLoading(false)
                 } catch (err) {
-                    console.log(err)
+                    setLoginErrorAlert(true)
                 }
             }
             else {
-                console.log('response not 404', err)
-                console.log(err.response.data)
+                setLoginErrorAlert(true)
             }
-            setLoading(false) //could display an error message
+            setLoading(false)
         }
-
     }
 
     const openWalletSelectModal = () => {
@@ -474,8 +454,16 @@ const LoginButton = () => {
     const walletSelectModalContent = () => {
         if (wallets.length === 0) {
             return (
-                <div className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
-                    No wallets found
+                <div className={`${darkMode && 'text-white'} text-white justify-center text-center pt-2`}>
+                    <div>
+                        No wallets found.
+                    </div>
+                    <div>
+                        Gaia currently supports Eternl and Typhon wallets.
+                    </div>
+                    <div>
+                        Click <Link to='/walletinstructions' style={{ textDecoration: 'none' }}>here</Link> for more information
+                    </div>
                 </div>
             )
         } else {
@@ -490,7 +478,7 @@ const LoginButton = () => {
                         {
 
                             wallets.map(key =>
-                                <div key={key} className={`flex justify-center pt-5 pl-5 pr-5 ${darkMode && 'text-white'}`}>
+                                <div key={key} className={`flex justify-center pt-5 pl-5 pr-5 text-white`}>
                                     <button
                                         type='button'
                                         onClick={() => handleWalletSelect(key)}
@@ -506,7 +494,7 @@ const LoginButton = () => {
 
                         <div className='justify-center pt-5 pl-5 pr-5' />
                         <div>
-                            <span className={`${darkMode && 'text-white'} flex justify-center text-center pt-2`}>
+                            <span className={`text-white flex justify-center text-center pt-2`}>
                                 This does not give Gaia permission to access funds.
                                 <br />
                                 <br />
@@ -558,7 +546,7 @@ const LoginButton = () => {
                             title={'Wallet'}
                             // func={() => openWalletLogoutModal()}
                             // label={`${connectedWallet.walletIsEnabled === true ? balanceInADA() : ''}`}
-                            label={`${displayAdaHandle ? adaHandleSelected : shortenAddress()}`}
+                            label={`${displayAdaHandle ? adaHandleSelected : profileNameFound ? profileName : shortenAddress()}`}
                             image={`${displayAdaHandle ? adaHandleLogo : connectedWallet.walletIcon}`}
                             imageAlt={`${connectedWallet.walletName + 'wallet logo'}`}
                             imageHeight={24}
@@ -630,6 +618,7 @@ const LoginButton = () => {
                     </div>
                 </Modal>
             </div>
+            <LoginErrorAlert open={loginErrorAlert} />
         </div>
     )
 }

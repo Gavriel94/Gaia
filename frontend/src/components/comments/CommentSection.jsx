@@ -5,16 +5,16 @@ import { BsReply } from 'react-icons/bs'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import Modal from 'react-modal'
-import '../../walletModal.css'
+import '../../replyModal.css'
 import { MdDeleteForever, MdCheck, MdOutlineCancel } from 'react-icons/md'
-import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert, SentimentIndicator, ExceedsLengthAlert } from '..'
+import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert, SentimentIndicator, ExceedsLengthAlert, InputArea } from '..'
 
 /**
  * 
  * @param {String} articleID - ID of the parent article
  * @param {String} articleAuthor - ID of the writer of the article
  *  
- * @returns Comment section to be displayed underneath an article, shows all top level comments
+ * @returns {JSX.Element} Comment section to be displayed underneath an article, shows all top level comments
  */
 
 const CommentSection = ({ articleID, articleAuthor }) => {
@@ -43,8 +43,10 @@ const CommentSection = ({ articleID, articleAuthor }) => {
     const [response, setResponse] = useState('')
     const [responseError, setResponseError] = useState(false)
 
-    const [createe, setCreatee] = useState('')
+    // Variables used to direct a response
+    const [createe, setCreatee] = useState('') // Createe of comment user is responding to
     const [commentUserID, setCommentUserID] = useState('')
+    const [respondingTo, setRespondingTo] = useState('')
 
     const [replySubmitted, setReplySubmitted] = useState(false)
     const [reactionSubmitted, setReactionSubmitted] = useState(false)
@@ -92,17 +94,6 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         newComment.append('comment', comment)
         newComment.append('is_reply', '0')
 
-        // newComment.append('recipient', articleAuthor)
-
-        let aggregateValues = ''
-
-        for (const v of newComment.values()) {
-            aggregateValues += newComment.keys() + ' ' + v + ' \n'
-        }
-        aggregateValues += comment.length
-
-        console.log(aggregateValues)
-
         try {
             await API.post(`/articles/article/comment/${articleID}/`, newComment, {
                 headers: {
@@ -110,12 +101,8 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                     'Content-Type': 'multipart/form-data',
                 },
             }).then(res => {
-                console.log(res)
-                // if (res.status === 201) {
-                //     setCommentSubmitted(true)
-                //     setComment('')
-                // }
                 setCommentSubmitted(true)
+                setComment('')
             })
         } catch (err) {
             if (comment.length > 250) {
@@ -146,14 +133,12 @@ const CommentSection = ({ articleID, articleAuthor }) => {
     }
 
     const handleDelete = async () => {
-        console.log(commentToDelete)
         await API.delete(`articles/article/comment/delete/${commentToDelete}/`, {
             headers: {
                 'Authorization': `Token ${loggedInProfile.sessionToken}`,
                 'Content-Type': 'multipart/form-data',
             },
         }).then((res => {
-            console.log(res)
             setConfirmDelete(false)
             setDeletionConfirmed(true)
         })).catch(console.err)
@@ -174,14 +159,14 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         if (replies.length === 1) {
             return (
                 <div className='mt-2'>
-                    <div className='flex justify-center'>
+                    {/* <div className='flex justify-center'>
                         1 response.
-                    </div>
+                    </div> */}
                     <div className='flex justify-center'>
                         <Link
                             to={`/articles/comments/${commentID}`}
                             style={{ textDecoration: 'none' }}>
-                            Continue the conversation
+                            1 response
                         </Link>
                     </div>
                 </div>
@@ -189,14 +174,14 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         } else if (replies.length > 1) {
             return (
                 <div className='mt-2'>
-                    <div className='flex justify-center'>
+                    {/* <div className='flex justify-center'>
                         {replies.length} responses.
-                    </div>
+                    </div> */}
                     <div className='flex justify-center'>
                         <Link
                             to={`/articles/comments/${commentID}`}
                             style={{ textDecoration: 'none' }}>
-                            Continue the conversation
+                            {replies.length} responses.
                         </Link>
                     </div>
                 </div>
@@ -211,13 +196,14 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         }
     }
 
-    const initReply = (createeID, commentID) => {
+    const initReply = (createe, commentID, comment) => {
         if (!walletUser) {
             setLoginAlert(true)
             return
         }
         setCommentUserID(commentID)
-        setCreatee(createeID)
+        setCreatee(createe)
+        setRespondingTo(comment)
         setOpenReplyModal(true)
     }
 
@@ -247,56 +233,18 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         userResponse.append('article', articleID)
         userResponse.append('is_reply', '1')
 
-        for (const v of userResponse.values()) {
-            console.log(v)
-        }
-
         await API.post(`/articles/article/comment/response/${commentUserID}/`, userResponse, {
             headers: {
                 'Authorization': `Token ${loggedInProfile.sessionToken}`,
                 'Content-Type': 'multipart/form-data',
             },
         }).then(res => {
-            console.log(res)
             setOpenReplyModal(false)
             setReplySubmitted(true)
         }).catch(err => {
-            console.log(err)
+            setEmptyFieldAlert(true)
         })
     }
-
-    // const handleReaction = async (reaction) => {
-    //     if (!walletUser) {
-    //         setLoginAlert(true)
-    //         return
-    //     }
-    //     let userReaction = new FormData()
-    //     userReaction.append('user_id', loggedInProfile.id)
-    //     userReaction.append('article_id', article.id)
-    //     userReaction.append('sentiment', reaction)
-    //     try {
-    //         await API.post(`/articles/reaction/${article.id}/`, userReaction, {
-    //             headers: {
-    //                 'Authorization': `Token ${loggedInProfile.sessionToken}`,
-    //                 'Content-Type': 'multipart/form-data',
-    //             },
-    //         }).then(res => {
-    //             setButtonClick(!buttonClick)
-    //         })
-    //     } catch (err) {
-    //         console.log(err)
-    //         if (err.response.status === 400) {
-    //             await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
-    //                 headers: {
-    //                     'Authorization': `Token ${loggedInProfile.sessionToken}`,
-    //                     'Content-Type': 'multipart/form-data',
-    //                 },
-    //             }).then((res => {
-    //                 setButtonClick(!buttonClick)
-    //             }))
-    //         }
-    //     }
-    // }
 
     const handleReaction = async (op_id, comment_id, sentiment) => {
         if (!walletUser) {
@@ -338,7 +286,10 @@ const CommentSection = ({ articleID, articleAuthor }) => {
         if (comment.length > 80) {
             let reducedComment = comment.slice(0, 79) + '...'
             return (
-                <Link to={`articles/comments/${commentID}`}>
+                <Link
+                    to={`articles/comments/${commentID}`}
+                    style={{ textDecoration: 'none' }}
+                >
                     {reducedComment}
                 </Link>
             )
@@ -353,15 +304,36 @@ const CommentSection = ({ articleID, articleAuthor }) => {
 
     }
 
+    const displayPosterProfile = () => {
+        let name = ''
+        if (createe?.profile_name?.length > 20) {
+            name = createe?.profile_name.slice(0, 19) + '...'
+        }
+        return (
+            <div className=''>
+                <div className='flex justify-center text-white'>
+                    {name}
+                </div>
+                <div className='flex flex-row space-x-5 mt-2 border-1 border-white rounded-xl p-2 justify-center'>
+                    <div>
+                        <img src={createe?.profile_image} alt={'User profile'} width={40} className='rounded-xl' />
+                    </div>
+                    <div className='mt-2 text-white text-center'>
+                        {respondingTo}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='border-2 border-light-orange dark:border-dark-orange rounded-lg p-10 w-full'>
-            {/* <div className='overflow-scroll'> */}
             <div>
                 <Title text={'Comments'} hover={true} size={'text-xl'} />
             </div>
-            <div className='mt-10'>
+            <div className='hidden sm:block mt-10'>
                 <div>
-                    <InputField
+                    <InputArea
                         required={true}
                         type='input'
                         placeholder='Comment'
@@ -377,11 +349,11 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                     <Button label={'Submit'} func={handleSubmit} />
                 </div>
             </div>
-            <div className='mt-5 w-full border-2 border-light-orange dark:border-dark-orange' />
-            <div className='overflow-scroll'>
+            <div className='mt-5 w-full border-1 border-light-orange dark:border-dark-orange' />
+            <div className='overflow-auto'>
                 {articleComments?.map((articleComment) => (
                     <div key={articleComment.sender + articleComment.comment} className='mt-2'>
-                        <div className='border-t-2 border-l-2 border-r-2 border-b-2 border-light-orange dark:border-dark-orange rounded-lg p-3 mt-5'>
+                        <div className='border-light-orange border-b-1 dark:border-dark-orange rounded-lg p-1 mt-2 hover:bg-light-white dark:hover:bg-dark-grey-lighter'>
                             <div>
                                 <Link to={`/profiles/${articleComment.sender.id}`} style={{ textDecoration: 'none' }}>
                                     <div className='flex flex-row'>
@@ -393,30 +365,35 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                                         </div>
                                     </div>
                                 </Link>
-                                <div className='flex justify-center mt-2'>
+                                <div className='flex justify-center mt-2 text-black dark:text-white'>
                                     {handleCommentLength(articleComment.comment, articleComment.id)}
                                 </div>
-                                <div className='flex justify-center mt-2'>
+                                <div className='flex justify-center mt-2 text-black dark:text-white'>
                                     {formatDate(articleComment.date)}
                                 </div>
-                                <div className='flex flex-row justify-center mt-5 space-x-2'>
-                                    <Button icon={<BsReply size={'26px'} />} func={() => initReply(articleComment.sender.id, articleComment.id)} />
+                                <div className='hidden sm:flex flex-row justify-center mt-5 space-x-2'>
+                                    <Button icon={<BsReply size={'26px'} />} func={() => initReply(articleComment.sender, articleComment.id, articleComment.comment)} />
                                     <Button icon={<BiLike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 1)} />
                                     <Button icon={<BiDislike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 2)} />
                                     <div className={`${loggedInProfile.id === articleComment.sender.id ? 'flex justify-center' : 'hidden'}`}>
                                         <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(articleComment.id)} />
                                     </div>
                                 </div>
-                                <div className='mt-5'>
-                                    <SentimentIndicator
-                                        dislikes={articleComment.sentiment[1]}
-                                        likes={articleComment.sentiment[0]}
-                                        likePercent={articleComment.sentiment[2]}
-                                    />
-                                </div>
-                                <div>
-                                    {showReplies(articleComment.comment_replies, articleComment.id)}
-                                </div>
+                                <Link
+                                    to={`/articles/comments/${articleComment.id}`}
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    <div className='mt-5'>
+                                        <SentimentIndicator
+                                            dislikes={articleComment.sentiment[1]}
+                                            likes={articleComment.sentiment[0]}
+                                            likePercent={articleComment.sentiment[2]}
+                                        />
+                                    </div>
+                                    <div className='text-black dark:text-white'>
+                                        {showReplies(articleComment.comment_replies, articleComment.id)}
+                                    </div>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -452,7 +429,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                 onRequestClose={() => openReplyModal(false)}
                 contentLabel="Reply"
                 ariaHideApp={false}
-                className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                className={`${darkMode ? 'darkReplyModal' : 'lightReplyModal'}`}
                 overlayClassName={'overlayModal'}
             >
                 <div className='text-4xl font-bold 
@@ -460,7 +437,10 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                     transition-colors duration-500 select-none text-center m-4'>
                     Reply
                 </div>
-                <InputField
+                <div className='mt-2 mb-2'>
+                    {displayPosterProfile()}
+                </div>
+                <InputArea
                     required={true}
                     type='input'
                     placeholder='Response'
@@ -469,7 +449,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
                     onChange={e => handleResponse(e.target.value)}
                 />
 
-                <div className='flex flex-row justify-center mt-5 space-x-5'>
+                <div className='flex flex-row justify-center mt-5 space-x-5 align-bottom'>
                     <Button func={() => submitResponse()} icon={<MdCheck size={'26px'} />} />
                     <Button func={() => cancelResponse()} icon={<MdOutlineCancel size={'26px'} />} />
                 </div>

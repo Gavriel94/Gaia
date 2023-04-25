@@ -25,12 +25,6 @@ import Modal from 'react-modal'
  * @returns {JSX.Element} - Input fields for article creation
  */
 
-/**
- * TODO: Create a checkbox for users to have to comply with ToS
- * TODO: Resize all images to be the same
- * TODO: Handle new response from pre/post save methods 
- */
-
 const CreateArticleV2 = () => {
 
   const {
@@ -42,13 +36,13 @@ const CreateArticleV2 = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
-  const [tags, setTags] = useState([])
+  const [topics, setTopics] = useState([])
   const [tagInput, setTagInput] = useState('')
   const [tagTooShort, setTagTooShort] = useState(undefined)
   const [tagTooLong, setTagTooLong] = useState(undefined)
   const [uniqueTag, setUniqueTag] = useState(undefined)
-  const [enoughTags, setEnoughTags] = useState(false)
-  const [tooManyTags, setTooManyTags] = useState(false)
+  const [enoughTopics, setEnoughTopics] = useState(false)
+  const [tooManyTopics, setTooManyTopics] = useState(false)
 
   const [previewImage, setPreviewImage] = useState(undefined)
   const [showPreview, setShowPreview] = useState(undefined)
@@ -60,17 +54,11 @@ const CreateArticleV2 = () => {
   const [imageErrorMessage, setImageErrorMessage] = useState('')
   const [titleError, setTitleError] = useState(false)
   const [contentError, setContentError] = useState(false)
-  const [tagsError, setTagsError] = useState(false)
+  const [topicsError, setTopicsError] = useState(false)
 
   const [openErrorAlert, setOpenErrorAlert] = useState(false)
   const [errors, setErrors] = useState([])
-
-  const handleTitle = (e) => {
-    setTitle(e)
-    if (titleError) {
-      setTitleError(false)
-    }
-  }
+  const [backendResponse, setBackendResponse] = useState('')
 
   useEffect(() => {
     if (contentError) {
@@ -80,11 +68,27 @@ const CreateArticleV2 = () => {
     }
   }, [content, contentError])
 
+  const sanitiseInput = (input) => {
+    // Only alphanumeric and some punctuation 
+    const allowedCharacters = /[^a-zA-Z0-9\s.,!?@'-]+/g;
+    // Remove characters which don't match regex
+    const sanitizedString = input.replace(allowedCharacters, '');
+    return sanitizedString;
+  }
+
+  const handleTitle = (e) => {
+    setTitle(e)
+    if (titleError) {
+      setTitleError(false)
+    }
+  }
+
   const writeTag = (e) => {
     const { key } = e
-    // const trimmedInput = tagInput.trim()
+
     const removePunct = tagInput.replace(/[.,-/#!$%^&*;:{}=\-_`~()@+?><[\]+]/g, '')
-    const trimmedInput = removePunct.replace(/\s{2,}/g, ' ');
+    let trimmedInput = removePunct.replace(/\s{2,}/g, ' ');
+    trimmedInput = trimmedInput.toLowerCase()
 
     if (trimmedInput.length < 2) {
       setTagTooShort(true)
@@ -100,22 +104,24 @@ const CreateArticleV2 = () => {
       setTagTooLong(false)
     }
 
-    if (tags.includes(trimmedInput)) {
+    if (topics.includes(trimmedInput)) {
       setUniqueTag(false)
       return
     } else {
       setUniqueTag(true)
     }
 
-    if (tags.length < 1) {
+    if (topics.length < 1) {
+      setEnoughTopics(false)
     } else {
-      setEnoughTags(true)
+      setEnoughTopics(true)
     }
 
-    if (tags.length > 4) {
-      return
+    if (topics.length > 4) {
+      setTooManyTopics(true)
+
     } else {
-      setTooManyTags(false)
+      setTooManyTopics(false)
     }
 
     if (trimmedInput.includes(',')) {
@@ -124,16 +130,16 @@ const CreateArticleV2 = () => {
 
     if (key === ',') {
       e.preventDefault()
-      setTags(prevState => [...prevState, trimmedInput])
+      setTopics(prevState => [...prevState, trimmedInput])
       setTagInput('')
-      if (tags.length >= 1) {
-        setTagsError(false)
+      if (topics.length >= 1) {
+        setTopicsError(false)
       }
     }
   }
 
   const deleteTag = (index) => {
-    setTags(prevState => prevState.filter((tag, i) => i !== index))
+    setTopics(prevState => prevState.filter((tag, i) => i !== index))
   }
 
   const handleImageUpload = async e => {
@@ -141,39 +147,53 @@ const CreateArticleV2 = () => {
     setImageError(false)
     setImageErrorMessage('')
     let image = e.target.files[0]
-    console.log(image)
 
     if (image.size > 800000) {
       setImageError(true)
-      setImageErrorMessage('Image must be less than 8MB')
-      return
-    } 
-  
-    let imageRegEx = /(\.gif|\.jpeg|\.jpg|\.tiff?|\.png|\.webp|\.bmp)$/
-    let imageValid = imageRegEx.test(image.name)
-    console.log(imageValid)
-    if (!imageValid) {
-      setImageError(true)
-      setImageErrorMessage('No image found. File must end with .gif / .jpeg / .jpg / .tiff / .png / .webp / .bmp.')
+      setImageErrorMessage('Image must be smaller than 8MB')
       return
     }
 
+    let imageRegEx = /(\.gif|\.jpg|\.png|\.bmp)$/
+    let imageValid = imageRegEx.test(image.name)
+    if (!imageValid) {
+      setImageError(true)
+      setImageErrorMessage('File must end with .gif / .jpg / .png / .bmp.')
+      return
+    }
 
     setPreviewImage(image)
     setShowPreview(URL.createObjectURL(image))
   }
 
+  const submissionChecklist = (newArticle) => {
+    let errors = []
+
+    for (const v of newArticle) {
+      if (v[1] === '') {
+        if (v[0] === 'tags') {
+          errors.push('topics')
+        } else {
+          errors.push(v[0])
+        }
+      }
+    }
+    setErrors(errors)
+  }
+
   const handleSubmit = async () => {
     let newArticle = new FormData()
-    newArticle.append('title', title)
-    if (content === '<p></p>') {
+    newArticle.append('title', sanitiseInput(title))
+    if (content === '<p></p>' || content === '<p></p> ') {
       setContent('')
       setContentError(true)
       return
     }
     newArticle.append('content', content)
-    newArticle.append('tags', tags)
-    newArticle.append('preview_image', previewImage)
+    newArticle.append('tags', topics)
+    if (previewImage) {
+      newArticle.append('preview_image', previewImage)
+    }
     newArticle.append('author', loggedInProfile.id)
     newArticle.append('author_username', loggedInProfile.username)
     if (loggedInProfile.profile_name === '') {
@@ -182,8 +202,10 @@ const CreateArticleV2 = () => {
       newArticle.append('author_profile_name', loggedInProfile.profile_name)
     }
 
-    for (const v of newArticle.values()) {
-      console.log('values', v)
+    submissionChecklist(newArticle)
+
+    for (const v in newArticle.values()) {
+      console.log(v)
     }
 
     try {
@@ -191,7 +213,7 @@ const CreateArticleV2 = () => {
       setImageError(false)
       setTitleError(false)
       setContentError(false)
-      setTagsError(false)
+      setTopicsError(false)
       var articleID = await API.post("articles/article/create/", newArticle, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -203,40 +225,32 @@ const CreateArticleV2 = () => {
         setIDSet(true)
       })
     } catch (err) {
-      let collectErrors = []
-      console.log(err.response.data)
-      for (let v in err.response.data) {
-        if (v === 'preview_image') {
-          setImageError(true)
-          collectErrors.push(imageErrorMessage)
-          console.log('Image error')
-        }
-        if (v === 'title') {
-          setTitleError(true)
-          collectErrors.push('Title is empty')
-          console.log('Title error')
-        }
-        if (v === 'content') {
-          setContentError(true)
-          collectErrors.push('Content is empty')
-          console.log('Content is empty')
-        }
-        if (v === 'tags') {
-          setTagsError(true)
-          collectErrors.push('Topics Error')
-          console.log('Tags error')
-        }
-      }
-      if(collectErrors.length === 0) {
-        let error_data = []
-        error_data.push(err.response.data)
-        setErrors(error_data)
-      } else {
-        setErrors(collectErrors)
-      }
-      console.log(errors)
+      setBackendResponse(err.response.data)
       setOpenErrorAlert(true)
       setSubmit(false)
+    }
+  }
+
+  const displayErrors = () => {
+    if (errors.length > 0) {
+      return (
+        <div>
+          Please add:
+          <br />
+          {
+            errors.map((error) => (
+              <div className='mt-2'>
+                {error.charAt(0).toUpperCase() + error.slice(1)}
+              </div>
+            ))}
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          {backendResponse}
+        </div>
+      )
     }
   }
 
@@ -268,7 +282,7 @@ const CreateArticleV2 = () => {
           <div className={`${submit ? 'hidden' : 'block'}`}>
             <div className='fixed justify-center m-auto left-0 right-0 '>
               <div className={`${loggedInProfile?.sessionToken ? 'block' : 'hidden'}`}>
-                <ArticleGuideBar title={title} content={content} tags={tags} previewImage={previewImage} />
+                <ArticleGuideBar title={title} content={content} tags={topics} previewImage={previewImage} />
               </div>
             </div>
             <Header />
@@ -292,17 +306,24 @@ const CreateArticleV2 = () => {
                   <div className={`${previewImage === undefined ? 'hidden' : 'flex justify-center mt-10'}`}>
                     <img src={showPreview} alt='preview' width={120} className='rounded-lg' />
                   </div>
-                  <div className='flex justify-center mt-20'>
-                    <div className='cursor-pointer'>
+
+                  <div className='flex flex-row'>
+                    <div className='cursor-pointer flex'>
                       <input type='file' className='opacity-0 w-[100px] h-[45px] cursor-pointer absolute' onChange={handleImageUpload} />
                       <div className={`rounded-full focus:outline-none hover:bg-light-white  
                     ${imageError ? 'bg-light-red' : 'bg-light-orange dark:bg-dark-orange'}
-                     w-[100px] py-2 px-4 text-xl font-bold cursor-pointer content-center`}>
+                     w-[100px] py-2 px-4 text-xl font-bold cursor-pointer content-center justify-center`}>
                         <div className='flex justify-center cursor-pointer'>
                           <BsCardImage size={'26px'} color={'white'} />
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className={`${previewImage === undefined ? 'flex text-center justify-center mt-2 ml-5 dark:text-white' : 'hidden'}`}>
+                    Add an image
+                  </div>
+                  <div className='dark:text-white text-black flex justify-center'>
+                  Gaia only accepts image files which end in .gif / .jpg / .png / .bmp.
                   </div>
                   <div className={`${imageError ? 'flex justify-center dark:text-white mt-5' : 'hidden'}`}>
                     {imageErrorMessage}
@@ -331,20 +352,26 @@ const CreateArticleV2 = () => {
                       setContent={setContent}
                       borderColor={`${contentError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
                     />
-                    {/* Editor leaves empty <p> tags if content was added then deleted */}
+                    {/* Editor leaves empty <p> topics if content was added then deleted */}
                     <div className={`${content === '' ? 'block mt-2 xl:hidden' : content === '<p></p>' ? 'xl:hidden block mt-2' : 'hidden'}`}>
                       <p className={`${darkMode && 'text-white'} flex justify-center`}>
                         <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Please enter content</span>
                       </p>
                     </div>
                     <div className='py-5' />
+                    <div className='text-center dark:text-white'>
+                      Topics are seperate with a comma
+                    </div>
+                    <div className='text-center dark:text-white mb-2'>
+                      Add up to 5 topics
+                    </div>
                     <InputField
                       id='tag field'
                       required={true}
                       type='input'
                       placeholder='Topics'
                       value={tagInput}
-                      borderColor={`${tagsError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                      borderColor={`${topicsError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
                       onChange={(e) => {
                         const { value } = e.target
                         setTagInput(value)
@@ -352,7 +379,7 @@ const CreateArticleV2 = () => {
                       onKeyDown={(e) => writeTag(e)}
                     />
                     <div className='flex justify-center pt-5'>
-                      {tags.map((tag, index) =>
+                      {topics.map((tag, index) =>
                         <div key={tag} className='px-2'>
                           <TagIcon tag={tag} index={index} func={() => deleteTag(index)} tagIcon={<MdOutlineCancel />} />
                         </div>)}
@@ -361,15 +388,15 @@ const CreateArticleV2 = () => {
                       <div className={`${tagInput.length > 0 && tagTooShort ? 'block' : tagTooLong ? 'block' : 'hidden'}`}>
                         Topics must be between 3-15 characters
                       </div>
-                      <div className={`${tags.length > 0 && !enoughTags ? 'block' : 'hidden'}`}>
+                      <div className={`${topics.length > 0 && !enoughTopics ? 'block' : 'hidden'}`}>
                         Add at least 2 topics
                       </div>
-                      <div className={`${tooManyTags ? 'block' : 'hidden'}`}>
+                      <div className={`${tooManyTopics ? 'block' : 'hidden'}`}>
                         Too many topics!
                       </div>
 
                     </div>
-                    <div className={`${tags.length === 0 ? 'block mt-2 xl:hidden' : 'hidden'}`}>
+                    <div className={`${topics.length === 0 ? 'block mt-2 xl:hidden' : 'hidden'}`}>
                       <p className={`${darkMode && 'text-white'} flex justify-center`}>
                         <RiQuillPenLine size={'26px'} /> <span className='pl-3 select-none'>Add up to 5 tags. Seperate them with a comma.</span>
                       </p>
@@ -399,12 +426,7 @@ const CreateArticleV2 = () => {
         <div className='text-2xl font-bold 
         text-light-white
         transition-colors duration-500 select-none text-center m-4'>
-          {
-            errors.map((error) => (
-              <div className='mt-2'>
-                {error}
-              </div>
-            ))}
+          {displayErrors()}
         </div>
         <div className='flex flex-row justify-center mt-5 space-x-5'>
           <Button func={() => setOpenErrorAlert(false)} icon={<MdOutlineCancel size={'26px'} />} />

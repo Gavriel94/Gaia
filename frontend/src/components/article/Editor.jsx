@@ -4,7 +4,6 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
-import LineBreak from '@tiptap/extension-hard-break'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 
@@ -28,37 +27,68 @@ import { useStateContext } from '../../context/ContextProvider'
 /**
  * Editor made using TipTap
  * Base code taken from documentation but has been adapted for Gaia
+ * Images uploaded by user are compressed and converted to base64 for image analysis
  * @param {string} - setContent State variable binded to the page where the component is constructed. Content is passed back up to that page.
  * 
  * @returns {JSX.Element} A fully fledged editor 
  */
-
-
-/**
- * TODO: Sanitise all HTML input 
- * TODO: Add dark mode styles
- * TODO: Change image upload to file input in addImage()
- */
-
 const MenuBar = ({ editor }) => {
 
-    // const addImage = () => {
-    //     const url = window.prompt('URL')
 
-    //     if (url) {
-    //         editor.chain().focus().setImage({ src: url }).run()
-    //     }
-    // }
+    function resizeImage(file, maxSize) {
+        return new Promise((resolve, reject) => {
+            const img = document.createElement("img");
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    } else {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => {
+                    const newFile = new File([blob], file.name, { type: file.type });
+                    resolve(newFile);
+                }, file.type);
+            };
+            img.onerror = () => {
+                reject(new Error("Failed to load image"));
+            };
+            img.src = URL.createObjectURL(file);
+        });
+    }
 
     const addImage = async e => {
-        console.log('add image')
         const img = e.target.files[0]
-        const imgURL = URL.createObjectURL(img)
+        let imageRegEx = /(\.gif|\.jpg|\.png|\.bmp)$/
+        let imageValid = imageRegEx.test(img.name)
 
-        // Perform image checks
+        if (!imageValid) {
+            return
+        }
 
-        // if(imageChecksOut)
-        editor.chain().focus().setImage({ src: imgURL}).run()
+        const resizedImgFile = await resizeImage(img, 550);
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(resizedImgFile)
+
+        await new Promise((resolve) => {
+            fileReader.onload = () => {
+                resolve()
+            }
+        })
+
+        const base64Img = fileReader.result
+
+        editor.chain().focus().setImage({ src: base64Img }).run()
     }
 
     const setLink = useCallback(() => {
@@ -214,7 +244,7 @@ const MenuBar = ({ editor }) => {
                 >
                     <BsCardImage size={'26px'} />
                 </button> */}
-                <input type='file' onChange={addImage} className='opacity-40 w-[40px] h-[50px] absolute cursor-pointer' />
+                <input type='file' onChange={addImage} className='opacity-0 w-[40px] h-[50px] absolute cursor-pointer' />
                 <button
                     className={'editor'}
                     onClick={(event) => {
@@ -276,7 +306,6 @@ const Editor = ({ setContent, borderColor }) => {
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
             setContent(html + ' ')
-            console.log(html + ' ')
         },
     })
 

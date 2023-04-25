@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
-import { Header, Title, SidebarV2, LoginButton, Button } from '../../components'
+import { Header, Title, SidebarV2, Button } from '../../components'
 import { BsEnvelope, BsEnvelopeOpen } from 'react-icons/bs'
-import { Link } from 'react-router-dom'
 import { MdDeleteForever } from 'react-icons/md'
 import { Navigate } from 'react-router-dom'
 
 /**
  * 
- * @returns Page containing a clickable list of all user notifications
+ * Page containing a clickable list of all user notifications
  */
+
 const Notifications = () => {
 
   const { loggedInProfile, darkMode } = useStateContext()
@@ -39,7 +39,6 @@ const Notifications = () => {
           'Content-Type': 'multipart/form-data',
         },
       }).then((res) => {
-        console.log(res)
         setNotifications(res.data.reverse())
       })
         .catch(err => {
@@ -72,7 +71,6 @@ const Notifications = () => {
         'Content-Type': 'multipart/form-data',
       },
     }).then((res) => {
-      console.log(res)
       setCommentID(commentID)
       setViewComment(true)
     }).catch(console.err)
@@ -85,7 +83,6 @@ const Notifications = () => {
         'Content-Type': 'multipart/form-data',
       },
     }).then((res) => {
-      console.log(res)
       setNotificationDeleted(true)
     }).catch(console.err)
   }
@@ -98,6 +95,16 @@ const Notifications = () => {
         </div>
       )
     }
+
+    const sliceStr = (string) => {
+      if (string.length > 19) {
+          return string.slice(0, 19) + '...'
+      }
+      else {
+          return string
+      }
+  }
+
     return (
       notifications.map((notification) => (
         <div className='flex flex-row space-x-5'>
@@ -106,15 +113,17 @@ const Notifications = () => {
             type="button"
             onClick={() => viewCommentDetail(notification.message.id, notification.id)}
           >
-            <div key={notification.timestamp} className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} grid grid-cols-4 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
-              <div className='ml-10'>
-                <img src={notification.message.sender.profile_image} width={'50'} alt={'sender profile'} />
-              </div>
-              <div className='text-black dark:text-white mt-2 text-center'>
-                {notification.message.comment}
-              </div>
-              <div className='ml-10 mt-2'>
-                {readIcon(notification.is_read)}
+            <div className={`${notification.is_read === "0" ? 'bg-light-orange-hover dark:bg-dark-orange-hover' : 'bg-white dark:bg-dark-grey'} border-light-orange dark:border-dark-orange rounded-lg w-72`}>
+              <div className='grid grid-cols-4 gap-6'>
+                <div>
+                  <img src={notification.message.sender.profile_image} width={'50'} alt={'sender profile'} />
+                </div>
+                <div className='mt-2 font-bold'>
+                  {sliceStr(notification.message.sender.profile_name)}
+                </div>
+                <div className='mt-2 col-start-3 col-end-6'>
+                  {sliceStr(notification.message.comment)}
+                </div>
               </div>
             </div>
           </button>

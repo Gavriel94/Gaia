@@ -1,7 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FiTwitter } from 'react-icons/fi';
-import { FaDiscord } from 'react-icons/fa';
+import { NavLink, Link } from 'react-router-dom';
 import { useStateContext } from '../../context/ContextProvider';
 import lightLogo from '../../assets/fpngs/tildelogolight.png'
 import darkLogo from '../../assets/fpngs/tildelogodark.png'
@@ -18,32 +16,20 @@ const Footer = () => {
     const { darkMode } = useStateContext();
 
     return (
-        <div className='absolute bottom-0 justify-center w-full h-16 flex flex-row dark:bg-dark-grey pt-3'>
-            <div className='px-3'>
-                <NavLink to={'/coming'}>
-                    <FiTwitter
-                        size={'30px'}
-                        color={darkMode === false ? 'black' : 'white'}
-                    />
-                </NavLink>
-            </div>
-            <div className='px-3'>
-                <NavLink to={'/coming'}>
-                    <FaDiscord
-                        size={'30px'}
-                        color={darkMode === false ? 'black' : 'white'}
-                    />
-                </NavLink>
-            </div>
-            <div className='px-3'>
-                <p className='select-none font-semibold dark:text-light-white'>Project Gaia</p>
-            </div>
-            <div className={darkMode === false ? '' : 'hidden'}>
-                <img src={lightLogo} width='40px' alt='Icon' />
-            </div>
-            <div className={darkMode === false ? 'hidden' : ''}>
-                <img src={darkLogo} width='40px' alt='Icon' />
-            </div>
+        <div className='bottom-0 mt-auto justify-center w-full h-16 flex flex-row dark:bg-dark-grey pt-3'>
+            <Link to={'/about'} style={{ textDecoration: 'none' }}>
+                <div className='flex flex-row'>
+                    <div className='px-3'>
+                        <p className='select-none font-semibold dark:text-light-white mt-2'>Gaia</p>
+                    </div>
+                    <div className={darkMode === false ? '' : 'hidden'}>
+                        <img src={lightLogo} width='40px' alt='Icon' />
+                    </div>
+                    <div className={darkMode === false ? 'hidden' : ''}>
+                        <img src={darkLogo} width='40px' alt='Icon' />
+                    </div>
+                </div>
+            </Link>
         </div>
     );
 };
