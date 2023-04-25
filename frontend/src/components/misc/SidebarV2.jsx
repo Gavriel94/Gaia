@@ -2,11 +2,13 @@ import React from 'react'
 import { AiOutlineHome } from 'react-icons/ai'
 import { FiInfo } from 'react-icons/fi'
 import { BsPen } from 'react-icons/bs'
+import { BiSearch } from 'react-icons/bi'
 import { Link } from 'react-router-dom';
 import lightLogo from '../../assets/fpngs/tildelogolight.png'
 import darkLogo from '../../assets/fpngs/tildelogodark.png'
 import { useStateContext } from '../../context/ContextProvider'
 import { CgProfile } from 'react-icons/cg'
+import { BiTrendingUp } from 'react-icons/bi'
 
 /**
  * Sidebar component which allows for easy app navigation
@@ -32,6 +34,16 @@ const SidebarV2 = () => {
       icon: <BsPen size={'26px'} />,
     },
     {
+      link: 'trending',
+      display: 'trends',
+      icon: <BiTrendingUp size={'26px'}/>
+    },
+    {
+      link: 'search',
+      display: 'search',
+      icon: <BiSearch size={'26px'}/>
+    },
+    {
       link: `${loggedInProfile.sessionToken ? `profiles/${loggedInProfile.id}` : 'login'}`,
       display: 'profile',
       icon: <CgProfile size={'26px'} />,
@@ -45,7 +57,7 @@ const SidebarV2 = () => {
 
   return (
     <div className='h-full hidden sm:block'>
-      <div className='fixed left-0 h-full md:border-r-1 border-light-orange dark:border-dark-orange sm:w-28 lg:w-72 overflow-scroll'>
+      <div className='fixed left-0 h-full md:border-r-1 border-light-orange dark:border-dark-orange sm:w-28 lg:w-72 overflow-auto'>
         <div className='dark:bg-dark-grey-lighter bg-white h-full'>
           <div className='justify-center pt-4 mb-2 p-2 hidden lg:block content-center items-center sm:flex'>
             <Link to='/home' style={{ textDecoration: 'none' }} className='flex justify-center'>
