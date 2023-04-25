@@ -109,7 +109,7 @@ const NotificationButton = () => {
     const showNotifications = () => {
         if (notifications.length === 0) {
             return (
-                <div className='bg-white dark:bg-dark-grey opacity-100 p-5 mt-2 rounded-lg border-2 border-black dark:border-white'>
+                <div className='bg-white dark:bg-dark-grey opacity-100 mt-2 rounded-lg border-2 border-black dark:border-white'>
                     <div className='flex justify-center text-center dark:text-white'>
                         No new notifications
                     </div>
@@ -124,7 +124,7 @@ const NotificationButton = () => {
         } else {
             return (
                 <div>
-                    <div className='bg-white dark:bg-dark-grey opacity-100 pb-2 relative mt-56 m-auto top-0 rounded-lg border-4 border-black dark:border-white w-full'>
+                    <div className='bg-white dark:bg-dark-grey opacity-100 relative mt-12 h-0 rounded-lg border-4 border-black dark:border-white w-full'>
                         <div className='flex text-center justify-center dark:text-white mt-2'>
                             {numberOfNotifications} total notifications
                         </div>
@@ -136,10 +136,13 @@ const NotificationButton = () => {
                                     onClick={() => viewCommentDetail(notification.message.id, notification.id)}
                                 >
                                     <div key={notification.timestamp} className={`${notification.is_read === "0" ? '' : 'bg-white dark:bg-dark-grey'} grid grid-cols-3 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
-                                        <div className='ml-10'>
+                                        <div className='ml-10 flex flex-row'>
                                             <img src={notification.message.sender.profile_image} width={'50'} alt={'user profile'} />
+                                            <div className='ml-2 text-bold mt-2'>
+                                                {notification.message.sender.profile_name}
+                                            </div>
                                         </div>
-                                        <div className='text-black dark:text-white mt-2 text-center'>
+                                        <div className='text-black dark:text-white text-center mt-2'>
                                             {sliceComment(notification.message.comment)}
                                         </div>
                                         <div className='ml-10 mt-2'>

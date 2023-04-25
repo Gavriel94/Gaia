@@ -4,17 +4,28 @@ import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
 import Button from '../misc/Button'
 
+
+/**
+ * 
+ * @param {string} articleID - article to be saved 
+ * @param {string} preview_image - image of article
+ * @param {string} title - title of article
+ * 
+ * @returns {JSX.Element} - button to bookmark articles
+ */
 const BookmarkButton = ({ articleID, preview_image, title }) => {
   const { loggedInProfile, setLoggedInProfile } = useStateContext()
   const [bookmarkIcon, setBookmarkIcon] = useState(<BsBookmarks size={'26px'} />)
 
   useEffect(() => {
-    for (var i = 0; i < loggedInProfile.bookmarked.length; i++) {
-      if (loggedInProfile.bookmarked[i].article.id === articleID) {
-        setBookmarkIcon(<BsBookmarksFill size={'26px'} />)
+    if (loggedInProfile) {
+      for (var i = 0; i < loggedInProfile.bookmarked.length; i++) {
+        if (loggedInProfile.bookmarked[i].article.id === articleID) {
+          setBookmarkIcon(<BsBookmarksFill size={'26px'} />)
+        }
       }
     }
-  }, [loggedInProfile.bookmarked, articleID])
+  }, [loggedInProfile.bookmarked, articleID, loggedInProfile])
 
   const handleBookmark = async () => {
     // if loggedInProfile.bookmarks.contains articleID delete else add
@@ -28,7 +39,6 @@ const BookmarkButton = ({ articleID, preview_image, title }) => {
         'Content-Type': 'multipart/form-data',
       },
     }).then(res => {
-      console.log(res)
       setBookmarkIcon(<BsBookmarksFill size={'26px'} />)
       // objects are nested as articles in the bookmarked array
       let articleWrapped = {
@@ -53,14 +63,12 @@ const BookmarkButton = ({ articleID, preview_image, title }) => {
         notifications: loggedInProfile.notifications
       })
     }).catch(err => {
-      console.log(err)
       API.delete(`articles/bookmark/delete/${articleID}`, {
         headers: {
           'Authorization': `Token ${loggedInProfile.sessionToken}`,
           'Content-Type': 'multipart/form-data',
         },
       }).then((res => {
-        console.log(res)
         setBookmarkIcon(<BsBookmarks size={'26px'} />)
         var newBookmarkedArray = loggedInProfile.bookmarked
         var index = -1

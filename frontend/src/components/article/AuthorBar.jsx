@@ -45,7 +45,7 @@ const AuthorBar = ({ authorID, showTipButton }) => {
   return (
     <div>
       <div className={`flex invisible xl:visible items-end px-10 flex-col`}>
-        <div className='duration-300 bg-opacity-5 dark:bg-opacity-5 overflow-scroll fixed'>
+        <div className='duration-300 bg-opacity-5 dark:bg-opacity-5 overflow-auto fixed'>
           <div className='my-20' />
           <Title text={'Author'} size={'text-3xl'} hover={true}/>
           <div className='p-4 mt-4'>

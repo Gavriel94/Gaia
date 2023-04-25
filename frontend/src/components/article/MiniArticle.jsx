@@ -37,18 +37,23 @@ const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) =>
             <div>
                 <div className='border-light-orange dark:border-dark-orange p-4 mb-3 mt-3 w-[250px] border-b-1 md:w-[500px] sm:border-1 sm:border-opacity-50 sm:rounded-3xl hover:bg-light-orange-hover dark:hover:bg-dark-orange-hover duration-500'>
                     <Link to={`/articles/${id}`} style={{ textDecoration: 'none' }}>
-                        <div className='flex flex-row'>
+                        <div className='grid grid-cols-2'>
                             <div className="justify-start hidden sm:block">
                                 <img src={image} alt='Preview' width='120' height='120' className='rounded-lg' />
                             </div>
-                            <div className="justify-start sm:hidden">
-                                <img src={image} alt='Preview' height={'150px'} width={'150px'} className='rounded-lg' />
+                            <div className="justify-start sm:hidden overflow-hidden w-[60px]">
+                                <div className="flex flex-col">
+                                    <img src={image} alt='Preview' className='rounded-lg object-fill' />
+                                </div>
                             </div>
-                            <div className='m-auto'>
+                            <div className='m-auto sm:block hidden'>
                                 <Title text={title} size={'text-3xl'} />
                             </div>
+                            <div className='m-auto sm:hidden block'>
+                                <Title text={title}/>
+                            </div>
                         </div>
-                        <div className='grid grid-cols-2 grid-rows-2 justify-end content-end'>
+                        <div className='grid grid-cols-2 grid-rows-2 justify-end content-end hidden sm:block'>
                             <div className='col-span-2 text-center dark:text-white text-black mt-10'>
                                 {contentPreview()}
                             </div>
