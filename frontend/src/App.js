@@ -13,18 +13,19 @@ import {
   CreateArticleV2, 
   UsernameUserRegister, 
   UserProfile, 
-  UsernameLogin, 
+  UsernameLogin, // Deprecated 
   EditProfile,
   Login,
   TagNavigation,
   CommentThread,
-  AllNotifications
+  AllNotifications,
+  Search,
+  WalletInstructions
 } from './pages'
 
 /**
-* App function with routing
+* SPA with routing defined
 */
-
 function App() {
 
   const { darkMode } = useStateContext()
@@ -49,7 +50,8 @@ function App() {
             <Route path='/articles/tags/:tag/' element={<TagNavigation/>}/>
             <Route path='/articles/comments/:id' element={<CommentThread/>}/>
             <Route path='/profile/notifications' element={<AllNotifications/>}/>
-
+            <Route path='/search' element={<Search/>}/>
+            <Route path={'/walletinstructions'} element={<WalletInstructions/>}/>
             <Route path={'*'} element={<UnresolvedPath />} />
           </Routes>
         </BrowserRouter>
