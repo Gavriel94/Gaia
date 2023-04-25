@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/buttons/NotificationButton.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/buttons/NotificationButton.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react'
+import Button from '../misc/Button'
+import { IoMdNotificationsOutline, IoMdNotifications } from 'react-icons/io'
+import { useStateContext } from '../../context/ContextProvider'
+import { MdOutlineCancel } from 'react-icons/md'
+import API from '../../API'
+import { BsList, BsEnvelopeOpen, BsEnvelope } from 'react-icons/bs'
+import { Link, Navigate } from 'react-router-dom'
+
+/**
+ * TODO: Have an icon displaying the total number of unread messages 
+ * 
+ * @returns {JSX.Element} Button displaying notifications in a dropdown
+ */
+
+const NotificationButton = () => {
+
+    const { loggedInProfile } = useStateContext()
+    const [open, setOpen] = useState(false)
+    const [notificationIcon, setNotificationIcon] = useState(undefined)
+    const [notifications, setNotifications] = useState([])
+    const [commentID, setCommentID] = useState('')
+    const [viewComment, setViewComment] = useState(false)
+    const [numberOfNotifications, setNumberOfNotifications] = useState(undefined)
+
+    useEffect(() => {
+        const getNotifications = async () => {
+            if (loggedInProfile.sessionToken === '') {
+                return
+            }
+            await API.get(`profile/notification/unread/${loggedInProfile.id}/`, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then((res) => {
+                setNumberOfNotifications(res.data.length)
+                // Only show the 5 latest notifications in the dropdown menu
+                setNotifications(res.data.slice(0, 5).reverse())
+                if (notifications.length > 0) {
+                    setNotificationIcon(
+                        &lt;Button icon={&lt;IoMdNotifications size={'26px'} />} func={() => setOpen(!open)} notification={'true'} />
+                    )
+                } else {
+                    setNotificationIcon(
+                        &lt;Button icon={&lt;IoMdNotificationsOutline size={'26px'} />} func={() => setOpen(!open)} />
+                    )
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
+
+        getNotifications()
+    }, [loggedInProfile.id, loggedInProfile.sessionToken, loggedInProfile, notifications.length, open])
+
+    const sliceComment = (comment) => {
+        if (comment.length > 19) {
+            return comment.slice(0, 19) + '...'
+        }
+        else {
+            return comment
+        }
+    }
+
+    /**
+     * Used to test connection to Websocket
+     * !currently unused
+     */
+    const notificationTest = () => {
+        let notificationSocket = new WebSocket(`ws://18.130.61.179:8000/ws/notifications/${loggedInProfile.id}`)
+        notificationSocket.onmessage = (e) => {
+            console.log(e)
+        }
+        notificationSocket.onclose = (e) => {
+            console.log('Closed unexpectedly')
+        }
+    }
+
+    const readIcon = (readStatus) => {
+        if (readStatus === "0") {
+            return (
+                &lt;BsEnvelope size={'26px'} />
+            )
+        } else {
+            return &lt;BsEnvelopeOpen size={'26px'} />
+        }
+    }
+
+    const viewCommentDetail = async (commentID, notificationID) => {
+        let readNotif = new FormData()
+        readNotif.append('is_read', 1)
+
+        await API.patch(`profile/notification/read/${notificationID}/`, readNotif, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then((res) => {
+            console.log(res)
+            setCommentID(commentID)
+            setViewComment(true)
+            setOpen(false)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
+    const showNotifications = () => {
+        if (notifications.length === 0) {
+            return (
+                &lt;div className='bg-white dark:bg-dark-grey opacity-100 mt-2 rounded-lg border-2 border-black dark:border-white'>
+                    &lt;div className='flex justify-center text-center dark:text-white'>
+                        No new notifications
+                    &lt;/div>
+                    &lt;div className='flex justify-center mt-5 space-x-5'>
+                        &lt;Link to={'/profile/notifications'}>
+                            &lt;Button icon={&lt;BsList size={'26px'} />} />
+                        &lt;/Link>
+                        &lt;Button icon={&lt;MdOutlineCancel size={'26px'} />} func={() => setOpen(!open)} />
+                    &lt;/div>
+                &lt;/div>
+            )
+        } else {
+            return (
+                &lt;div>
+                    &lt;div className='bg-white dark:bg-dark-grey opacity-100 relative mt-12 h-0 rounded-lg border-4 border-black dark:border-white w-full'>
+                        &lt;div className='flex text-center justify-center dark:text-white mt-2'>
+                            {numberOfNotifications} total notifications
+                        &lt;/div>
+                        {
+                            notifications.map((notification) => (
+                                &lt;button
+                                    className='w-full rounded-xl mt-5'
+                                    type="button"
+                                    onClick={() => viewCommentDetail(notification.message.id, notification.id)}
+                                >
+                                    &lt;div key={notification.timestamp} className={`${notification.is_read === "0" ? '' : 'bg-white dark:bg-dark-grey'} grid grid-cols-3 p-2 border-b-1 border-light-orange dark:border-dark-orange rounded-lg`}>
+                                        &lt;div className='ml-10 flex flex-row'>
+                                            &lt;img src={notification.message.sender.profile_image} width={'50'} alt={'user profile'} />
+                                            &lt;div className='ml-2 text-bold mt-2'>
+                                                {notification.message.sender.profile_name}
+                                            &lt;/div>
+                                        &lt;/div>
+                                        &lt;div className='text-black dark:text-white text-center mt-2'>
+                                            {sliceComment(notification.message.comment)}
+                                        &lt;/div>
+                                        &lt;div className='ml-10 mt-2'>
+                                            {console.log(notification.is_read)}
+                                            {readIcon(notification.is_read)}
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/button>
+                            ))
+                        }
+                        &lt;div className='flex justify-center mt-2 space-x-5'>
+                            &lt;Link to={'/profile/notifications'}>
+                                &lt;Button icon={&lt;BsList size={'26px'} />} />
+                            &lt;/Link>
+                            &lt;Button icon={&lt;MdOutlineCancel size={'26px'} />} func={() => setOpen(!open)} />
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            )
+        }
+    }
+
+    return (
+        &lt;>
+            &lt;div>
+                {notificationIcon}
+            &lt;/div>
+            {
+                open &amp;&amp; (
+                    &lt;div>
+                        {showNotifications()}
+                        {/* {notificationTest()} */}
+                    &lt;/div>
+                )
+            }
+            {
+                viewComment &amp;&amp; (
+                    &lt;Navigate to={`/articles/comments/${commentID}`} replace={true} />
+                )
+            }
+        &lt;/>
+    )
+}
+
+export default NotificationButton</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

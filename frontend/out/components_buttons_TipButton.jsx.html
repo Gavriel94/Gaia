@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/buttons/TipButton.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/buttons/TipButton.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react'
+import { InputField, Button, Title, LoginAlert } from '..'
+import {
+    TransactionOutput,
+    TransactionBuilder,
+    TransactionBuilderConfigBuilder,
+    LinearFee,
+    BigNum,
+    TransactionWitnessSet,
+    Transaction,
+    Value,
+    TransactionUnspentOutputs,
+    Address,
+    TransactionBuilderConfig,
+} from "@emurgo/cardano-serialization-lib-asmjs"
+import { useStateContext } from '../../context/ContextProvider'
+import Modal from 'react-modal'
+import { useState } from 'react'
+import '../../walletModal.css'
+import { MdCheck, MdOutlineCancel } from 'react-icons/md'
+let Buffer = require('buffer/').Buffer
+
+/**
+ * Functional tip button which allows a logged in user to send ADA to an authors wallet
+ * 
+ * @param {String} authorUsername - username of tip recipient
+ * @param {String} amountInAda - amount to tip author (must be >=1₳) 
+ * 
+ * @returns {JSX.Element} - button for user to execute tipping feature
+ */
+
+const TipButton = ({ authorUsername }) => {
+
+    const { connectedWallet, darkMode, walletUser, loginAlert, setLoginAlert } = useStateContext()
+    const [openModal, setOpenModal] = useState(false)
+    const [tipAmount, setTipAmount] = useState('')
+    const [amountError, setAmountError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
+    const [tipSuccessful, setTipSuccessful] = useState(false)
+
+    const getTxUnspentOutputs = async () => {
+        let outputs = TransactionUnspentOutputs.new()
+        for (const utxo of connectedWallet.Utxos) {
+            outputs.add(utxo.TransactionUnspentOutput)
+        }
+        return outputs
+    }
+
+    const printAll = (
+            linearFee, 
+            txBuilderCfg, 
+            txBuilder, 
+            shelleyOutputAddress, 
+            shelleyChangeAddress, 
+            strAmountInLovelace, 
+            txUnspentOutputs, 
+            txBody, 
+            transactionWitnessSet, 
+            tx, 
+            txVkeyWitnesses, 
+            signedTx,
+            submittedTxHash
+        ) => {
+        console.log('linearFee', linearFee)
+        console.log('txBuilderCfg', txBuilderCfg)
+        console.log('txBuilder', txBuilder)
+        console.log('shelleyOutputAddress', shelleyOutputAddress)
+        console.log('shelleyChangeAddress', shelleyChangeAddress)
+        console.log('strAmountInLovelace', strAmountInLovelace)
+        console.log('txBuilder post build', txBuilder)
+        console.log('txUnspentOutputs', txUnspentOutputs)
+        console.log('txBody', txBody)
+        console.log('transactionWitnessSet', transactionWitnessSet)
+        console.log('tx', tx)
+        console.log('txVkeyWitnesses', txVkeyWitnesses)
+        console.log('signedTx', signedTx)
+        console.log('submittedTxHash', submittedTxHash)
+    }
+
+    const buildADATransaction = async (amountInADA) => {
+        try {
+            const protocol_params = {
+                linearFee: {
+                    minFeeA: '44',
+                    minFeeB: '155381'
+                },
+                minUtxo: '34482',
+                poolDeposit: '500000000',
+                keyDeposit: '2000000',
+                maxValSize: 5000,
+                maxTxSize: 16384,
+                priceMem: 0.0577,
+                priceStep: 0.0000721,
+                coinsPerUtxoWord: '34482',
+            }
+
+            const txBuilder = TransactionBuilder.new(
+                TransactionBuilderConfigBuilder.new()
+                .fee_algo(
+                    LinearFee.new(
+                        BigNum.from_str(protocol_params.linearFee.minFeeA),
+                        BigNum.from_str(protocol_params.linearFee.minFeeB)
+                    )
+                )
+                .pool_deposit(BigNum.from_str(protocol_params.poolDeposit))
+                .key_deposit(BigNum.from_str(protocol_params.keyDeposit))
+                .coins_per_utxo_word(BigNum.from_str(protocol_params.coinsPerUtxoWord))
+                .max_value_size(protocol_params.maxValSize)
+                .max_tx_size(protocol_params.maxTxSize)
+                .prefer_pure_change(true)
+                .build()        
+            )
+
+            // tip recipient address
+            const shelleyOutputAddress = Address.from_bech32(authorUsername);
+            // tip sender address (receives change)
+            const shelleyChangeAddress = Address.from_bech32(connectedWallet.changeAddress);
+
+            // 1 ADA = 1,000,000 Lovelace
+            const strAmountInLovelace = (amountInADA * 1000000).toString()
+
+            // Use available UTxOs to converge funds for transaction
+            const txUnspentOutputs = await getTxUnspentOutputs();
+            txBuilder.add_inputs_from(txUnspentOutputs, 3)
+
+            // add output to the tx
+            txBuilder.add_output(
+                TransactionOutput.new(
+                    shelleyOutputAddress,
+                    Value.new(BigNum.from_str(strAmountInLovelace))
+                ),
+            );
+
+            // Calculate min-fee and register change address
+            txBuilder.add_change_if_needed(shelleyChangeAddress)
+
+            // Build transaction with no witnesses
+            const txBody = txBuilder.build();
+
+
+            // Tx witness
+            const transactionWitnessSet = TransactionWitnessSet.new();
+
+            const tx = Transaction.new(
+                txBody,
+                TransactionWitnessSet.from_bytes(transactionWitnessSet.to_bytes())
+            )
+
+            let txVkeyWitnesses = await connectedWallet.walletAPI.signTx(Buffer.from(tx.to_bytes(), "utf8").toString("hex"), true);
+            txVkeyWitnesses = TransactionWitnessSet.from_bytes(Buffer.from(txVkeyWitnesses, "hex"));
+
+            transactionWitnessSet.set_vkeys(txVkeyWitnesses.vkeys());
+
+            const signedTx = Transaction.new(
+                tx.body(),
+                transactionWitnessSet
+            );
+
+
+            const submittedTxHash = await connectedWallet.walletAPI.submitTx(Buffer.from(signedTx.to_bytes(), "utf8").toString("hex"));
+
+            setOpenModal(false)
+            setTipSuccessful(true)
+ 
+        } catch (err) {
+            console.log(err)
+            if (err === 'UTxO Balance Insufficient') {
+                setAmountError(true)
+                setErrorMessage('Insufficient balance')
+            }
+            if (err === 'Value 0 less than the minimum UTXO value 969750') {
+                setAmountError(true)
+                setErrorMessage('Tip must be at least 1₳')
+            }
+        }
+    }
+
+    const createTip = () => {
+        if(!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+        setOpenModal(true)
+        if (tipSuccessful) {
+            setTipSuccessful(false)
+        }
+    }
+
+    const cancelTip = () => {
+        setOpenModal(false)
+        document.body.style.overflow = 'unset';
+    }
+
+    const handleTipAmount = (e) => {
+        setTipAmount(e)
+        if (amountError) {
+            setAmountError(false)
+            setErrorMessage('')
+        }
+    }
+
+    const confirmSuccess = () => {
+        setTipSuccessful(false)
+        document.body.style.overflow = 'unset';
+    }
+
+    const displayBalance = () => {
+        if(walletUser) {
+            return (
+                &lt;div>
+                    Wallet balance: {connectedWallet.balance / 1000000}₳
+                &lt;/div>
+            )
+        } else {
+            return (
+                &lt;div>
+                    Login to view your balance
+                &lt;/div>
+            )
+        }
+    }
+
+    Modal.setAppElement("#root")
+
+    return (
+        &lt;>
+            &lt;div className='mt-5'>
+                {/* &lt;Button label={'Tip ₳'} func={() => buildADATransaction()} /> */}
+                &lt;Button label={'Tip ₳'} func={() => createTip()} />
+            &lt;/div>
+            &lt;Modal
+                isOpen={tipSuccessful}
+                onRequestClose={() => setTipSuccessful(false)}
+                contentLabel="Tip Success"
+                ariaHideApp={false}
+                className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                overlayClassName={'overlayModal'}
+            >
+                &lt;div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                    Tip Success
+                &lt;/div>
+                &lt;div className='font-bold text-light-white transition-colors duration-500 select-none text-center mt-5'>
+                    {tipAmount}₳ sent to {authorUsername?.slice(0, 12) + '...'}
+                &lt;/div>
+                &lt;div className='flex flex-row justify-center mt-5 space-x-5'>
+                    &lt;Button func={() => confirmSuccess()} icon={&lt;MdOutlineCancel size={'26px'} />} />
+                &lt;/div>
+            &lt;/Modal>
+
+            &lt;Modal
+                isOpen={openModal}
+                onRequestClose={() => setOpenModal(false)}
+                contentLabel="Tip Modal"
+                ariaHideApp={false}
+                className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                overlayClassName={'overlayModal'}
+            >
+                &lt;div>
+                    &lt;div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                        Tip
+                    &lt;/div>
+                    &lt;div className='flex flex-row mt-5'>
+                        &lt;InputField
+                            required={true}
+                            type='input'
+                            placeholder='Value in ADA'
+                            defaultValue={''}
+                            borderColor={`${amountError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                            onChange={e => handleTipAmount(e.target.value)}
+                        />
+                        &lt;div className='text-4xl font-bold mt-2 pl-2
+                    text-light-white
+                    transition-colors duration-500 select-none text-center'>
+                            ₳
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className='text-sm text-light-white transition-colors duration-500 select-none text-center mt-5'>
+                        {displayBalance()}
+                    &lt;/div>
+                    &lt;div className={`${amountError ? 'hidden' : 'font-bold text-light-white transition-colors duration-500 select-none text-center mt-5'}`}>
+                        &lt;div>
+                            Tips cannot be less than 1₳
+                        &lt;/div>
+                        &lt;div>
+                            Each tip requires a wallet signature
+                        &lt;/div>
+                    &lt;/div>
+                    &lt;div className={`${amountError ? 'block font-bold text-light-white transition-colors duration-500 select-none text-center mt-5' : 'hidden'}`}>
+                        {errorMessage}
+                    &lt;/div>
+                    &lt;div className='flex flex-row justify-center mt-5 space-x-5'>
+                        &lt;Button func={() => buildADATransaction(tipAmount)} icon={&lt;MdCheck size={'26px'} />} />
+                        &lt;Button func={() => cancelTip()} icon={&lt;MdOutlineCancel size={'26px'} />} />
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;LoginAlert open={loginAlert}/>
+        &lt;/>
+    )
+}
+
+export default TipButton</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

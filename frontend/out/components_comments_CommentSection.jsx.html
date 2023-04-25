@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/comments/CommentSection.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/comments/CommentSection.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react'
+import API from '../../API'
+import { useStateContext } from '../../context/ContextProvider'
+import { BsReply } from 'react-icons/bs'
+import { BiLike, BiDislike } from 'react-icons/bi'
+import { Link } from 'react-router-dom'
+import Modal from 'react-modal'
+import '../../replyModal.css'
+import { MdDeleteForever, MdCheck, MdOutlineCancel } from 'react-icons/md'
+import { Button, Title, InputField, LoginAlert, AlreadySaidAlert, EmptyFieldAlert, SentimentIndicator, ExceedsLengthAlert, InputArea } from '..'
+
+/**
+ * 
+ * @param {String} articleID - ID of the parent article
+ * @param {String} articleAuthor - ID of the writer of the article
+ *  
+ * @returns {JSX.Element} Comment section to be displayed underneath an article, shows all top level comments
+ */
+
+const CommentSection = ({ articleID, articleAuthor }) => {
+    const {
+        loggedInProfile,
+        darkMode,
+        walletUser,
+        loginAlert,
+        setLoginAlert,
+        alreadySaidAlert,
+        setAlreadySaidAlert,
+        emptyFieldAlert,
+        setEmptyFieldAlert,
+        exceedsLengthAlert,
+        setExceedsLengthAlert,
+    } = useStateContext()
+
+    const [comment, setComment] = useState('')
+    const [commentError, setCommentError] = useState(false)
+    const [commentSubmitted, setCommentSubmitted] = useState(false)
+    const [articleComments, setArticleComments] = useState([])
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [deletionConfirmed, setDeletionConfirmed] = useState(false)
+    const [commentToDelete, setCommentToDelete] = useState('')
+    const [openReplyModal, setOpenReplyModal] = useState(false)
+    const [response, setResponse] = useState('')
+    const [responseError, setResponseError] = useState(false)
+
+    // Variables used to direct a response
+    const [createe, setCreatee] = useState('') // Createe of comment user is responding to
+    const [commentUserID, setCommentUserID] = useState('')
+    const [respondingTo, setRespondingTo] = useState('')
+
+    const [replySubmitted, setReplySubmitted] = useState(false)
+    const [reactionSubmitted, setReactionSubmitted] = useState(false)
+
+    const handleComment = (e) => {
+        setComment(e)
+        if (commentError) {
+            setCommentError(false)
+        }
+    }
+
+    useEffect(() => {
+        const refreshComments = async () => {
+            await API.get(`articles/article/comments/${articleID}/`)
+                .then((res) => {
+                    setArticleComments(res.data.reverse())
+                    if (commentSubmitted) {
+                        setCommentSubmitted(false)
+                    }
+                    if (deletionConfirmed) {
+                        setDeletionConfirmed(false)
+                    }
+                    if (replySubmitted) {
+                        setReplySubmitted(false)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+        refreshComments()
+    }, [commentSubmitted, deletionConfirmed, articleID, replySubmitted, reactionSubmitted])
+
+    const handleSubmit = async () => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+
+        let newComment = new FormData()
+        newComment.append('user', loggedInProfile.id)
+        newComment.append('sender', loggedInProfile.id)
+        newComment.append('receiver', articleAuthor)
+        newComment.append('article', articleID)
+        newComment.append('comment', comment)
+        newComment.append('is_reply', '0')
+
+        try {
+            await API.post(`/articles/article/comment/${articleID}/`, newComment, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => {
+                setCommentSubmitted(true)
+                setComment('')
+            })
+        } catch (err) {
+            if (comment.length > 250) {
+                setExceedsLengthAlert(true)
+                setCommentError(true)
+                return
+            }
+            if (err.response.status === 400 &amp;&amp; comment.length > 1) {
+                setAlreadySaidAlert(true)
+                setCommentError(true)
+                return
+            }
+            if (err.response.status === 400) {
+                setEmptyFieldAlert(true)
+                setCommentError(true)
+                return
+            }
+        }
+    }
+
+    const openConfirmDelete = (e) => {
+        setConfirmDelete(true)
+        setCommentToDelete(e)
+    }
+
+    const cancelDelete = () => {
+        setConfirmDelete(false)
+    }
+
+    const handleDelete = async () => {
+        await API.delete(`articles/article/comment/delete/${commentToDelete}/`, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then((res => {
+            setConfirmDelete(false)
+            setDeletionConfirmed(true)
+        })).catch(console.err)
+    }
+
+    const formatDate = (e) => {
+        const year = e?.substring(0, 4)
+        const month = e?.substring(5, 7)
+        const day = e?.substring(8, 10)
+        const hour = e?.substring(11, 13)
+        const minute = e?.substring(14, 16)
+        const seconds = e?.substring(17, 19)
+
+        return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
+    }
+
+    const showReplies = (replies, commentID) => {
+        if (replies.length === 1) {
+            return (
+                &lt;div className='mt-2'>
+                    {/* &lt;div className='flex justify-center'>
+                        1 response.
+                    &lt;/div> */}
+                    &lt;div className='flex justify-center'>
+                        &lt;Link
+                            to={`/articles/comments/${commentID}`}
+                            style={{ textDecoration: 'none' }}>
+                            1 response
+                        &lt;/Link>
+                    &lt;/div>
+                &lt;/div>
+            )
+        } else if (replies.length > 1) {
+            return (
+                &lt;div className='mt-2'>
+                    {/* &lt;div className='flex justify-center'>
+                        {replies.length} responses.
+                    &lt;/div> */}
+                    &lt;div className='flex justify-center'>
+                        &lt;Link
+                            to={`/articles/comments/${commentID}`}
+                            style={{ textDecoration: 'none' }}>
+                            {replies.length} responses.
+                        &lt;/Link>
+                    &lt;/div>
+                &lt;/div>
+            )
+        }
+        else {
+            return (
+                &lt;div className='mt-2 flex justify-center'>
+                    No replies
+                &lt;/div>
+            )
+        }
+    }
+
+    const initReply = (createe, commentID, comment) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+        setCommentUserID(commentID)
+        setCreatee(createe)
+        setRespondingTo(comment)
+        setOpenReplyModal(true)
+    }
+
+    const handleResponse = (e) => {
+        setResponse(e)
+        if (responseError) {
+            setResponseError(false)
+        }
+    }
+
+    const cancelResponse = () => {
+        setCommentUserID('')
+        setCreatee('')
+        setResponse('')
+        setOpenReplyModal(false)
+        if (responseError) {
+            setResponseError(false)
+        }
+    }
+
+    const submitResponse = async () => {
+        let userResponse = new FormData()
+        userResponse.append('sender', loggedInProfile.id)
+        userResponse.append('receiver', articleAuthor)
+        userResponse.append('reply', commentUserID)
+        userResponse.append('comment', response)
+        userResponse.append('article', articleID)
+        userResponse.append('is_reply', '1')
+
+        await API.post(`/articles/article/comment/response/${commentUserID}/`, userResponse, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then(res => {
+            setOpenReplyModal(false)
+            setReplySubmitted(true)
+        }).catch(err => {
+            setEmptyFieldAlert(true)
+        })
+    }
+
+    const handleReaction = async (op_id, comment_id, sentiment) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+        let reaction = new FormData()
+        reaction.append('original_poster_id', op_id)
+        reaction.append('reactor_id', loggedInProfile.id)
+        reaction.append('comment_id', comment_id)
+        reaction.append('sentiment', sentiment)
+
+        try {
+            await API.post(`user/comment/reaction/${comment_id}/`, reaction, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => {
+                console.log(res)
+                setReactionSubmitted(!reactionSubmitted)
+            })
+        } catch (err) {
+            console.log(err)
+            if (err.response.status === 400) {
+                await API.delete(`user/comment/reaction/delete/${comment_id}/`, {
+                    headers: {
+                        'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then((res => {
+                    setReactionSubmitted(!reactionSubmitted)
+                }))
+            }
+        }
+    }
+
+    const handleCommentLength = (comment, commentID) => {
+        if (comment.length > 80) {
+            let reducedComment = comment.slice(0, 79) + '...'
+            return (
+                &lt;Link
+                    to={`articles/comments/${commentID}`}
+                    style={{ textDecoration: 'none' }}
+                >
+                    {reducedComment}
+                &lt;/Link>
+            )
+        }
+        else {
+            return (
+                &lt;div>
+                    {comment}
+                &lt;/div>
+            )
+        }
+
+    }
+
+    const displayPosterProfile = () => {
+        let name = ''
+        if (createe?.profile_name?.length > 20) {
+            name = createe?.profile_name.slice(0, 19) + '...'
+        }
+        return (
+            &lt;div className=''>
+                &lt;div className='flex justify-center text-white'>
+                    {name}
+                &lt;/div>
+                &lt;div className='flex flex-row space-x-5 mt-2 border-1 border-white rounded-xl p-2 justify-center'>
+                    &lt;div>
+                        &lt;img src={createe?.profile_image} alt={'User profile'} width={40} className='rounded-xl' />
+                    &lt;/div>
+                    &lt;div className='mt-2 text-white text-center'>
+                        {respondingTo}
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        )
+    }
+
+    return (
+        &lt;div className='border-2 border-light-orange dark:border-dark-orange rounded-lg p-10 w-full'>
+            &lt;div>
+                &lt;Title text={'Comments'} hover={true} size={'text-xl'} />
+            &lt;/div>
+            &lt;div className='hidden sm:block mt-10'>
+                &lt;div>
+                    &lt;InputArea
+                        required={true}
+                        type='input'
+                        placeholder='Comment'
+                        defaultValue={''}
+                        borderColor={`${commentError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                        onChange={e => handleComment(e.target.value)}
+                    />
+                    &lt;div className='flex justify-end mt-2'>
+                        {comment.length}/250
+                    &lt;/div>
+                &lt;/div>
+                &lt;div className='flex justify-center mt-5'>
+                    &lt;Button label={'Submit'} func={handleSubmit} />
+                &lt;/div>
+            &lt;/div>
+            &lt;div className='mt-5 w-full border-1 border-light-orange dark:border-dark-orange' />
+            &lt;div className='overflow-auto'>
+                {articleComments?.map((articleComment) => (
+                    &lt;div key={articleComment.sender + articleComment.comment} className='mt-2'>
+                        &lt;div className='border-light-orange border-b-1 dark:border-dark-orange rounded-lg p-1 mt-2 hover:bg-light-white dark:hover:bg-dark-grey-lighter'>
+                            &lt;div>
+                                &lt;Link to={`/profiles/${articleComment.sender.id}`} style={{ textDecoration: 'none' }}>
+                                    &lt;div className='flex flex-row'>
+                                        &lt;div className='m-auto'>
+                                            &lt;Title text={articleComment.sender.profile_name} lengthLimit={true} hover={false} />
+                                        &lt;/div>
+                                        &lt;div className='m-auto'>
+                                            &lt;img src={articleComment.sender.profile_image} alt={'User profile'} width={60} />
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/Link>
+                                &lt;div className='flex justify-center mt-2 text-black dark:text-white'>
+                                    {handleCommentLength(articleComment.comment, articleComment.id)}
+                                &lt;/div>
+                                &lt;div className='flex justify-center mt-2 text-black dark:text-white'>
+                                    {formatDate(articleComment.date)}
+                                &lt;/div>
+                                &lt;div className='hidden sm:flex flex-row justify-center mt-5 space-x-2'>
+                                    &lt;Button icon={&lt;BsReply size={'26px'} />} func={() => initReply(articleComment.sender, articleComment.id, articleComment.comment)} />
+                                    &lt;Button icon={&lt;BiLike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 1)} />
+                                    &lt;Button icon={&lt;BiDislike size={'26px'} />} func={() => handleReaction(articleComment.sender.id, articleComment.id, 2)} />
+                                    &lt;div className={`${loggedInProfile.id === articleComment.sender.id ? 'flex justify-center' : 'hidden'}`}>
+                                        &lt;Button icon={&lt;MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(articleComment.id)} />
+                                    &lt;/div>
+                                &lt;/div>
+                                &lt;Link
+                                    to={`/articles/comments/${articleComment.id}`}
+                                    style={{ textDecoration: 'none' }}
+                                >
+                                    &lt;div className='mt-5'>
+                                        &lt;SentimentIndicator
+                                            dislikes={articleComment.sentiment[1]}
+                                            likes={articleComment.sentiment[0]}
+                                            likePercent={articleComment.sentiment[2]}
+                                        />
+                                    &lt;/div>
+                                    &lt;div className='text-black dark:text-white'>
+                                        {showReplies(articleComment.comment_replies, articleComment.id)}
+                                    &lt;/div>
+                                &lt;/Link>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                ))}
+            &lt;/div>
+            {/* &lt;/div> */}
+            &lt;Modal
+                isOpen={confirmDelete}
+                onRequestClose={() => setConfirmDelete(false)}
+                contentLabel="Confirm Delete Modal"
+                ariaHideApp={false}
+                className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                overlayClassName={'overlayModal'}
+            >
+                &lt;div>
+                    &lt;div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                        Confirm Delete
+                    &lt;/div>
+                    &lt;div className='text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                        Comments cannot be recovered once deleted
+                    &lt;/div>
+                    &lt;div className='flex flex-row justify-center mt-5 space-x-5'>
+                        &lt;Button func={() => cancelDelete()} icon={&lt;MdOutlineCancel size={'26px'} />} />
+                        &lt;Button func={() => handleDelete()} icon={&lt;MdCheck size={'26px'} />} />
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Modal>
+            &lt;Modal
+                isOpen={openReplyModal}
+                onRequestClose={() => openReplyModal(false)}
+                contentLabel="Reply"
+                ariaHideApp={false}
+                className={`${darkMode ? 'darkReplyModal' : 'lightReplyModal'}`}
+                overlayClassName={'overlayModal'}
+            >
+                &lt;div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center m-4'>
+                    Reply
+                &lt;/div>
+                &lt;div className='mt-2 mb-2'>
+                    {displayPosterProfile()}
+                &lt;/div>
+                &lt;InputArea
+                    required={true}
+                    type='input'
+                    placeholder='Response'
+                    defaultValue={''}
+                    borderColor={`${responseError ? 'border-light-red' : 'border-light-orange dark:border-dark-orange'}`}
+                    onChange={e => handleResponse(e.target.value)}
+                />
+
+                &lt;div className='flex flex-row justify-center mt-5 space-x-5 align-bottom'>
+                    &lt;Button func={() => submitResponse()} icon={&lt;MdCheck size={'26px'} />} />
+                    &lt;Button func={() => cancelResponse()} icon={&lt;MdOutlineCancel size={'26px'} />} />
+                &lt;/div>
+            &lt;/Modal>
+            &lt;LoginAlert open={loginAlert} />
+            &lt;AlreadySaidAlert open={alreadySaidAlert} />
+            &lt;EmptyFieldAlert open={emptyFieldAlert} />
+            &lt;ExceedsLengthAlert open={exceedsLengthAlert} />
+        &lt;/div>
+    )
+}
+
+export default CommentSection</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

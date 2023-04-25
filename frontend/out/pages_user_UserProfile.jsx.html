@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/user/UserProfile.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/user/UserProfile.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react'
+import API from '../../API'
+import parser from 'html-react-parser'
+import { Header, SidebarV2, Title, Button, LogoutButton, ArticleLoading, ProfileArticle } from '../../components'
+import { useStateContext } from '../../context/ContextProvider'
+import { Link, Navigate } from 'react-router-dom'
+import { AiOutlineEdit } from 'react-icons/ai'
+import { useParams } from 'react-router-dom'
+import { BiLike, BiDislike } from 'react-icons/bi'
+import { BsPen, BsBookmarksFill } from 'react-icons/bs'
+
+/**
+ * Page which displays information about the user
+ * Allows a logged in user access to their personal EditProfile page
+ * Profile details page
+ * 
+ */
+
+const UserProfile = () => {
+  const { loggedInProfile, connectedWallet } = useStateContext()
+  const { id } = useParams()
+  const [profileData, setProfileData] = useState({
+    id: '',
+    username: '',
+    bio: '',
+    profile_image: '',
+    authored: [],
+    reacted: [],
+    bookmarked: [],
+  })
+  const [notLoaded, setNotLoaded] = useState(false)
+  const [showArticles, setShowArticles] = useState([])
+  const [title, setTitle] = useState('Articles Written')
+
+  useEffect(() => {
+    const profileDetail = () => {
+      API.get(`/profile/user/${id}/`)
+        .then((res) => {
+          setProfileData(res.data)
+          setShowArticles(res.data.authored)
+        }).catch(err => {
+          setNotLoaded(true)
+        })
+    }
+    profileDetail()
+  }, [id])
+
+  const sortByWritten = () => {
+    setTitle('Articles Written')
+    setShowArticles(profileData.authored)
+  }
+
+  const sortByLiked = () => {
+    setTitle('Articles Liked')
+    const liked = []
+    for (var i = 0; i &lt; profileData.reacted.length; i++) {
+      if (profileData.reacted[i].sentiment === 1) {
+        liked.push(profileData.reacted[i].article_id)
+      }
+    }
+    setShowArticles(liked)
+  }
+
+  const sortByDisliked = () => {
+    const disliked = []
+    setTitle('Articles Disliked')
+    for (var i = 0; i &lt; profileData.reacted.length; i++) {
+      if (profileData.reacted[i].sentiment === 2) {
+        disliked.push(profileData.reacted[i].article_id)
+      }
+    }
+    setShowArticles(disliked)
+  }
+
+  const sortByBookmarked = () => {
+    const bookmarked = []
+    setTitle('Private Bookmarks')
+    for (let i = 0; i &lt; profileData.bookmarked.length; i++) {
+      bookmarked.push(profileData.bookmarked[i].article)
+    }
+    setShowArticles(bookmarked)
+  }
+
+  if (profileData.id === '') {
+    return (
+      &lt;>
+        &lt;ArticleLoading pageTitle={'Loading'} />
+        {
+          notLoaded &amp;&amp; (
+            &lt;Navigate to={'not-found'} replace={true} />
+          )
+        }
+      &lt;/>
+    )
+  }
+  else {
+    return (
+      &lt;>
+        &lt;div className='fixed justify-center m-auto left-0 right-0'>
+          {/* &lt;ProfileArticleBar header={'Articles Written'} articles={profileData.authored} /> */}
+          &lt;div>
+            &lt;div className={`flex invisible xl:visible items-end px-10 flex-col h-full`}>
+              &lt;div className='duration-300 h-screen bg-opacity-5 dark:bg-opacity-5 overflow-auto fixed'>
+                &lt;div className='py-4' />
+                &lt;div className='w-[300px] h-[10px] justify-center py-10'>
+                  &lt;Title text={title} size={'text-3xl'} hover={true}/>
+                &lt;/div>
+                {showArticles.map((article) => (
+                  &lt;div className='pt-4 grid grid-cols-1 gap-y-4' key={article.id}>
+                    &lt;ProfileArticle
+                      id={article.id}
+                      title={article.title}
+                      image={article.preview_image}
+                      imageHeight={80}
+                      imageWidth={80}
+                    />
+                  &lt;/div>
+                ))}
+                &lt;div className='flex justify-center space-x-2 mt-2'>
+                  &lt;Button icon={&lt;BsPen size={'26px'} />} func={() => sortByWritten()} />
+                  &lt;Button icon={&lt;BiLike size={'26px'} />} func={() => sortByLiked()} />
+                  &lt;Button icon={&lt;BiDislike size={'26px'} />} func={() => sortByDisliked()} />
+                  &lt;div className={`${loggedInProfile.id !== profileData.id ? 'hidden' : 'block'}`}>
+                    &lt;Button icon={&lt;BsBookmarksFill size={'26px'} />} func={() => sortByBookmarked()} />
+                  &lt;/div>
+                &lt;/div>
+
+              &lt;/div>
+            &lt;/div>
+          &lt;/div>
+          &lt;Header page={'user'} />
+          &lt;SidebarV2 />
+        &lt;/div>
+        &lt;div className={`${profileData.profile_name === null ? 'block' : 'hidden'} pt-20 flex justify-center dark:text-white`}>
+          &lt;Title text={profileData.username} lengthLimit={true} />
+        &lt;/div>
+        &lt;div className={`${profileData.profile_name === null ? 'hidden' : 'block'} pt-20 flex justify-center dark:text-white`}>
+          &lt;Title text={profileData.profile_name} size={'text-3xl'} lengthLimit={true} hover={true}/>
+        &lt;/div>
+        &lt;div className='grid grid-cols-1'>
+
+          &lt;div className='mt-10 flex justify-center'>
+            &lt;img src={profileData.profile_image} className='rounded-lg' alt='' height='200px' width='200px' />
+          &lt;/div>
+          &lt;div className={`${profileData.bio === null ? 'hidden' : 'justify-center mt-10 w-[200px] m-auto dark:text-white text-center'}`}>
+            {parser(String(profileData.bio))}
+          &lt;/div>
+        &lt;/div>
+        &lt;div className={`${id === loggedInProfile.id ? 'flex justify-center mt-10' : 'hidden'}`}>
+          {/* If logged in profile ID is equal to router URL ID &amp;&amp; sessionToken then show edit button */}
+          &lt;div className={`px-2 ${profileData.id === loggedInProfile.id ? 'block px-2' : 'hidden'}`}>
+            &lt;Link to={'/profiles/edit'} replace={true}>
+              &lt;Button icon={&lt;AiOutlineEdit size={'26px'} />} label={'Edit profile'} labelProps={'text-sm pt-1 pl-2'} />
+            &lt;/Link>
+          &lt;/div>
+          &lt;div className={`px-2 ${profileData.id === loggedInProfile.id ? 'block px-2' : 'hidden'}`}>
+            &lt;LogoutButton />
+          &lt;/div>
+        &lt;/div>
+      &lt;/>
+    )
+  }
+}
+
+export default UserProfile</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

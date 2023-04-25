@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/article/ArticleDetail.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/article/ArticleDetail.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from "react";
+import { Title, SidebarV2, Header, Button, SentimentIndicator, CommentSection, LoginAlert, BookmarkButton } from "../../components";
+import API from '../../API'
+import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
+import { ArticleLoading } from "../../components";
+import { useStateContext } from "../../context/ContextProvider";
+import parser from 'html-react-parser'
+import AuthorBar from "../../components/article/AuthorBar";
+import { BiLike, BiDislike } from 'react-icons/bi'
+import { MdDeleteForever, MdCheck, MdOutlineCancel } from "react-icons/md";
+import Modal from 'react-modal'
+
+/**
+ * Displays a single Article in a full page view
+ */
+
+const ArticleDetail = () => {
+    const { darkMode, loggedInProfile, walletUser, loginAlert, setLoginAlert } = useStateContext()
+    const [article, setArticle] = useState('')
+    const [notLoaded, setNotLoaded] = useState(false)
+    const [tagToLoad, setTagToLoad] = useState('')
+    const [loadTag, setLoadTag] = useState(false)
+    const { id } = useParams()
+    let history = useNavigate()
+
+    /**
+     * articleSentiment is an array of three elements
+     * idx 0 - total likes
+     * idx 1 - total dislikes
+     * idx 2 - (likes / likes + dislikes) * 100
+     */
+    const [buttonClick, setButtonClick] = useState(false)
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [deletionConfirmed, setDeletionConfirmed] = useState(false)
+
+    useEffect(() => {
+        const articleDetail = async () => {
+            await API.get(`/articles/article/${id}/`)
+                .then((res) => {
+                    setArticle(res.data)
+                })
+                .catch(err => {
+                    setNotLoaded(true)
+                })
+        }
+
+        articleDetail()
+
+    }, [id, buttonClick])
+
+    const formatDate = (e) => {
+        const year = e?.substring(0, 4)
+        const month = e?.substring(5, 7)
+        const day = e?.substring(8, 10)
+        const hour = e?.substring(11, 13)
+        const minute = e?.substring(14, 16)
+        const seconds = e?.substring(17, 19)
+
+        return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
+    }
+
+    const handleReaction = async (reaction) => {
+        if (!walletUser) {
+            setLoginAlert(true)
+            return
+        }
+        let userReaction = new FormData()
+        userReaction.append('user_id', loggedInProfile.id)
+        userReaction.append('article_id', article.id)
+        userReaction.append('sentiment', reaction)
+        try {
+            await API.post(`/articles/reaction/${article.id}/`, userReaction, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => {
+                setButtonClick(!buttonClick)
+            })
+        } catch (err) {
+            if (err.response.status === 400) {
+                await API.delete(`articles/reaction/delete/${loggedInProfile.id}/`, {
+                    headers: {
+                        'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then((res => {
+                    setButtonClick(!buttonClick)
+                }))
+            }
+        }
+    }
+
+    const handleDelete = async () => {
+        await API.delete(`articles/article/delete/${id}/`, {
+            headers: {
+                'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        }).then((res => {
+            setConfirmDelete(false)
+            setDeletionConfirmed(true)
+        }))
+    }
+
+    const openConfirmDelete = () => {
+        setConfirmDelete(true)
+    }
+
+    const cancelDelete = () => {
+        setConfirmDelete(false)
+    }
+
+    /**
+     * Users cannot tip themselves
+     */
+    const showTipButton = () => {
+        if (article.author_username === loggedInProfile.username) {
+            return false
+        }
+        return true
+    }
+
+    const navigateToTab = (tag) => {
+        setTagToLoad(tag)
+        setLoadTag(true)
+    }
+
+    if (article === '') {
+        return (
+            &lt;>
+                &lt;ArticleLoading pageTitle={'Loading'} />
+                {
+                    notLoaded &amp;&amp; (
+                        &lt;Navigate to={'not-found'} replace={true} />
+                    )
+                }
+            &lt;/>
+        )
+    }
+    else {
+        return (
+            &lt;>
+                {
+                    loadTag &amp;&amp; (
+                        &lt;Navigate to={`/articles/tags/${tagToLoad}`} replace={true} />
+                    )
+                }
+                {
+                    deletionConfirmed &amp;&amp; (
+                        &lt;Navigate to={`/home/`} replace={true} />
+                    )
+                }
+                &lt;div className='fixed justify-center m-auto left-0 right-0'>
+                    &lt;div className="hidden xl:block">
+                        &lt;AuthorBar authorID={article.author} showTipButton={showTipButton()} />
+                    &lt;/div>
+                    &lt;Header page={'articleDetail'} />
+                    &lt;SidebarV2 />
+                &lt;/div>
+                &lt;div className={`flex justify-center ${darkMode ? 'text-white' : ''}`}>
+                    &lt;div className='pt-20 justify-center'>
+                        &lt;div className='pr-2 sm:pr-0 pl-2 md:pl-10 flex justify-center'>
+                            &lt;img src={`${article.preview_image}`} className='rounded-lg' alt="" height={'300px'} width={'300px'} />
+                        &lt;/div>
+                        &lt;div className='flex justify-center flex-row mx-auto'>
+                            &lt;div className='pt-5'>
+                                &lt;Title text={`${article.title}`} size={'text-6xl'} />
+                                &lt;div className='flex text-center justify-center mt-5 xl:hidden'>
+                                    &lt;p>Written by &lt;Link to={`/profiles/${article.author}`}> {article.author_profile_name.slice(0, 20) + '...'} &lt;/Link>&lt;/p>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                        &lt;div className={`${loggedInProfile.sessionToken === '' ? 'hidden' : 'flex justify-center space-x-5 mt-5'}`}>
+                            &lt;BookmarkButton articleID={article.id} preview_image={article.preview_image} title={article.title} />
+                            &lt;div className={`${article.author_username === loggedInProfile.username ? 'block' : 'hidden'}`}>
+                                &lt;Button icon={&lt;MdDeleteForever size={'26px'} />} func={() => openConfirmDelete()} />
+                            &lt;/div>
+                        &lt;/div>
+                        &lt;div className='mt-20' />
+                        &lt;div className='justify-center text-center pl-36 w-[300px] sm:w-[350px] sm:pl-10 md:w-[500px] lg:w-[600px] xl:w-[850px]'>
+                            {parser(article.content)}
+                        &lt;/div>
+                        &lt;div className='flex justify-center mt-10'>
+                            &lt;Title text={'Topics'} size={'text-2xl'} />
+                        &lt;/div>
+                        &lt;div className='hidden flex-row justify-center mt-2 sm:flex'>
+                            {article.article_tags.map((tag) =>
+                                &lt;div key={tag.tag} className='px-2'>
+                                    &lt;Button label={tag.tag} func={() => navigateToTab(tag.tag)} />
+                                &lt;/div>)
+                            }
+                        &lt;/div>
+                        &lt;div className='flex flex-row justify-center mt-2 sm:hidden'>
+                            {article.article_tags.map((tag) =>
+                                &lt;div key={tag.tag} className='px-2'>
+                                    &lt;Link to={`/articles/tags/${tag.tag}`}>{tag.tag}&lt;/Link>
+                                &lt;/div>)
+                            }
+                        &lt;/div>
+                        &lt;div className='flex justify-center mt-10 overflow-auto'>
+                            {formatDate(article.pub_date)}
+                        &lt;/div>
+                        &lt;div className='hidden sm:block mt-10 justify-center space-x-5'>
+                        &lt;/div>
+                        &lt;div className='hidden sm:flex flex-row justify-center space-x-5'>
+                            &lt;div className='mt-3'>
+                                &lt;Button icon={&lt;BiLike size={'26px'} />} func={e => handleReaction(1)} />
+                            &lt;/div>
+                            &lt;div className='mt-3'>
+                                &lt;Button icon={&lt;BiDislike size={'26px'} />} func={e => handleReaction(2)} />
+                            &lt;/div>
+                        &lt;/div>
+                        &lt;SentimentIndicator
+                            dislikes={article.sentiment[1]}
+                            likes={article.sentiment[0]}
+                            likePercent={article.sentiment[2]}
+                        />
+                        &lt;div className='flex justify-center mt-10 mb-10'>
+                            &lt;CommentSection articleID={article.id} articleAuthor={article.author} />
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+                &lt;Modal
+                    isOpen={confirmDelete}
+                    onRequestClose={() => setConfirmDelete(false)}
+                    contentLabel="Confirm Delete Modal"
+                    ariaHideApp={false}
+                    className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                    overlayClassName={'overlayModal'}
+                >
+                    &lt;div>
+                        &lt;div className='text-4xl font-bold 
+                    text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                            Confirm Delete
+                        &lt;/div>
+                        &lt;div className='text-light-white
+                    transition-colors duration-500 select-none text-center mt-2'>
+                            Articles cannot be recovered once deleted
+                        &lt;/div>
+                        &lt;div className='flex flex-row justify-center mt-5 space-x-5'>
+                            &lt;Button func={() => cancelDelete()} icon={&lt;MdOutlineCancel size={'26px'} />} />
+                            &lt;Button func={() => handleDelete()} icon={&lt;MdCheck size={'26px'} />} />
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/Modal>
+                &lt;LoginAlert open={loginAlert} />
+            &lt;/>
+        )
+    }
+}
+
+export default ArticleDetail</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

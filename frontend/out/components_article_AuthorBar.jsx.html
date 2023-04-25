@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/article/AuthorBar.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/article/AuthorBar.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react'
+import Title from '../misc/Title'
+import { Link } from 'react-router-dom'
+import API from '../../API'
+import TipButton from '../buttons/TipButton'
+
+/**
+ * 
+ * @param {String} authorID - ID of the Author  
+ * @param {Boolean} showTipButton - Displays the tip button if the reader is not using the same wallet as the author
+ * @returns Link showing display name, profile picture and a tip button of article author
+ */
+
+const AuthorBar = ({ authorID, showTipButton }) => {
+  const [authorProfile, setAuthorProfile] = useState(undefined)
+
+  useEffect(() => {
+    const authorDetail = async () => {
+      await API.get(`/profile/user/author/${authorID}`)
+        .then((res) => {
+          setAuthorProfile(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    authorDetail()
+  }, [authorID])
+
+  const checkProfileName = () => {
+    if(authorProfile?.profile_name === '') {
+      setAuthorProfile({
+        id: authorProfile.id,
+        username: authorProfile.username,
+        profile_name: authorProfile.username.slice(0,6) + '...',
+        profile_image: authorProfile.profile_image
+      })
+    }
+
+    return (
+      &lt;Title text={authorProfile?.profile_name} size={'text-3xl'} lengthLimit={true} hover={true} />
+    )
+  }
+
+  return (
+    &lt;div>
+      &lt;div className={`flex invisible xl:visible items-end px-10 flex-col`}>
+        &lt;div className='duration-300 bg-opacity-5 dark:bg-opacity-5 overflow-auto fixed'>
+          &lt;div className='my-20' />
+          &lt;Title text={'Author'} size={'text-3xl'} hover={true}/>
+          &lt;div className='p-4 mt-4'>
+            &lt;Link to={`/profiles/${authorID}`} style={{ textDecoration: 'none' }}>
+              &lt;div className='grid grid-cols-1 gap-y-4 content-center justify-center text-center m-auto'>
+                &lt;div>
+                {checkProfileName()}
+                &lt;/div>
+                &lt;div className='flex justify-center'>
+                  &lt;img src={authorProfile?.profile_image} alt={'Authors profile'} width={120} />
+                &lt;/div>
+              &lt;/div>
+            &lt;/Link>
+          &lt;/div>
+          &lt;div className={`${showTipButton ? 'flex justify-center mb-2' : 'hidden'}`}>
+            &lt;TipButton authorUsername={authorProfile?.username}/>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  )
+}
+
+export default AuthorBar
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#AlreadySaidAlert">AlreadySaidAlert</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#ArticleDetail">ArticleDetail</a></li><li><a href="global.html#ArticleGuide">ArticleGuide</a></li><li><a href="global.html#ArticleGuideBar">ArticleGuideBar</a></li><li><a href="global.html#ArticleList">ArticleList</a></li><li><a href="global.html#ArticleLoading">ArticleLoading</a></li><li><a href="global.html#ArticlesWritten">ArticlesWritten</a></li><li><a href="global.html#AuthorBar">AuthorBar</a></li><li><a href="global.html#BookmarkButton">BookmarkButton</a></li><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CommentSection">CommentSection</a></li><li><a href="global.html#CommentThread">CommentThread</a></li><li><a href="global.html#CreateArticle">CreateArticle</a></li><li><a href="global.html#CreateArticleV2">CreateArticleV2</a></li><li><a href="global.html#DisplayComment">DisplayComment</a></li><li><a href="global.html#EditProfile">EditProfile</a></li><li><a href="global.html#EmptyFieldAlert">EmptyFieldAlert</a></li><li><a href="global.html#ExceedsLengthAlert">ExceedsLengthAlert</a></li><li><a href="global.html#FlipCard">FlipCard</a></li><li><a href="global.html#Footer">Footer</a></li><li><a href="global.html#Header">Header</a></li><li><a href="global.html#Home">Home</a></li><li><a href="global.html#ImageTooLargeAlert">ImageTooLargeAlert</a></li><li><a href="global.html#InputArea">InputArea</a></li><li><a href="global.html#InputField">InputField</a></li><li><a href="global.html#InputTooShortAlert">InputTooShortAlert</a></li><li><a href="global.html#Landing">Landing</a></li><li><a href="global.html#LandingPageVideo">LandingPageVideo</a></li><li><a href="global.html#LoadingSpinner">LoadingSpinner</a></li><li><a href="global.html#Login">Login</a></li><li><a href="global.html#LoginAlert">LoginAlert</a></li><li><a href="global.html#LoginButton">LoginButton</a></li><li><a href="global.html#LoginErrorAlert">LoginErrorAlert</a></li><li><a href="global.html#LogoutButton">LogoutButton</a></li><li><a href="global.html#Market">Market</a></li><li><a href="global.html#MenuBar">MenuBar</a></li><li><a href="global.html#MiniArticle">MiniArticle</a></li><li><a href="global.html#NotImageAlert">NotImageAlert</a></li><li><a href="global.html#NotificationButton">NotificationButton</a></li><li><a href="global.html#Notifications">Notifications</a></li><li><a href="global.html#ProfileArticleBar">ProfileArticleBar</a></li><li><a href="global.html#Profiles">Profiles</a></li><li><a href="global.html#RefreshArticles">RefreshArticles</a></li><li><a href="global.html#SentimentIndicator">SentimentIndicator</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarV2">SidebarV2</a></li><li><a href="global.html#SortingButton">SortingButton</a></li><li><a href="global.html#StateContext">StateContext</a></li><li><a href="global.html#TagIcon">TagIcon</a></li><li><a href="global.html#TagNavigation">TagNavigation</a></li><li><a href="global.html#TipButton">TipButton</a></li><li><a href="global.html#Title">Title</a></li><li><a href="global.html#TopLoader">TopLoader</a></li><li><a href="global.html#TrendBar">TrendBar</a></li><li><a href="global.html#TrendCard">TrendCard</a></li><li><a href="global.html#Trending">Trending</a></li><li><a href="global.html#UnresolvedPath">UnresolvedPath</a></li><li><a href="global.html#UserProfile">UserProfile</a></li><li><a href="global.html#UsernameLogin">UsernameLogin</a></li><li><a href="global.html#UsernameUserRegister">UsernameUserRegister</a></li><li><a href="global.html#WalletInstructions">WalletInstructions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Tue Apr 25 2023 22:51:07 GMT+0100 (British Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
