@@ -47,12 +47,14 @@ export const ContextProvider = ({ children }) => {
     const [displayAdaHandle, setDisplayAdaHandle] = useState(false)
     const [adaHandleSelected, setAdaHandleSelected] = useState('')
 
+    const [profileName, setProfileName] = useState('')
+    const [profileNameFound, setProfileNameFound] = useState(false)
+
     const [adaHandleDetected, setadaHandleDetected] = useState(false)
     const [adaHandleName, setadaHandleName] = useState([])
 
     const [refreshing, setRefreshing] = useState(false)
     const [walletUser, setWalletUser] = useState(false) //True if user uses wallet login
-    const [submitted, setSubmitted] = useState(false) //Used for displaying loading pages
 
     /**
      * Used for opening alerts throughout Gaia
@@ -63,6 +65,8 @@ export const ContextProvider = ({ children }) => {
     const [imageTooLargeAlert, setImageTooLargeAlert] = useState(false)
     const [notImageAlert, setNotImageAlert] = useState(false)
     const [exceedsLengthAlert, setExceedsLengthAlert] = useState(false)
+    const [inputTooShortAlert, setInputTooShortAlert] = useState(false)
+    const [loginErrorAlert, setLoginErrorAlert] = useState(false)
 
     /**
      * State variables for connecting a wallet
@@ -149,6 +153,10 @@ export const ContextProvider = ({ children }) => {
                 imageTooLargeAlert, setImageTooLargeAlert,
                 notImageAlert, setNotImageAlert,
                 exceedsLengthAlert, setExceedsLengthAlert,
+                inputTooShortAlert, setInputTooShortAlert,
+                loginErrorAlert, setLoginErrorAlert,
+                profileName, setProfileName,
+                profileNameFound, setProfileNameFound,
             }}
         >
             {children}
