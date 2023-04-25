@@ -2,9 +2,12 @@ frontend/node_modules/*
 !frontend/node_modules/axios
 package.json
 frontend/src/assets/GaiaAnimPrototype.mp4
+frontend/src/assets/GaiaLanding.mov
 frontend/yarn-error.log
 frontend/src/pages/CreateArticle.jsx
 frontend/src/assets/DocsAndDrawings
 frontend/src/components/WalletConnect.jsx
 frontend/.env
 frontend/docs
+.DS_Store
+frontend/.DS_Store
