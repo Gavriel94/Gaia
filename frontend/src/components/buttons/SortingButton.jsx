@@ -60,10 +60,8 @@ const SortingButton = () => {
                     setSortingIcon(<TbSunrise size={'26px'} />)
                 })
                 .catch(console.error)
-            console.log(articleList.sortBy)
             return
         } else if (orderBy === 'oldest') {
-            console.log('API call')
             API.get('/articles/all/')
                 .then((res) => {
                     setArticleList({
@@ -74,7 +72,6 @@ const SortingButton = () => {
                     setSortingIcon(<GiNightSleep size={'26px'} />)
                 })
                 .catch(console.error)
-            console.log(articleList.sortBy)
             return
         }
     }
@@ -87,8 +84,6 @@ const SortingButton = () => {
  */
     const refreshPopular = (orderBy) => {
         if (orderBy === 'mostPopular' && articleList.sortBy === 'most popular') {
-            console.log('no API call')
-            console.log(articleList.sortBy)
             setOpen(!open)
             return
         } else if (orderBy === 'leastPopular' && articleList.sortBy === 'most popular') {
@@ -99,7 +94,6 @@ const SortingButton = () => {
             })
             setOpen(!open)
             setSortingIcon(<BiDislike size={'26px'} />)
-            console.log(articleList.sortBy)
             return
         }
         else if (orderBy === 'mostPopular' && articleList.sortBy === 'least popular') {
@@ -111,14 +105,11 @@ const SortingButton = () => {
             setSortingIcon(<BiLike size={'26px'} />)
         }
         else if (orderBy === 'leastPopular' && articleList.sortBy === 'least popular') {
-            console.log('no API call')
-            console.log(articleList.sortBy)
             setOpen(!open)
             return
         }
 
         else if (orderBy === 'mostPopular') {
-            console.log('API call')
             API.get('/articles/popular/')
                 .then((res) => {
                     setArticleList({
@@ -129,10 +120,8 @@ const SortingButton = () => {
                     setSortingIcon(<BiLike size={'26px'} />)
                 })
                 .catch(console.error)
-            console.log(articleList.sortBy)
             return
         } else if (orderBy === 'leastPopular') {
-            console.log('API call')
             API.get('/articles/popular/')
                 .then((res) => {
                     setArticleList({
@@ -143,7 +132,6 @@ const SortingButton = () => {
                     setSortingIcon(<BiDislike size={'26px'} />)
                 })
                 .catch(console.error)
-            console.log(articleList.sortBy)
             return
         }
     }
