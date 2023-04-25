@@ -90,7 +90,7 @@ const Search = () => {
                 <div className='justify-center mt-5 hidden sm:flex'>
                     <Button label={'Submit'} func={() => submitSearchTerm()} />
                 </div>
-                <div className='flex justify-center mt-5 block sm:hidden'>
+                <div className='flex justify-center mt-5 sm:hidden'>
                     <button className='rounded-full focus:outline-none
                     bg-light-orange hover:bg-light-white hover:text-light-orange text-light-white
                     dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'

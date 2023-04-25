@@ -48,17 +48,17 @@ const TrendCard = ({ image, imageAlt, title, tags, likes }) => {
                             src={image}
                             alt={imageAlt}
                         />
-                        <p className='col-span-2 flex-shrink font-medium'>
+                        <div className='col-span-2 flex-shrink font-medium'>
                             {capitalize(title)}
-                        </p>
-                        <p className='flex flex-row mt-2 space-x-2'>
+                        </div>
+                        <div className='flex flex-row mt-2 space-x-2'>
                         <div>
                         <BiTrendingUp size={'26px'}/> 
                         </div>
                         <div>
                         {numLikes(likes)}
                         </div>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>

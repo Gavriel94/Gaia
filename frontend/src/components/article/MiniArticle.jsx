@@ -53,7 +53,7 @@ const MiniArticle = ({ id, title, content, image, likes, dislikes, percent }) =>
                                 <Title text={title}/>
                             </div>
                         </div>
-                        <div className='grid grid-cols-2 grid-rows-2 justify-end content-end hidden sm:block'>
+                        <div className='grid-cols-2 grid-rows-2 justify-end content-end hidden sm:grid'>
                             <div className='col-span-2 text-center dark:text-white text-black mt-10'>
                                 {contentPreview()}
                             </div>

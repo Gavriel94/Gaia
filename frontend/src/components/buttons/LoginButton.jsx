@@ -363,8 +363,9 @@ const LoginButton = () => {
                 }
             }
             if (res.data.profile_name.length > 0) {
+                let sliceName = res.data.profileName.slice(0, 12) + '...'
                 setProfileNameFound(true)
-                setProfileName(res.data.profile_name)
+                setProfileName(sliceName)
             }
         }).catch(console.err)
     }

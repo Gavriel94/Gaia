@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useStateContext } from '../../context/ContextProvider';
 import lightLogo from '../../assets/fpngs/tildelogolight.png'
 import darkLogo from '../../assets/fpngs/tildelogodark.png'
@@ -16,7 +16,7 @@ const Footer = () => {
     const { darkMode } = useStateContext();
 
     return (
-        <div className='bottom-0 mt-auto justify-center w-full h-16 flex flex-row dark:bg-dark-grey pt-3'>
+        <div className='bottom-0 mt-auto justify-center w-full h-16 flex flex-row  pt-3'>
             <Link to={'/about'} style={{ textDecoration: 'none' }}>
                 <div className='flex flex-row'>
                     <div className='px-3'>
