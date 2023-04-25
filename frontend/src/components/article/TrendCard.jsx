@@ -1,4 +1,5 @@
 import React from 'react'
+import { BiTrendingUp } from 'react-icons/bi'
 
 /**
  * Card used to display article previews in the Trending Bar
@@ -11,10 +12,26 @@ import React from 'react'
  * @returns {JSX.Element} - Card to be displayed in the TrendBar
  */
 
-const TrendCard = ({ image, imageAlt, title, tags }) => {
+const TrendCard = ({ image, imageAlt, title, tags, likes }) => {
 
     function capitalize(word) {
         return word?.charAt(0).toUpperCase() + word?.slice(1)
+    }
+
+    const numLikes = (likes) => {
+        if (likes === 1) {
+            return (
+                <div>
+                    {likes} like
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    {likes} likes
+                </div>
+            )
+        }
     }
 
     return (
@@ -34,8 +51,13 @@ const TrendCard = ({ image, imageAlt, title, tags }) => {
                         <p className='col-span-2 flex-shrink font-medium'>
                             {capitalize(title)}
                         </p>
-                        <p className='col-span-2 font-light italic py-10'>
-                            {tags}
+                        <p className='flex flex-row mt-2 space-x-2'>
+                        <div>
+                        <BiTrendingUp size={'26px'}/> 
+                        </div>
+                        <div>
+                        {numLikes(likes)}
+                        </div>
                         </p>
                     </div>
                 </div>
