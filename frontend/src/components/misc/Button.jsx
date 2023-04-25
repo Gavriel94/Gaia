@@ -27,7 +27,7 @@ const Button = ({ label, labelProps, func, icon, image, imageAlt, imageWidth, im
             <div className='flex flex-row text-center justify-center'>
                 {<img src={image} alt={imageAlt} height={imageHeight} width={imageWidth} />}
                 {icon}
-                <div className={`${labelProps}`}>
+                <div className={`${labelProps} hidden sm:block`}>
                     {label}
                 </div>
                 <div className={`${notification === 'true' ? 'block' : 'hidden'}`}>
