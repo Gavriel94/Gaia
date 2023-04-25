@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import API from '../../API';
 import { useStateContext } from '../../context/ContextProvider';
-import { Button, InputField, Title, Header, SidebarV2, LoginAlert } from '../../components';
+import { Button, Title, Header, SidebarV2, LoginAlert, InputArea, SentimentIndicator } from '../../components';
 import { BsReply } from 'react-icons/bs'
 import { BiLike, BiDislike } from 'react-icons/bi'
 import { MdDeleteForever, MdOutlineCancel, MdCheck } from 'react-icons/md'
 import Modal from 'react-modal'
+import '../../replyModal.css'
+
 /**
  * 
  * Similar to CommentSection except any replies are appended to the top of the page
@@ -27,22 +29,22 @@ const CommentThread = () => {
     const [commentCreatee, setCommentCreatee] = useState('')
     const [commentUserID, setCommentUserID] = useState('')
     const [replyToResponseSubmitted, setReplyToResponseSubmitted] = useState(false)
+    const [respondingTo, setRespondingTo] = useState('')
+    const [commentUser, setCommentUser] = useState(undefined)
+    const [reactionSubmitted, setReactionSubmitted] = useState(false)
+
 
     useEffect(() => {
         const getComment = async () => {
-            console.log(id)
             try {
                 await API.get(`/articles/article/comment/detail/${id}`)
                     .then(res => {
-                        console.log(res)
                         setOriginalPost(res.data)
-                        console.log(res.data)
                         setReplies(res.data.comment_replies.reverse())
-                        console.log(res.data.comment_replies)
                         if (responseSubmitted) {
                             setResponseSubmitted(false)
                         }
-                        if(replyToResponseSubmitted) {
+                        if (replyToResponseSubmitted) {
                             setReplyToResponseSubmitted(false)
                         }
                     })
@@ -51,7 +53,7 @@ const CommentThread = () => {
             }
         }
         getComment()
-    }, [id, responseSubmitted, deletionConfirmed, replyToResponseSubmitted])
+    }, [id, responseSubmitted, deletionConfirmed, replyToResponseSubmitted, reactionSubmitted])
 
     const formatDate = (e) => {
         const year = e?.substring(0, 4)
@@ -64,12 +66,35 @@ const CommentThread = () => {
         return hour + ':' + minute + ' ' + day + '/' + month + '/' + year + ' UTC'
     }
 
-    const submitSentiment = (e) => {
-        let response = new FormData()
-        response.append('comment',)
-        response.append('createe')
-        response.append('responder')
-        response.append('sentiment', e)
+    const submitSentiment = async (op_id, comment_id, sentiment) => {
+        let reaction = new FormData()
+        reaction.append('comment_id', comment_id)
+        reaction.append('original_poster_id', op_id)
+        reaction.append('reactor_id', loggedInProfile.id)
+        reaction.append('sentiment', sentiment)
+
+        try {
+            await API.post(`user/comment/reaction/${comment_id}/`, reaction, {
+                headers: {
+                    'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            }).then(res => {
+                console.log(res)
+                setReactionSubmitted(!reactionSubmitted)
+            })
+        } catch (err) {
+            if (err.response.status === 400) {
+                await API.delete(`user/comment/reaction/delete/${comment_id}/`, {
+                    headers: {
+                        'Authorization': `Token ${loggedInProfile.sessionToken}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }).then((res => {
+                    setReactionSubmitted(!reactionSubmitted)
+                }))
+            }
+        }
     }
 
     const handleResponse = (e) => {
@@ -80,11 +105,10 @@ const CommentThread = () => {
     }
 
     const submitResponse = async () => {
-        if(!walletUser) {
+        if (!walletUser) {
             setLoginAlert(true)
             return
         }
-        console.log(originalPost)
         let userResponse = new FormData()
         userResponse.append('sender', loggedInProfile.id)
         userResponse.append('comment', response)
@@ -92,10 +116,6 @@ const CommentThread = () => {
         userResponse.append('is_reply', '1')
         userResponse.append('article', '')
         userResponse.append('reply', originalPost.id)
-        for (const v of userResponse) {
-            console.log(userResponse.keys())
-            console.log(v)
-        }
 
         await API.post(`/articles/article/comment/response/${id}/`, userResponse, {
             headers: {
@@ -103,22 +123,20 @@ const CommentThread = () => {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(res => {
-            console.log(res)
             setResponseSubmitted(true)
             setResponse('')
         }).catch(err => {
             console.log(err)
-
         })
     }
 
     const submitReplyToResponse = async () => {
         let userResponse = new FormData()
         userResponse.append('sender', loggedInProfile.id)
-        userResponse.append('user', loggedInProfile.id)
-        userResponse.append('receiver', commentCreatee)
+        userResponse.append('receiver', commentUserID)
         userResponse.append('comment', response)
         userResponse.append('article', '')
+        userResponse.append('reply', commentCreatee)
         userResponse.append('is_reply', '1')
         for (const v of userResponse) {
             console.log(userResponse.keys())
@@ -131,7 +149,6 @@ const CommentThread = () => {
                 'Content-Type': 'multipart/form-data',
             },
         }).then(res => {
-            console.log(res)
             setOpenReplyModal(false)
             setReplyToResponseSubmitted(true)
         }).catch(err => {
@@ -149,26 +166,26 @@ const CommentThread = () => {
     }
 
     const handleDelete = async () => {
-        console.log(commentToDelete)
         await API.delete(`articles/article/comment/delete/${commentToDelete}/`, {
             headers: {
                 'Authorization': `Token ${loggedInProfile.sessionToken}`,
                 'Content-Type': 'multipart/form-data',
             },
         }).then((res => {
-            console.log(res)
             setConfirmDelete(false)
             setDeletionConfirmed(true)
         })).catch(console.err)
     }
 
-    const initReplyToResponse = (commentID, commentCreateeID) => {
-        if(!walletUser) {
+    const initReplyToResponse = (commentUser, commentCreateeID, comment) => {
+        if (!walletUser) {
             setLoginAlert(true)
             return
         }
-        setCommentUserID(commentID)
+        setCommentUser(commentUser)
+        setCommentUserID(commentUser.id)
         setCommentCreatee(commentCreateeID)
+        setRespondingTo(comment)
         setOpenReplyModal(true)
     }
 
@@ -223,6 +240,28 @@ const CommentThread = () => {
         }
     }
 
+    const displayPosterProfile = () => {
+        let name = ''
+        if (commentUser?.profile_name?.length > 20) {
+            name = commentUser?.profile_name.slice(0, 19) + '...'
+        }
+        return (
+            <div className=''>
+                <div className='flex justify-center text-white'>
+                    {name}
+                </div>
+                <div className='flex flex-row space-x-5 mt-2 border-1 border-white rounded-xl p-2 justify-center'>
+                    <div>
+                        <img src={commentUser?.profile_image} alt={'User profile'} width={40} className='rounded-xl' />
+                    </div>
+                    <div className='mt-2 text-white text-center'>
+                        {respondingTo}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <>
@@ -231,31 +270,53 @@ const CommentThread = () => {
             <div className='flex justify-center'>
                 <div className='mt-36 pb-10'>
                     <div className=''>
-                        <div className='flex flex-row justify-center'>
+                        <div className={`${originalPost?.article?.id === undefined ? 'hidden' : 'block'}`}>
+                            <Link to={`/articles/${originalPost?.article?.id}`} style={{ textDecoration: 'none' }}>
+                                <div className='flex flex-row space-x-5 justify-center'>
+                                    <div>
+                                        <img src={originalPost?.article?.preview_image} width={'50px'} alt={'Article '} />
+                                    </div>
+                                    <div>
+                                        <Title text={`${originalPost?.article?.title}`} size={'text-3xl'} lengthLimit={true} />
+                                    </div>
+                                </div>
+                            </Link>
+
+                            <div className='mt-5 w-full border-1 border-light-orange dark:border-dark-orange' />
+                        </div>
+                        <div className='mt-20' />
+                        <div className='flex flex-row justify-center space-x-5'>
+                            <div>
+                                <img src={originalPost?.sender?.profile_image} alt={'User profile'} width={80} />
+                            </div>
                             <Link to={`/profiles/${originalPost?.sender?.id}`} style={{ textDecoration: 'none' }}>
-                                <div>
+                                <div className='mt-5'>
                                     <Title text={originalPost?.sender?.profile_name} lengthLimit={true} hover={false} />
                                 </div>
                             </Link>
-                            <div className='flex justify-end'>
-                                <img src={originalPost?.sender?.profile_image} alt={'User profile'} width={80} />
-                            </div>
                         </div>
-                        <div className='mt-10'>
-                            <Title text={originalPost?.comment} hover={false} />
+                        <div className='mt-10 text-center'>
+                            {originalPost?.comment}
                         </div>
-                        <div className='flex justify-center mt-2 dark:text-white'>
+                        <div className='flex justify-center mt-5 dark:text-white'>
                             {formatDate(originalPost?.date)}
                         </div>
-                        <div className='flex flex-row justify-center mt-5 space-x-2'>
-                            <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(1)} />
-                            <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(2)} />
+                        <div className='mt-5'>
+                            <SentimentIndicator
+                                likes={originalPost?.sentiment?.at(0)}
+                                dislikes={originalPost?.sentiment?.at(1)}
+                                likePercent={originalPost?.sentiment?.at(2)}
+                            />
+                        </div>
+                        <div className='flex-row justify-center mt-5 space-x-2 hidden sm:flex'>
+                            <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(originalPost?.sender?.id, originalPost?.id, 1)} />
+                            <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(originalPost?.sender?.id, originalPost?.id, 2)} />
                         </div>
                     </div>
 
-                    <div className='flex flex-row space-x-10 mt-20'>
+                    <div className='space-x-10 mt-20 hidden sm:block'>
                         <div>
-                            <InputField
+                            <InputArea
                                 required={true}
                                 type='input'
                                 placeholder='Reply'
@@ -264,26 +325,25 @@ const CommentThread = () => {
                                 onChange={e => handleResponse(e.target.value)}
                             />
                         </div>
-                        <div>
+                        <div className='flex justify-center mt-10'>
                             <Button label={'Submit'} func={() => submitResponse()} />
                         </div>
                     </div>
-                    <div className='mt-5 w-full border-2 border-light-orange dark:border-dark-orange' />
+                    <div className='mt-5 w-full border-1 border-light-orange dark:border-dark-orange' />
                     <div className='mt-20'>
                         {replies?.map((reply) => (
                             <div key={reply.sender.id + reply.comment} className='mt-2'>
-                                {console.log(reply)}
-                                <div className='border-t-2 border-l-2 border-r-2 border-b-2 border-light-orange dark:border-dark-orange rounded-lg p-3 mt-5'>
+                                <div className='border-light-orange border-b-1 dark:border-dark-orange rounded-lg p-1 mt-2 hover:bg-light-white dark:hover:bg-dark-grey-lighter'>
                                     <div>
-                                        <div className='flex'>
+                                        <div className='flex flex-row justify-center space-x-5 '>
+                                            <div>
+                                                <img src={reply?.sender?.profile_image} alt={'User profile'} width={60} />
+                                            </div>
                                             <Link to={`/profiles/${reply?.sender.id}`} style={{ textDecoration: 'none' }}>
-                                                <div>
+                                                <div className='mt-5'>
                                                     <Title text={reply?.sender?.profile_name} lengthLimit={true} hover={false} />
                                                 </div>
                                             </Link>
-                                            <div className='ml-auto'>
-                                                <img src={reply?.sender?.profile_image} alt={'User profile'} width={60} />
-                                            </div>
                                         </div>
                                         <div className='flex justify-center mt-2 dark:text-white'>
                                             {reply?.comment}
@@ -291,17 +351,30 @@ const CommentThread = () => {
                                         <div className='flex justify-center mt-2 dark:text-white'>
                                             {formatDate(reply?.date)}
                                         </div>
-                                        <div className='flex flex-row justify-center mt-5 space-x-2'>
-                                            <Button icon={<BsReply size={'26px'} />} func={() => initReplyToResponse(reply?.sender?.id, reply?.id)} />
-                                            <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(1)} />
-                                            <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(2)} />
+                                        <div className='sm:flex flex-row justify-center mt-5 space-x-2 hidden'>
+                                            {/* <Button icon={<BsReply size={'26px'} />} func={() => initReplyToResponse(reply?.sender?.id, reply?.id)} /> */}
+                                            <Button icon={<BsReply size={'26px'} />} func={() => initReplyToResponse(reply?.sender, reply?.id, reply?.comment)} />
+                                            <Button icon={<BiLike size={'26px'} />} func={() => submitSentiment(reply?.sender?.id, reply?.id, 1)} />
+                                            <Button icon={<BiDislike size={'26px'} />} func={() => submitSentiment(reply?.sender?.id, reply?.id, 2)} />
                                             <div className={`${loggedInProfile.id === reply?.sender?.id ? 'flex justify-center' : 'hidden'}`}>
                                                 <Button icon={<MdDeleteForever size={'26px'} />} func={() => openConfirmDelete(reply?.id)} />
                                             </div>
                                         </div>
-                                        <div>
-                                            {showReplies(reply.comment_replies, reply.id)}
-                                        </div>
+                                        <Link
+                                            to={`/articles/comments/${reply.id}`}
+                                            style={{ textDecoration: 'none' }}
+                                        >
+                                            <div className='mt-5'>
+                                                <SentimentIndicator
+                                                    dislikes={reply?.sentiment[1]}
+                                                    likes={reply?.sentiment[0]}
+                                                    likePercent={reply?.sentiment[2]}
+                                                />
+                                            </div>
+                                            <div>
+                                                {showReplies(reply.comment_replies, reply.id)}
+                                            </div>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -338,7 +411,7 @@ const CommentThread = () => {
                 onRequestClose={() => openReplyModal(false)}
                 contentLabel="Reply"
                 ariaHideApp={false}
-                className={`${darkMode ? 'darkWalletModal' : 'lightWalletModal'}`}
+                className={`${darkMode ? 'darkReplyModal' : 'lightReplyModal'}`}
                 overlayClassName={'overlayModal'}
             >
                 <div className='text-4xl font-bold 
@@ -346,7 +419,10 @@ const CommentThread = () => {
                     transition-colors duration-500 select-none text-center m-4'>
                     Reply
                 </div>
-                <InputField
+                <div className='mt-2 mb-2'>
+                    {displayPosterProfile()}
+                </div>
+                <InputArea
                     required={true}
                     type='input'
                     placeholder='Response'
@@ -360,7 +436,7 @@ const CommentThread = () => {
                     <Button func={() => cancelResponse()} icon={<MdOutlineCancel size={'26px'} />} />
                 </div>
             </Modal>
-            <LoginAlert open={loginAlert}/>
+            <LoginAlert open={loginAlert} />
         </>
     )
 }
