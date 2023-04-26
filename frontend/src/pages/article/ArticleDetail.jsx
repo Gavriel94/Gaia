@@ -217,7 +217,7 @@ const ArticleDetail = () => {
                             likes={article.sentiment[0]}
                             likePercent={article.sentiment[2]}
                         />
-                        <div className='flex justify-center w-1/2 mt-10 mb-10'>
+                        <div className='flex justify-center mt-10 mb-10'>
                             <CommentSection articleID={article.id} articleAuthor={article.author} />
                         </div>
                     </div>

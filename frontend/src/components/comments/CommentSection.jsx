@@ -327,7 +327,7 @@ const CommentSection = ({ articleID, articleAuthor }) => {
     }
 
     return (
-        <div className='border-2 border-light-orange dark:border-dark-orange rounded-lg p-10 w-full'>
+        <div className='border-2 border-light-orange dark:border-dark-orange rounded-lg p-10 w-1/2'>
             <div>
                 <Title text={'Comments'} hover={true} size={'text-xl'} />
             </div>
