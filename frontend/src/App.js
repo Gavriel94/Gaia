@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useStateContext } from './context/ContextProvider';
 import { 
   Landing, 
@@ -33,7 +33,7 @@ function App() {
   return (
     <div className={`${darkMode === true ? 'dark' : ''}`}>
       <div className='dark:bg-dark-grey bg-white min-h-screen min-w-full'>
-        <BrowserRouter>
+        <Router>
           <Routes>
             <Route path='/' element={<Landing />} />
             <Route path='/home/' element={<Home />} />
@@ -54,7 +54,7 @@ function App() {
             <Route path={'/walletinstructions'} element={<WalletInstructions/>}/>
             <Route path={'*'} element={<UnresolvedPath />} />
           </Routes>
-        </BrowserRouter>
+        </Router>
       </div>
     </div>
   )
