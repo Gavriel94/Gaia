@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.bb811cbe.css",
+    "main.js": "/static/js/main.5b96649d.js",
+    "static/media/NewLandingVideo.mp4": "/static/media/NewLandingVideo.add7af2a0d8f97759b65.mp4",
+    "static/media/Success.png": "/static/media/Success.f2ee2dac5355660a34ea.png",
+    "static/media/CreatedWallet.png": "/static/media/CreatedWallet.5cce8837f7f36d97287d.png",
+    "static/media/LoginButton.png": "/static/media/LoginButton.7715153b09cf629414a3.png",
+    "static/media/DetailsFilled.png": "/static/media/DetailsFilled.e56445058daf5dd77040.png",
+    "static/media/TyphonExtension.png": "/static/media/TyphonExtension.d74c311aefdc7d5701df.png",
+    "static/media/tildelogolight.png": "/static/media/tildelogolight.a33b9dd1c50fce996d7e.png",
+    "static/media/cardanoLogo.png": "/static/media/cardanoLogo.d9b90224323ccff57026.png",
+    "static/media/Typhon.png": "/static/media/Typhon.203ae75346f555a4dc17.png",
+    "static/media/adaHandleLogoRounded.png": "/static/media/adaHandleLogoRounded.f398ea4b6d81c6469047.png",
+    "static/media/tildelogodark.png": "/static/media/tildelogodark.b9a0d6f5f7f8fe53e6c7.png",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.bb811cbe.css",
+    "static/js/main.5b96649d.js"
+  ]
+}
