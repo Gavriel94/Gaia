@@ -203,7 +203,7 @@ const SortingButton = () => {
             </div>
             <div>
                 {open ? (
-                    <div className='bg-white dark:bg-dark-grey border-2 border-black dark:border-white opacity-100 p-5 mt-40 rounded-lg'>
+                    <div className='bg-white dark:bg-dark-grey border-2 border-black dark:border-white opacity-100 top-0 mt-10 p-5 rounded-lg'>
                         {menu.map((item) => (
                             <div key={item.option} className='flex justify-center pt-2'>
                                 {item.button}

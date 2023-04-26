@@ -178,7 +178,8 @@ const ArticleDetail = () => {
                             </div>
                         </div>
                         <div className='mt-20' />
-                        <div className='justify-center text-center pl-36 w-[300px] sm:w-[350px] sm:pl-10 md:w-[500px] lg:w-[600px] xl:w-[850px]'>
+                        <div className='justify-center m-auto text-center dark:text-white w-auto sm:w-1/2 mt-20'>
+                        {/* <div className='justify-center text-center pl-36 w-[300px] sm:w-[350px] sm:pl-10 md:w-[500px] lg:w-[600px] xl:w-[850px]'> */}
                             {parser(article.content)}
                         </div>
                         <div className='flex justify-center mt-10'>
@@ -216,7 +217,7 @@ const ArticleDetail = () => {
                             likes={article.sentiment[0]}
                             likePercent={article.sentiment[2]}
                         />
-                        <div className='flex justify-center mt-10 mb-10'>
+                        <div className='flex justify-center w-1/2 mt-10 mb-10'>
                             <CommentSection articleID={article.id} articleAuthor={article.author} />
                         </div>
                     </div>

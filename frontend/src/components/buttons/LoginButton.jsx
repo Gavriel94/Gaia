@@ -18,6 +18,7 @@ import {
 import { useStateContext } from '../../context/ContextProvider'
 import API from '../../API'
 import LoginErrorAlert from '../alerts/LoginErrorAlert'
+import { AiOutlineInfo } from 'react-icons/ai'
 let Buffer = require('buffer/').Buffer
 
 /**
@@ -462,9 +463,12 @@ const LoginButton = () => {
                     <div>
                         Gaia currently supports Eternl and Typhon wallets.
                     </div>
-                    <div>
-                        Click <Link to='/walletinstructions' style={{ textDecoration: 'none' }}>here</Link> for more information
+                    <div className='text-white'>
+                        Click below for more information
                     </div>
+                    <Link to={`/walletinstructions`} style={{ textDecoration: 'none' }}>
+                    <Button icon={<AiOutlineInfo size={'26px'}/>} />
+                    </Link>
                 </div>
             )
         } else {

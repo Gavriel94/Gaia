@@ -289,11 +289,14 @@ const CreateArticleV2 = () => {
             <SidebarV2 />
             <div>
               <div className={`${!loggedInProfile?.sessionToken ? 'flex justify-center dark:text-white ' : 'hidden'}`}>
-                <div className='mt-20'>
+                <div className='hidden sm:block mt-20'>
                   You must login to post an Article
                   <div className='flex justify-center mt-20'>
                     <LoginButton />
                   </div>
+                </div>
+                <div className='sm:hidden block mt-20'>
+                  Articles can only be written on desktop devices for now
                 </div>
               </div>
             </div>

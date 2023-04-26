@@ -95,7 +95,7 @@ const NotificationButton = () => {
     const showNotifications = () => {
         if (notifications.length === 0) {
             return (
-                <div className='bg-white dark:bg-dark-grey opacity-100 mt-2 rounded-lg border-2 border-black dark:border-white'>
+                <div className='bg-white dark:bg-dark-grey border-2 border-black dark:border-white opacity-100 top-0 mt-10 p-5 rounded-lg'>
                     <div className='flex justify-center text-center dark:text-white'>
                         No new notifications
                     </div>

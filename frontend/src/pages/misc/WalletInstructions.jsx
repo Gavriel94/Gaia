@@ -100,9 +100,6 @@ const WalletInstructions = () => {
             <div className='flex justify-center dark:text-white text-center mt-5 mb-20'>
                 <Title text={'Enjoy Gaia!'} size={'text-2xl'}/>
             </div>
-
-
-            <Footer />
         </>
     )
 }

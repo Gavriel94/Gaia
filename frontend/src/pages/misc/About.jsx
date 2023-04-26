@@ -11,10 +11,10 @@ const About = () => {
         <>
             <Header />
             <SidebarV2 />
-            <div className='flex justify-center mt-20'>
+            <div className='flex justify-center'>
                 <Title text={'About Gaia'} size={'text-6xl'} />
             </div>
-            <div className='justify-center m-auto text-center dark:text-white w-1/2 mt-20'>
+            <div className='justify-center m-auto text-center dark:text-white w-1/2 mt-20 mb-20'>
                 <div className='mt-5'>
                     Gaia is a social publishing platform developed with a mission to promote informative and responsible content sharing.
                 </div>
@@ -51,12 +51,9 @@ const About = () => {
                 <div className='mt-5'>
                     Gaia has no access to your funds at any time and never takes a fee
                 </div>
-                <div className='mt-5'>
+                <div className='mt-5 mb-40 sm:mb-0'>
                     Join Gaia to be part of an innovative community that values information sharing in a balanced ecosystem.
                 </div>
-            </div>
-            <div className='fixed bottom-0 w-full justify-center'>
-                <Footer />
             </div>
         </>
     )

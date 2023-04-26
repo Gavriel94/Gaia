@@ -16,7 +16,7 @@ const Footer = () => {
     const { darkMode } = useStateContext();
 
     return (
-        <div className='bottom-0 mt-auto justify-center w-full h-16 flex flex-row  pt-3'>
+        <div className='hidden sm:flex bottom-0 mt-auto justify-center w-full h-16 flex-row  pt-3'>
             <Link to={'/about'} style={{ textDecoration: 'none' }}>
                 <div className='flex flex-row'>
                     <div className='px-3'>

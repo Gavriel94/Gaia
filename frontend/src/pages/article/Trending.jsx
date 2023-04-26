@@ -64,7 +64,6 @@ const Trending = () => {
                 </div>
             </div>
         </div>
-        <Footer/>
 </>
   )
 }

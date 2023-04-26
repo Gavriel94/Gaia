@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Header, SidebarV2, Title, InputField, Button, EmptyFieldAlert, ExceedsLengthAlert, InputTooShortAlert, Footer } from '../../components'
 import { useStateContext } from '../../context/ContextProvider'
-import { Navigate } from 'react-router-dom'
-import { AiOutlineEnter } from 'react-icons/ai'
+import { Navigate, Link } from 'react-router-dom'
+import { AiOutlineEnter, AiOutlineInfoCircle } from 'react-icons/ai'
 
 const Search = () => {
 
@@ -61,7 +61,7 @@ const Search = () => {
                     <Navigate to={`/articles/tags/${searchTerm.toLowerCase()}`} replace={true} />
                 )
             }
-            <Header page={'home'} />
+            <Header page={'search'} />
             <SidebarV2 />
             <div className='h-screen'>
                 <div className='flex justify-center'>
@@ -72,7 +72,7 @@ const Search = () => {
                 <div className='flex justify-center text-center mt-10 dark:text-white'>
                     Search for a Topic
                     <br />
-                    Remember, topics are between 2-15 characters
+                    Topics are between 2-15 characters
                 </div>
                 <div className='flex justify-center text-center dark:text-white mt-20'>
                     <InputField
@@ -94,17 +94,25 @@ const Search = () => {
                     <button className='rounded-full focus:outline-none
                     bg-light-orange hover:bg-light-white hover:text-light-orange text-light-white
                     dark:bg-dark-orange dark:hover:bg-dark-grey dark:hover:text-dark-orange dark:text-white py-2 px-4 text-xl font-bold transition-color duration-500 cursor-pointer'
-                    onClick={() => submitSearchTerm()}
+                        onClick={() => submitSearchTerm()}
                     >
-                        <AiOutlineEnter size={'26px'}/>
+                        <AiOutlineEnter size={'26px'} />
                     </button>
+                </div>
+
+                <div className='flex justify-center text-center mt-10 dark:text-white sm:hidden'>
+                    Learn more about Gaia
+                </div>
+                <div className='flex justify-center text-center mt-2 dark:text-white sm:hidden'>
+                    <Link to='/about'>
+                        <Button icon={<AiOutlineInfoCircle />} />
+                    </Link>
                 </div>
 
                 <EmptyFieldAlert open={emptyFieldAlert} />
                 <ExceedsLengthAlert open={exceedsLengthAlert} />
                 <InputTooShortAlert open={inputTooShortAlert} />
             </div>
-            <Footer />
         </>
     )
 }

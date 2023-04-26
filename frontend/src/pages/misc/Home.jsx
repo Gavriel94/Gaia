@@ -89,7 +89,10 @@ const Home = () => {
                     <div className='flex justify-center'>
                         <div className='pt-20'>
                             <Title text={'home'} size={'text-6xl'} hover={true}/>
-                            <div className={`${refreshing ? 'hidden' : 'mt-10 overflow-auto flex flex-row pb-20 sm:pb-10'}`}>
+                            <div className='mt-10 flex justify-center text-center'>
+                                Sorting by {articleList.sortBy}
+                            </div>
+                            <div className={`${refreshing ? 'hidden' : 'overflow-auto flex flex-row pb-20 sm:pb-10'}`}>
                                 <ArticleList />
                             </div>
                             <div className={`${refreshing ? 'block mt-10 overflow-auto pb-20 sm:pb-10' : 'hidden'}`}>
@@ -98,7 +101,6 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                <Footer/>
             </>
         )
     }
