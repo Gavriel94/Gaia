@@ -1,7 +1,12 @@
-# Gaia
+# [Gaia](http://gaiasocial.net)
 
-An evolution in knowledge sharing and community
+An evolution in knowledge sharing and community.
 
-The initial repository for this project is located at https://github.com/Gavriel94/project-gaia
-The project stored here had a dependency issue and this development version is now deprecated.
-I have rebuilt the frontend with `yarn` so the project and its dependencies now have more stability.
+A social media website designed to allow communities to arise through topics.
+Users can create topics, which act as threads, allowing others to find specific information or have discussions with like-minded people.
+
+Gaia uses a combination of three deep learning models in order to moderate every post.
+
+Users are anonymous by default as [Cardano](https://cardano.org) wallets are used to create an account. 
+
+A social media website built using React and Tailwind, with Django as the backend. 
