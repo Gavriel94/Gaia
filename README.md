@@ -10,3 +10,5 @@ Gaia uses a combination of three deep learning models in order to moderate every
 Users are anonymous by default as [Cardano](https://cardano.org) wallets are used to create an account. 
 
 A social media website built using React and Tailwind, with Django as the backend. 
+
+Explore at www.gaiasocial.net
